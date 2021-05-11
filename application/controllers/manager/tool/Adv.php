@@ -64,8 +64,8 @@ class Adv extends CI_Controller
         $id = (int)$id;
         if (!empty($id)) {
             $item               = $this->loop_model->get_id('adv', $id);
-            $item['start_time'] =  $item['start_time'] ? date('Y-m-d H:i:s', $item['start_time']) : '';
-            $item['end_time']   =  $item['end_time'] ? date('Y-m-d H:i:s', $item['end_time']) : '';
+            $item['start_time'] = date('Y-m-d H:i:s', $item['start_time']);
+            $item['end_time']   = date('Y-m-d H:i:s', $item['end_time']);
             assign('item', $item);
         }
         //广告位列表

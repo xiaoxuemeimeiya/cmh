@@ -36,7 +36,7 @@ class Login extends CI_Controller
         $password = trim($this->input->post('password', true));
         if (!empty($username) && !empty($password)) {
             $this->load->model('loop_model');
-            $admin_data = $this->loop_model->get_where('my_admin', array('username' => $username));
+            $admin_data = $this->loop_model->get_where('admin', array('username' => $username));
             if ($admin_data['username'] == '') {
                 error_json('用户名不存在');
             } elseif ($admin_data['password'] != md5(md5($password) . $admin_data['salt'])) {
@@ -44,10 +44,10 @@ class Login extends CI_Controller
             } elseif ($admin_data['status'] != 0) {
                 error_json('帐号被管理员锁定');
             } else {
-                $this->loop_model->update_where('my_admin', array('lasttime' => time()), array('id' => $admin_data['id']));
+                $this->loop_model->update_where('admin', array('lasttime' => time()), array('id' => $admin_data['id']));
                 $this->session->set_userdata('admin_id', $admin_data['id']);
-				//error_reporting(E_ALL & ~E_NOTICE);
-		//ini_set('display_errors', 1);
+				error_reporting(E_ALL & ~E_NOTICE);
+		ini_set('display_errors', 1);
 				
                 admin_log_insert($admin_data['username'] . '登录系统');
                 error_json('y');

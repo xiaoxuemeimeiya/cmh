@@ -57,29 +57,4 @@ class Areas_model extends CI_Model
         }
         return false;
     }
-
-    /**
-     * 根据名称获取地区id
-     * @param int array $id 数据id或者数据id数组
-     * @return array
-     */
-    public function get_id($name = FALSE)
-    {
-        if (!empty($name)) {
-            if (is_array($name)) {
-                $this->db->where_in('area_name', $name);
-                $query = $this->db->get('areas');
-                $list = $query->result_array();
-                foreach ($list as $k) {
-                    $area[$k['area_name']] = $k['area_id'];
-                }
-            } else {
-                $query = $this->db->get_where('areas', array('area_name' => $name));//echo $this->db->last_query()."<br>";
-                $row = $query->row_array();
-                $area[$row['area_name']] = $row['area_id'];
-            }
-            return $area;
-        }
-        return false;
-    }
 }

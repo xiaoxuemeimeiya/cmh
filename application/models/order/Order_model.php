@@ -41,13 +41,11 @@ class Order_model extends CI_Model
      */
     public function add($order_data = array(), $sku_list = '')
     {
-        $this->load->model('loop_model');
         if (!empty($order_data)) {
-            //$this->db->trans_start();
-            //$res1 = $this->loop_model->insert('order',$order_data);return $res1;
-            $res1 = $this->db->insert('order', $order_data);
+            $this->db->trans_start();
+            $this->db->insert('order', $order_data);
             $res = $this->db->insert_id();
-/*
+
             foreach ($sku_list as $key) {
                 $insert_data = array();
                 $insert_data = array(
@@ -68,13 +66,12 @@ class Order_model extends CI_Model
                 self::update_store_nums($key['id'], $key['num'], 'reduce');//更新商品库存
             }
             $this->db->trans_complete();
-            */
         }
 
         if (!empty($res)) {
-            return $res;
+            return 'y';
         } else {
-            return false;
+            return '保存失败';
         }
     }
 
@@ -372,17 +369,15 @@ class Order_model extends CI_Model
                     //修改订单状态
                     $res      = $this->loop_model->update_where('order', array('status' => 9), array('id' => $order_id));
                     $sku_list = $this->loop_model->get_list('order_sku', array('where' => array('order_id' => $order_id)));
-                    if($sku_list) {
-                        foreach ($sku_list as $key) {
-                            //没有发货的还原商品库存
-                            if ($key['is_send'] == 0) {
-                                self::update_store_nums($key['sku_id'], $key['sku_num'], 'add');
-                            }
+                    foreach ($sku_list as $key) {
+                        //没有发货的还原商品库存
+                        if ($key['is_send'] == 0) {
+                            self::update_store_nums($key['sku_id'], $key['sku_num'], 'add');
                         }
-                        //退还优惠券
-                        $this->load->model('market/coupons_model');
-                        $this->coupons_model->back_coupons($order_data['coupons_id']);
                     }
+                    //退还优惠券
+                    $this->load->model('market/coupons_model');
+                    $this->coupons_model->back_coupons($order_data['coupons_id']);
                     return 'y';
                 } else {
                     return '作废失败';
@@ -812,6 +807,7 @@ class Order_model extends CI_Model
         $where      = array(
             'where'    => array(
                 'sendtime<'       => time() - (config_item('order_auto_confirm') * 60),
+                'delivery_status' => 1,
             ),
             'where_in' => array(
                 'status' => array(3, 7),
@@ -844,14 +840,13 @@ class Order_model extends CI_Model
             'where' => array(
                 'status'       => 1,
                 'payment_id!=' => 1,
-                'addtime<'     => time() - (config_item('order_auto_cancel') * 60),//2天
+                'addtime<'     => time() - (config_item('order_auto_cancel') * 60),
             ),
         );
         $order_list = $this->loop_model->get_list('order', $where);
         if (!empty($order_list)) {
             foreach ($order_list as $key) {
                 $up_res = self::admin_cancel($key['id'], '系统', '系统自动作废');
-
             }
         }
     }

@@ -52,6 +52,9 @@ class Order extends CI_Controller
         } elseif ($status != '') {
             $where_data['where']['status'] = $status;
         }
+        //来源店铺
+        $shop_id = $this->input->post_get('shop_id');
+        if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
 
         //支付状态
         $payment_status = $this->input->post_get('payment_status');
@@ -64,16 +67,16 @@ class Order extends CI_Controller
         $search_where = array(
             'is_del'         => $is_del,
             'status'         => $status,
-            //'shop_id'        => $shop_id,
+            'shop_id'        => $shop_id,
             'payment_status' => $payment_status,
             'keyword_where'  => $keyword_where,
             'keyword'        => $keyword,
         );
         assign('search_where', $search_where);
         //搜索条件end
-        $where_data['select'] = 'o.*,m.nickname as username';
+        $where_data['select'] = 'o.*,m.username';
         $where_data['join']   = array(
-            array('user as m', 'o.m_id=m.id')
+            array('member as m', 'o.m_id=m.id')
         );
 
         //支付方式列表
@@ -83,6 +86,12 @@ class Order extends CI_Controller
         }
         assign('payment_list', $payment_list);
 
+        //配送方式列表
+        $delivery_data = $this->loop_model->get_list('delivery', array(), '', '', 'id asc');
+        foreach ($delivery_data as $key) {
+            $delivery_list[$key['id']] = $key;
+        }
+        assign('delivery_list', $delivery_list);
 
         //查到数据
         if (empty($export)) {
@@ -93,6 +102,9 @@ class Order extends CI_Controller
             assign('page_count', ceil($all_rows / $pagesize));
             //开始分页end
 
+            //店铺列表
+            $shop_list = $this->loop_model->get_list('member_shop', array('select' => 'm_id,shop_name', 'where' => array('status' => '0')), '', '', 'm_id asc');
+            assign('shop_list', $shop_list);
 
             display('/order/order/list.html');
         } else {
@@ -106,10 +118,13 @@ class Order extends CI_Controller
             $resultPHPExcel->getActiveSheet()->setCellValue('C' . $i, '支付状态');
             $resultPHPExcel->getActiveSheet()->setCellValue('D' . $i, '订单状态');
             $resultPHPExcel->getActiveSheet()->setCellValue('E' . $i, '支付方式');
-            $resultPHPExcel->getActiveSheet()->setCellValue('F' . $i, '用户名');
-            $resultPHPExcel->getActiveSheet()->setCellValue('G' . $i, '支付时间');
-            $resultPHPExcel->getActiveSheet()->setCellValue('H' . $i, '支付金额');
-            $resultPHPExcel->getActiveSheet()->setCellValue('I' . $i, '商品');
+            $resultPHPExcel->getActiveSheet()->setCellValue('F' . $i, '配送方式');
+            $resultPHPExcel->getActiveSheet()->setCellValue('G' . $i, '用户名');
+            $resultPHPExcel->getActiveSheet()->setCellValue('H' . $i, '收货地址');
+            $resultPHPExcel->getActiveSheet()->setCellValue('I' . $i, '支付时间');
+            $resultPHPExcel->getActiveSheet()->setCellValue('J' . $i, '支付金额');
+            $resultPHPExcel->getActiveSheet()->setCellValue('K' . $i, '物流费用');
+            $resultPHPExcel->getActiveSheet()->setCellValue('L' . $i, '商品');
             foreach ($list as $key) {
                 $i++;
                 if ($key['payment_status'] == 0) {
@@ -127,9 +142,12 @@ class Order extends CI_Controller
                 $resultPHPExcel->getActiveSheet()->setCellValue('C' . $i, $payment_status);
                 $resultPHPExcel->getActiveSheet()->setCellValue('D' . $i, get_order_status_text($key));
                 $resultPHPExcel->getActiveSheet()->setCellValue('E' . $i, $payment_name);
-                $resultPHPExcel->getActiveSheet()->setCellValue('F' . $i, $key['username']);
-                $resultPHPExcel->getActiveSheet()->setCellValue('G' . $i, date('Y-m-d H:i:s', $key['paytime']));
-                $resultPHPExcel->getActiveSheet()->setCellValue('H' . $i, '￥' . format_price($key['order_price']));
+                $resultPHPExcel->getActiveSheet()->setCellValue('F' . $i, $delivery_list[$key['delivery_id']]['name']);
+                $resultPHPExcel->getActiveSheet()->setCellValue('G' . $i, $key['username']);
+                $resultPHPExcel->getActiveSheet()->setCellValue('H' . $i, get_area_name(array($key['prov'], $key['city'], $key['area'])) . $key['address']);
+                $resultPHPExcel->getActiveSheet()->setCellValue('I' . $i, date('Y-m-d H:i:s', $key['paytime']));
+                $resultPHPExcel->getActiveSheet()->setCellValue('J' . $i, '￥' . format_price($key['order_price']));
+                $resultPHPExcel->getActiveSheet()->setCellValue('K' . $i, '￥' . format_price($key['delivery_price_real']));
                 //订单商品
                 $this->load->model('order/order_model');
                 $sku_list  = array();
@@ -150,7 +168,7 @@ class Order extends CI_Controller
                     }
                     $goods_str .= "\r\n";
                 }
-                $resultPHPExcel->getActiveSheet()->setCellValue('I' . $i, $goods_str);
+                $resultPHPExcel->getActiveSheet()->setCellValue('L' . $i, $goods_str);
             }
             $outputFileName = "订单.xls";
             $xlsWriter      = new PHPExcel_Writer_Excel5($resultPHPExcel);
@@ -330,10 +348,15 @@ class Order extends CI_Controller
             $order_data                        = $this->loop_model->get_id('order', $id);
             $order_data['sku_price']           = format_price($order_data['sku_price']);
             $order_data['sku_price_real']      = format_price($order_data['sku_price_real']);
+            $order_data['delivery_price']      = format_price($order_data['delivery_price']);
+            $order_data['delivery_price_real'] = format_price($order_data['delivery_price_real']);
             $order_data['discount_price']      = format_price($order_data['discount_price']);
             $order_data['promotion_price']     = format_price($order_data['promotion_price']);
             $order_data['coupons_price']       = format_price($order_data['coupons_price']);
             $order_data['order_price']         = format_price($order_data['order_price']);
+            $this->load->model('areas_model');
+            $order_data['area_name'] = $this->areas_model->get_name(array($order_data['prov'], $order_data['city'], $order_data['area']));
+            assign('order_data', $order_data);
             //订单商品
             $this->load->model('order/order_model');
             $sku_list = $this->order_model->get_order_sku($id);
@@ -341,10 +364,26 @@ class Order extends CI_Controller
             //下单用户
             $member_data = $this->loop_model->get_id('member', $order_data['m_id']);
             assign('member_data', $member_data);
+            //配送方式
+            $delivery_data = $this->loop_model->get_id('delivery', $order_data['delivery_id']);
+            assign('delivery_data', $delivery_data);
             //支付方式
             $payment_data = $this->loop_model->get_id('payment', $order_data['payment_id']);
             assign('payment_data', $payment_data);
+            //来源店铺
+            $shop_data = $this->loop_model->get_where('member_shop', array('m_id' => $order_data['shop_id']));
+            assign('shop_data', $shop_data);
 
+            //发货日志
+            $send_log_where          = array(
+                'select' => 'doc.*,e.name',
+                'where'  => array('doc.order_id' => $order_data['id']),
+                'join'   => array(
+                    array('express_company as e', 'e.id=doc.express_company_id')
+                ),
+            );
+            $order_delivery_doc_list = $this->loop_model->get_list('order_delivery_doc as doc', $send_log_where);
+            assign('order_delivery_doc_list', $order_delivery_doc_list);
 
             //订单日志
             $order_log_list = $this->loop_model->get_list('order_log', array('where' => array('order_id' => $order_data['id'])), '', '', 'id asc');

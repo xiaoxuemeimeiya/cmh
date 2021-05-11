@@ -13,70 +13,6 @@ class Goods_model extends CI_Model
         $this->load->database();
     }
 
-        /**
-     * 根据id查询数据(前台展示用)
-     * @param int $id 数据id
-     * @return array
-     */
-    public function get_detail($id)
-    {
-        $id = (int)$id;
-        if (!empty($id)) {
-            $goods_data = $this->loop_model->get_where('goods', array('id'=>$id),'id,name,sub_desc,sale,visit,market_price,sell_price,time');
-            if (empty($goods_data)) return false;//msg('商品不存在');
-            if ($goods_data['status'] != 0) return false; //msg('商品已下架');
-            $goods_data['market_price'] = format_price($goods_data['market_price']);
-            $goods_data['sell_price']   = format_price($goods_data['sell_price']);
-            $goods_data['endtime']   = $goods_data['time'] ? $goods_data['time'].'个月' : '终身';
-            //商品描述
-            $desc               = $this->loop_model->get_where('goods_desc', array('goods_id' => $id), 'desc');
-            $goods_data['desc'] = $desc['desc'];
-            //商品图片
-            $goods_data['image_list'] = $this->loop_model->get_list('goods_image', array('where' => array('goods_id' => $id), 'select' => 'url'));
-
-            //商品sku
-            /*
-            $sku_list = $this->loop_model->get_list('goods_sku', array('where' => array('goods_id' => $id), 'select' => 'id,sku_no,value,store_nums,market_price,sell_price,weight,minimum'));
-            $this->load->model('goods/goods_sum_model');
-            foreach ($sku_list as $v => $k) {
-                $arr                    = $sku_key_data = array();
-                $arr['sku_id']          = $k['id'];
-                $arr['sku_no']          = $k['sku_no'];
-                $arr['store_nums']      = $k['store_nums'];
-                $arr['minimum']         = $k['minimum'];
-                $arr['market_price']    = format_price($k['market_price']);
-                $arr['sell_price']      = format_price($this->goods_sum_model->sku_member_group_price($k));
-                $max_min_sell_price[]   = $arr['sell_price'];//得到价格的数据,方便计算最大和最小价格
-                $max_min_market_price[] = $arr['market_price'];//得到价格的数据,方便计算最大和最小价格
-                $spec_value             = json_decode($k['value'], true);//规格属性解析
-                if (!empty($spec_value)) {
-                    foreach ($spec_value as $val => $key) {
-                        $spec_select_value[$val]['name']    = $key['name'];//属性名
-                        $spec_select_value[$val]['type']    = $key['type'];//属性类型
-                        $spec_select_value[$val]['value'][] = $key['value'];//属性集合
-                        $sku_key_data[]                     = $key['value'];//sku键值
-                    }
-                }
-                $sku_key        = join(';', $sku_key_data);
-                $arr['sku_key'] = $sku_key;//skuid的属性名称组合为键值
-                $sku_data[]     = $arr;
-            }
-            
-            //属性按名称集合
-            if (!empty($spec_select_value)) {
-                foreach ($spec_select_value as $k) {
-                    $spec_select_value_unique = array_unique($k['value']);//去掉重复的值
-                    $spec_select_list[]       = array('name' => $k['name'], 'type' => $k['type'], 'value' => $spec_select_value_unique);//规格列表
-                }
-            }
-            */
-            //$goods_data['spec_select_list']     = $spec_select_list;//规格名称和属性列表
-            //$goods_data['sku_list']             = $sku_data;//sku列表以属性组合为键值
-            //$goods_data['one_sku_data']         = current($sku_data);//第一个sku详情
-            return $goods_data;
-        }
-    }
-
     /**
      * 根据id查询数据(前台展示用)
      * @param int $id 数据id
@@ -149,7 +85,11 @@ class Goods_model extends CI_Model
         $id = (int)$id;
         if ($id !== FALSE) {
             //商品信息
-            $query = $this->db->get_where('goods', array('id' => $id));
+            if (!empty($shop_id)) {
+                $query = $this->db->get_where('goods', array('id' => $id, 'shop_id' => $shop_id));
+            } else {
+                $query = $this->db->get_where('goods', array('id' => $id));
+            }
             $row = $query->row_array();
             //商品描述
             $query       = $this->db->get_where('goods_desc', array('goods_id' => $id));//echo $this->db->last_query()."<br>";
@@ -181,8 +121,6 @@ class Goods_model extends CI_Model
                 }
                 $sku_data[] = $k;
             }
-
-            $row['endtime'] = date('Y-m-d H:i:s',$row['endtime']);//sku的规格名称
             $row['spec_name'] = $spec_name;//sku的规格名称
             $row['sku_list']  = $sku_data;
             return $row;
@@ -200,8 +138,6 @@ class Goods_model extends CI_Model
         //数据验证
         if (empty($data_post['name'])) {
             return '商品名称不能为空';
-        }elseif (empty($data_post['sub_desc'])) {
-            return '商品描述不能为空';
         } elseif (empty($data_post['sell_price'])) {
             return '销售价格错误';
         } elseif (empty($data_post['market_price'])) {
@@ -212,25 +148,27 @@ class Goods_model extends CI_Model
 
         $update_data = array(
             'name'         => $data_post['name'],
-            'sub_desc'     => $data_post['sub_desc'],
             'model_id'     => (int)$data_post['model_id'],
             'cat_id'       => (int)$data_post['cat_id'],
+            'brand_id'     => (int)$data_post['brand_id'],
             'sell_price'   => price_format(min($data_post['sell_price'])),
             'market_price' => price_format(min($data_post['market_price'])),
             'unit'         => $data_post['unit'],
             'status'       => (int)$data_post['status'],
             'sortnum'      => (int)$data_post['sortnum'],
-            //'vedio'        => $data_post['type']==1 ? $data_post['vedio'] :$data_post['vedio_url'],
             'edittime'     => time(),
-            'time'         => $data_post['time'],
-            'json'         => $data_post['json'],
         );
 
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
 
+        //店铺分类
+        if (!empty($data_post['shop_cat_id'])) {
+            $update_data['shop_cat_id'] = $data_post['shop_cat_id'];
+        }
+
         //商品默认图片
         if (!empty($data_post['image_list'])) {
-            $data_post['image'] == '' ? $update_data['image'] = ($data_post['image_list'] ? $data_post['image_list'][0] : '') : $update_data['image'] = $data_post['image'];
+            $data_post['image'] == '' ? $update_data['image'] = current($data_post['image_list']) : $update_data['image'] = $data_post['image'];
         }
 
         //上下架时间
@@ -240,6 +178,9 @@ class Goods_model extends CI_Model
             $update_data['down_time'] = time();
         }
 
+        //商户
+        $update_data['shop_id'] = $data_post['shop_id'];
+        if (empty($data_post['shop_id'])) $update_data['shop_id'] = 1;
 
         //去掉重复的规格名称
         $spec_name = $spec_value = '';
@@ -319,7 +260,7 @@ class Goods_model extends CI_Model
                     'store_nums'   => $data_post['store_nums'][$v],
                     'market_price' => price_format($data_post['market_price'][$v]),
                     'sell_price'   => price_format($data_post['sell_price'][$v]),
-                    //'weight'       => $data_post['weight'][$v],
+                    'weight'       => $data_post['weight'][$v],
                     'minimum'      => $data_post['minimum'][$v],
                 );
                 $sk       = array();
@@ -386,20 +327,32 @@ class Goods_model extends CI_Model
      * @param int   $screening 是否需要筛选项,不为空时需要
      * @return array
      */
-    public function search($where_data = array(), $cache = '')
+    public function search($where_data = array(), $cache = '', $screening = '')
     {
         $is_cache = '';
         if (!empty($cache)) {
-            $cache_name = md5(json_encode($where_data));
+            $cache_name = md5(json_encode($where_data).$screening);
             $reslut_array = cache('get', $cache_name);
             if (!empty($reslut_array)) {
                 $is_cache = 'in';
                 return $reslut_array;
             }
         }
-
         if (empty($is_cache)) {
-            $cat_id        = $where_data['cat_id'];//分类id
+            $cat_id        = (int)$where_data['cat_id'];//分类id
+            $shop_cat_id   = (int)$where_data['shop_cat_id'];//店铺分类id
+            $brand_id      = (int)$where_data['brand_id'];//品牌id
+            $shop_id       = (int)$where_data['shop_id'];//店铺id
+            $min_price     = price_format((int)$where_data['min_price']);//最低价格
+            $max_price     = price_format((int)$where_data['max_price']);//最高价格
+            $up_time_start = $where_data['up_time_start'];//开始时间
+            $up_time_end   = $where_data['up_time_end'];//结束时间
+            $keyword       = $where_data['keyword'];//关键字
+            $limit         = (int)$where_data['limit'];//显示数量
+            $is_hot        = (int)$where_data['is_hot'];//最热
+            $is_new        = (int)$where_data['is_new'];//最新
+            $is_flag       = (int)$where_data['is_flag'];//推荐
+
             if (!is_array($cat_id)) {
                 $this->load->model('goods/category_model');
                 $cat_id = $this->category_model->get_reid_down($cat_id);
@@ -408,11 +361,41 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,sub_desc,cat_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale');
+            $this->db->select('g.id,name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+            if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+            if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+            if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+            if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+            if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+            if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+            if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+            if (!empty($keyword)) $this->db->like('g.name', $keyword);
+            if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+            if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+            if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+            //规格属性筛选start
+            if (!empty($where_data['attr'])) {
+                $where_attr = array_filter($where_data['attr']);
+                if (!empty($where_attr)) {
+                    $attr_sql = '';
+                    foreach ($where_attr as $val => $key) {
+                        $attr_sql[] = "(attr_id = $val and find_in_set('$key',attr_value))";
+                    }
+                    $this->db->join("(select * from " . $this->db->dbprefix('goods_attr') . " where " . join(' or ', $attr_sql) . " group by goods_id having count(goods_id)>=" . count($attr_sql) . ") as ga", 'ga.goods_id=g.id');
+                }
+            }
+            //规格属性筛选end
+
             $this->db->where('g.status', 0);
+            //开始排序
+            $orderby      = $where_data['orderby'];//排序字段
+            $orderby_type = $where_data['orderby_type'];//排序类型
+            if ($orderby == '') $orderby = config_item('goods_list_orderby');
+            if ($orderby_type == '') $orderby_type = config_item('goods_list_orderby_type');
+            $this->db->order_by($orderby, $orderby_type);
             $this->db->order_by('sortnum', 'asc');
 
             //分页
@@ -423,7 +406,6 @@ class Goods_model extends CI_Model
             $this->db->limit($limit, $limit * ($page - 1));
             $query      = $this->db->get();
             $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
-
             $this->load->model('goods/goods_sum_model');
             foreach ($goods_data as $key) {
                 $key['sell_price']   = format_price($this->goods_sum_model->sku_member_group_price($key));
@@ -438,12 +420,17 @@ class Goods_model extends CI_Model
             $this->db->from('goods as g');
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
-            //if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
-            //if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
-            //if (!empty($keyword)) $this->db->like('g.name', $keyword);
-            //if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
-            //if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
-            //if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+            if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+            if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+            if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+            if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+            if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+            if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+            if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+            if (!empty($keyword)) $this->db->like('g.name', $keyword);
+            if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+            if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+            if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
             //规格属性筛选start
             if (!empty($where_data['attr'])) {
                 $where_attr = array_filter($where_data['attr']);
@@ -460,8 +447,110 @@ class Goods_model extends CI_Model
             $this->db->where('g.status', 0);
             $goods_count = $this->db->count_all_results();
             $page_count  = ceil($goods_count / $limit);
+            //查询对应的商品总数end
 
-            $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
+
+            $attr_list = $brand_data = $price_data = array();
+            //是否需要查询筛选属性
+            $screening = (int)$screening;//是否需要筛选
+            if (!empty($screening)) {
+                //*******************************************************
+                //查询对应的商品属性start**********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('gma.id,gma.name,gma.value');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+                if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+
+                $this->db->where('g.status', 0);
+                $this->db->where('gma.search', 1);//是否是搜索项
+                $this->db->join('goods_attr as ga', 'g.id=ga.goods_id');
+                $this->db->group_by('ga.attr_id');
+                $this->db->join('goods_model_attr as gma', 'ga.attr_id=gma.id');
+                $query     = $this->db->get();
+                $attr_data = $query->result_array();//echo $this->db->last_query()."<br>";
+                foreach ($attr_data as $k) {
+                    $k['value']  = explode(',', $k['value']);
+                    $attr_list[] = $k;
+                }
+                //查询对应的商品属性end
+
+                //*******************************************************
+                //查询对应的商品品牌start***********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('gb.id,gb.name,gb.logo');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+                if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+                $this->db->group_by('gb.id');
+                $this->db->where('g.status', 0);
+                $this->db->join('goods_brand as gb', 'g.brand_id=gb.id');
+                $query      = $this->db->get();
+                $brand_data = $query->result_array();//echo $this->db->last_query()."<br>";
+                //查询对应的商品品牌end
+
+                //*******************************************************
+                //计算商品的价格区间start***********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('MIN(g.sell_price) as min,MAX(g.sell_price) as max');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+                //规格属性筛选start
+                if (!empty($where_data['attr'])) {
+                    $where_attr = array_filter($where_data['attr']);
+                    if (!empty($where_attr)) {
+                        $attr_sql = '';
+                        foreach ($where_attr as $val => $key) {
+                            $attr_sql[] = "(attr_id = $val and find_in_set('$key',attr_value))";
+                        }
+                        $this->db->join("(select * from " . $this->db->dbprefix('goods_attr') . " where " . join(' or ', $attr_sql) . " group by goods_id having count(goods_id)>=" . count($attr_sql) . ") as ga", 'ga.goods_id=g.id');
+                    }
+                }
+                //规格属性筛选end
+
+                $this->db->where('g.status', 0);
+                $query       = $this->db->get();
+                $goods_price = $query->row_array();//echo $this->db->last_query()."<br>";
+
+                $price_data = self::get_goods_price(format_price($goods_price['min']), format_price($goods_price['max']));
+                //计算商品的价格区间end
+            }
+
+            $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count, 'attr_list' => $attr_list, 'brand_list' => $brand_data, 'price_list' => $price_data);
             if($cache!='') {
                 cache('save', $cache_name, $reslut_array);
             }

@@ -26,8 +26,7 @@ img{ border:0px;}
 .left_menu_parent{ width:100%; height:60px; line-height:60px; background-color:#eeeeee; border-bottom: 1px solid #e5e5e5; border-top: 1px solid #e5e5e5;}
 .left_menu_parent a{ margin-left: 20px;}
 .left_menu_down{ width:100%;}
-.left_menu_down li{ width:100%; line-height:50px; background-color: #eeeeee; border-top:1px dashed #e5e5e5;}
-.left_menu_down:last-child{border-bottom:1px dashed #e5e5e5;}
+.left_menu_down li{ width:100%; line-height:30px; background-color: #eeeeee; border-top:1px dashed #e5e5e5;}
 .left_menu_down li a{ margin-left:40px;}
 li .a-active{color:#2691FD}
 .left_menu_down .no_border_top{ border-top:0px;}

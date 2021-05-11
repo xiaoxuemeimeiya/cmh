@@ -417,26 +417,6 @@ if (!function_exists('get_area_name')) {
     }
 }
 
-/**
- * 根据中文获取地区id
- * @param array $area_name  省市区名称
- * @param str   $join_str 多个之间隔断符号
- */
-if (!function_exists('get_area_id')) {
-    function get_area_id($area_name, $join_str = '')
-    {
-        if (!empty($area_name)) {
-            $CI = &get_instance();
-            $CI->load->model('areas_model');
-            $area_id = $CI->areas_model->get_id($area_name);
-            if (!empty($area_id)) {
-                return join($join_str, $area_id);
-            }
-            return false;
-        }
-    }
-}
-
 
 /**
  * 加载一个编辑器

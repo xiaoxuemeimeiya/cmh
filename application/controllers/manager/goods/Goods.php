@@ -16,97 +16,6 @@ class Goods extends CI_Controller
         $this->load->model('loop_model');
     }
 
-    public function vedio(){
-        $imagesExt=['jpg','png','jpeg','gif','mp4'];
-        $files =  $_FILES['file'];
-        $path = "./uploads";
-
-        // 判断错误号
-        if (@$files['error'] == 0) {
-
-            // 判断文件类型
-
-            $ext = strtolower(pathinfo(@$files['name'],PATHINFO_EXTENSION));
-            if (!in_array($ext,$imagesExt)){
-
-                error_json('非法文件类型');
-
-            }
-
-            // 生成唯一的文件名
-
-            $fileName = md5(uniqid(microtime(true),true)).'.'.$ext;
-
-            // 将文件名拼接到指定的目录下
-
-            $dir = $path ."/". date('Y', time()) . '/' . date('m', time()) . '/' . date('d', time()) . '/';
-
-            // 判断是否存在上传到的目录
-
-            if (!is_dir($dir)){
-
-                mkdir($dir,0777,true);
-
-            }
-
-            $destName = $dir.$fileName;
-            // 进行文件移动
-
-            if (!move_uploaded_file($files['tmp_name'],$destName)){
-
-                error_json("文件上传失败！");
-
-
-            }
-
-            //error_json("文件上传成功！");
-            $file_dir = str_replace('./uploads',  '/uploads', $destName);
-            error_json($file_dir,"y");
-
-        } else {
-
-            // 根据错误号返回提示信息
-
-            switch (@$files['error']) {
-
-                case 1:
-
-                    error_json("上传的文件超过了 php.ini 中 upload_max_filesize 选项限制的值");
-
-                    break;
-
-                case 2:
-
-                    error_json("上传文件的大小超过了 HTML 表单中 MAX_FILE_SIZE 选项指定的值");
-
-                    break;
-
-                case 3:
-
-                    error_json("文件只有部分被上传");
-
-                    break;
-
-                case 4:
-
-                    error_json("没有文件被上传");
-
-                    break;
-
-                case 6:
-
-                case 7:
-
-                    error_json("系统错误");
-
-                    break;
-
-            }
-
-        }
-
-    }
-
     /**
      * 列表
      */
@@ -123,14 +32,10 @@ class Goods extends CI_Controller
         } else {
             $where_data['where']['g.status!='] = '1';
         }
-        /*
         //来源店铺
         $shop_id = $this->input->post_get('shop_id');
         if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
-        //品牌
-        $brand_id = $this->input->post_get('brand_id');
-        if (!empty($brand_id)) $where_data['where']['brand_id'] = $brand_id;
-*/
+
         //分类
         $cat_id = $this->input->post_get('cat_id');
         if (!empty($cat_id)) {
@@ -138,6 +43,10 @@ class Goods extends CI_Controller
             $cat_id_list                      = $this->category_model->get_reid_down($cat_id);
             $where_data['where_in']['cat_id'] = $cat_id_list;
         }
+
+        //品牌
+        $brand_id = $this->input->post_get('brand_id');
+        if (!empty($brand_id)) $where_data['where']['brand_id'] = $brand_id;
 
         //关键字
         $name = $this->input->post_get('name');
@@ -152,19 +61,18 @@ class Goods extends CI_Controller
         if (!empty($goods_store_nums)) $where_data['where']['g.store_nums<='] = config_item('goods_store_nums');
         $search_where = array(
             'status'           => $status,
-           // 'shop_id'          => $shop_id,
+            'shop_id'          => $shop_id,
             'cat_id'           => $cat_id,
-            //'brand_id'         => $brand_id,
+            'brand_id'         => $brand_id,
             'name'             => $name,
             'flag_type'        => $flag_type,
             'goods_store_nums' => $goods_store_nums,
         );
         assign('search_where', $search_where);
 
-        $where_data['select'] = array('g.*,cat.name as cat_name,pcat.name as pcat_name');
+        $where_data['select'] = array('g.*,cat.name as cat_name');
         $where_data['join']   = array(
-            array('goods_category as cat', 'g.cat_id=cat.id', 'left'),
-            array('goods_category as pcat', 'pcat.id=cat.reid', 'left')
+            array('goods_category as cat', 'g.cat_id=cat.id', 'left')
         );
         //搜索条件end
         //查到数据
@@ -186,6 +94,13 @@ class Goods extends CI_Controller
         $cat_list = $this->category_model->get_all();
         assign('cat_list', $cat_list);
 
+        //店铺列表
+        $shop_list = $this->loop_model->get_list('member_shop', array('select' => 'm_id,shop_name', 'where' => array('status' => '0')), '', '', 'm_id asc');
+        assign('shop_list', $shop_list);
+
+        //品牌列表
+        $brand_list = $this->loop_model->get_list('goods_brand', array('select' => 'id,name'), '', '', 'sortnum asc,id desc');
+        assign('brand_list', $brand_list);
         display('/goods/goods/list.html');
     }
 
@@ -207,6 +122,9 @@ class Goods extends CI_Controller
         $cat_list = $this->category_model->get_all();
         assign('cat_list', $cat_list);
 
+        //店铺列表
+        $shop_list = $this->loop_model->get_list('member_shop', array('select' => 'm_id,shop_name', 'where' => array('status' => '0')), '', '', 'm_id asc');
+        assign('shop_list', $shop_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/goods/goods/add.html');

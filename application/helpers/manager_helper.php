@@ -87,39 +87,4 @@ if (!function_exists('admin_log_insert')) {
     }
 }
 
-/**
- * 返现操作记录
- */
-if (!function_exists('cash_log_insert')) {
-    function cash_log_insert($note = '',$id,$state)
-    {
-        if (!empty($note)) {
-            $CI = &get_instance();
-            $admin_data = get_manager_data();
-            $CI->load->model('loop_model');
-            $insert_data = array(
-                'admin_user' => $admin_data['username'],
-                'note'       => $note,
-                'cash_id'       => $id,
-                'state'       => $state,
-                'addtime'    => date('Y-m-d H:i:s',time()),
-            );
-            $CI->loop_model->insert('cash_log', $insert_data);
-        }
-    }
-}
-
-
-if(!function_exists('getRandChar')){
-    //生成随机字符串
-    function getRandChar($length){
-        $str = null;
-        $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        $max = strlen($strPol)-1;
-        for($i=0;$i<$length;$i++){
-            $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
-        }
-        return $str;
-    }
-}
 
