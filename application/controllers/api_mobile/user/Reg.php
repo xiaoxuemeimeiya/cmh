@@ -62,12 +62,12 @@ class Reg extends CI_Controller
 
                 //判断用户信息是否存在
                 $checkinWhere["openid"] = isset($info["openid"])?$info["openid"]:"";
-                $hasCheckin = $this->loop_model->get_where('user', $checkinWhere);
+                $hasCheckin = $this->loop_model->get_where('member_oauth', $checkinWhere);
                 if ($hasCheckin) {
                     //已注册
                     $info["userin"] = true;
-                    $user_data = $this->loop_model->get_where('user', array('openid' => $info["openid"]));
-                    $this->loop_model->update_where('user', array('endtime' => time()), array('id' => $user_data['id']));
+                    $user_data = $this->loop_model->get_where('member_oauth', array('openid' => $info["openid"]));
+                    $this->loop_model->update_where('member_oauth', array('endtime' => time()), array('id' => $user_data['id']));
                     $salt = substr(uniqid(), -6);
                     $token = md5($user_data['id'] . $user_data['openid']);
                     $is_register = 0;
@@ -97,9 +97,9 @@ class Reg extends CI_Controller
                 } else {
                     //用户不存在
                     $addDAta["is_true"] = 0;
-                    $res = $this->loop_model->insert('user',$addDAta);
+                    $res = $this->loop_model->insert('member_oauth',$addDAta);
                     $info["userin"] = true;
-                    $user_data = $this->loop_model->get_where('user', array('openid' => $addDAta["openid"]));
+                    $user_data = $this->loop_model->get_where('member_oauth', array('openid' => $addDAta["openid"]));
                     $salt = substr(uniqid(), -6);
                     $token = md5($user_data['id'] . $user_data['openid']);
                     $tokenData = [
@@ -116,11 +116,6 @@ class Reg extends CI_Controller
                     $this->ResArr['code'] = 200;
                     $this->ResArr['data'] = $tokenData;
                     echo json_encode($this->ResArr);exit;
-                    /*
-                    $this->ResArr['code'] = 5;
-                    $this->ResArr['data'] = $info;
-                    echo json_encode($this->ResArr);exit;
-                    */
                 }
             }else{
                 //拒绝会话密钥
@@ -178,15 +173,15 @@ class Reg extends CI_Controller
             //加入分销功能
             if(isset($getData["top_openid"])||!empty($getData["top_openid"])){
 
-                $userinfo = $this->loop_model->get_where("user",["openid"=>$getData["top_openid"]],'id')->find();
+                $userinfo = $this->loop_model->get_where("member_oauth",["openid"=>$getData["top_openid"]],'id')->find();
                 if($userinfo){
                     $addData['top_openid'] = $userinfo["id"];
                 }
             }
             */
-            $findopenid = $this->loop_model->get_where('user',["openid"=>$data['openId']]);
+            $findopenid = $this->loop_model->get_where('member_oauth',["openid"=>$data['openId']]);
             if(isset($getData["top_id"])&&!empty($getData["top_id"])){
-                $userinfo = $this->loop_model->get_where("user",["id"=>$getData["top_id"]],'id');
+                $userinfo = $this->loop_model->get_where("member_oauth",["id"=>$getData["top_id"]],'id');
 
                 if($userinfo){
                     //查看是否被绑定
@@ -197,7 +192,7 @@ class Reg extends CI_Controller
                             //提示该用户已被绑定
                         }else{
                             //已过期
-                            $res = $this->loop_model->update_where("user",['top_id'=>''],["openid"=>$data['openId']]);
+                            $res = $this->loop_model->update_where("member_oauth",['top_id'=>''],["openid"=>$data['openId']]);
                             $res = $this->loop_model->update_where("user_bind",['status'=>2],["id"=>$binddata['id']]);
                             //新插入
                             $bind['m_id'] = $userinfo["id"];
@@ -222,10 +217,10 @@ class Reg extends CI_Controller
             }
 
             if($findopenid){
-                $res = $this->loop_model->update_where("user",$addData,["openid"=>$data['openId']]);
+                $res = $this->loop_model->update_where("member_oauth",$addData,["openid"=>$data['openId']]);
             }else{
                 $addData['openid']              = $data['openId'];
-                 $res = $this->loop_model->insert('user',$addData);
+                 $res = $this->loop_model->insert('member_oauth',$addData);
             }
             if($res > 0){
                 $is_bind = false;
@@ -237,7 +232,7 @@ class Reg extends CI_Controller
                 }
                 $this->ResArr["code"] = 200;
                 $salt = substr(uniqid(), -6);
-                $openid = $this->loop_model->get_where('user',["openid"=>$data['openId']]);
+                $openid = $this->loop_model->get_where('member_oauth',["openid"=>$data['openId']]);
                 $token = md5($openid['id'] . $openid['openid']);
                 $tokenData = [
                     'm_id' => $openid['id'],
@@ -247,10 +242,8 @@ class Reg extends CI_Controller
                     'is_register' => 1,
                     'is_bind' => $is_bind
                 ];
-                //cache('save', 'user_token_' . $openid['id'], $token, time() + 30 * 24 * 3600);//保存token
                 $this->ResArr['code'] = 200;
 				$this->ResArr['data'] = $tokenData;
-                //$this->ResArr['data'] = $tokenData;
                 $this->ResArr['msg'] = '数据更新成功';
                 echo json_encode($this->ResArr);
             }else{
@@ -396,7 +389,7 @@ class Reg extends CI_Controller
             $temp1 = 'SMS_146750109';//登入操作
             $temp2 = 'SMS_146750107';//注册操作
             /*
-            $member_data = $this->loop_model->get_where('user', array('username' => $mobile));
+            $member_data = $this->loop_model->get_where('member_oauth', array('username' => $mobile));
             if($member_data){
                 $tmp = $temp1;
             }else{
