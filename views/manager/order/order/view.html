@@ -69,6 +69,10 @@
 							<td>￥<{$order_data.sku_price_real}></td>
 						</tr>
 						<tr class="text-l">
+							<td>邮费金额金额</td>
+							<td>￥<{$order_data.delivery_price_real}></td>
+						</tr>
+						<tr class="text-l">
 							<td>优惠券/促销金额</td>
 							<td>￥<{$order_data.coupons_price}>/￥<{$order_data.promotion_price}></td>
 						</tr>
@@ -84,7 +88,37 @@
 						</tbody>
 					</table>
 				</li>
-
+				<li style="width: 30%; float: left; margin-right: 10px;">
+					<table class="table table-border table-bordered table-bg table-hover table-sort">
+						<thead>
+						<tr class="text-c">
+							<th colspan="2">收货信息</th>
+						</tr>
+						</thead>
+						<tr class="text-l">
+							<td width="100">姓名</td>
+							<td><{$order_data.full_name}></td>
+						</tr>
+						<tr class="text-l">
+							<td>电话</td>
+							<td><{$order_data.tel}></td>
+						</tr>
+						<tr class="text-l">
+							<td>地区</td>
+							<td><{$order_data.area_name[$order_data.prov]}><{$order_data.area_name[$order_data.city]}><{$order_data.area_name[$order_data.area]}></td>
+						</tr>
+						<tr class="text-l">
+							<td>地址</td>
+							<td><{$order_data.address}></td>
+						</tr>
+						<tr class="text-l">
+							<td>送货时间</td>
+							<td><{$order_data.delivery_time}></td>
+						</tr>
+						<tbody>
+						</tbody>
+					</table>
+				</li>
 				<li style="width: 30%; float: left; margin-right: 10px;">
 					<table class="table table-border table-bordered table-bg table-hover table-sort">
 						<thead>
@@ -101,8 +135,16 @@
 							<td><{$member_data.username}></td>
 						</tr>
 						<tr class="text-l">
+							<td>配送方式</td>
+							<td><{$delivery_data.name}></td>
+						</tr>
+						<tr class="text-l">
 							<td>支付方式</td>
 							<td><{$payment_data.name}></td>
+						</tr>
+						<tr class="text-l">
+							<td>来源店铺</td>
+							<td><{$shop_data.shop_name}></td>
 						</tr>
 						<tbody>
 						</tbody>
