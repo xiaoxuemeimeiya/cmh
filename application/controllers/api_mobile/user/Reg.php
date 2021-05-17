@@ -149,7 +149,7 @@ class Reg extends CI_Controller
         $encryptedData = $getData["encryptedData"];
         $iv = $getData["iv"];
         $pc = new \WXBizDataCrypt($smallapp_appid, $smallapp_secret);
-        $errCode = $pc->decryptData($encryptedData, $iv, $data );
+        $errCode = $pc->decryptData($encryptedData, $iv, $data );var_dump($errCode);
         if ($errCode == 0) {
             $data = json_decode($data,true);
             if(!isset($data["openId"])||strlen($data["openId"])=="0"){
