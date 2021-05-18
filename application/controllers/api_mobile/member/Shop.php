@@ -9,8 +9,6 @@ class Shop extends CI_Controller
     {
         parent::__construct();
         $this->load->model('loop_model');
-        $this->load->helpers('web_helper');
-        $this->member_data = get_member_data();
     }
 
     /**
@@ -18,11 +16,42 @@ class Shop extends CI_Controller
      */
     public function index()
     {
+        $shop_name  = $this->input->get_post('shop_name', true);//店铺名称
+        $city  = $this->input->get_post('city', true);//地理位置
+        $area  = $this->input->get_post('area', true);//地理位置
+        $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
+        $search_where = [];
+        $like = [];
+        if (!empty($shop_name)) {
+            $search_where['shop_name'] = $shop_name;
+        }
+        if (!empty($city)) {
+            $search_where['city'] = $city;
+        }
+        if (!empty($area)) {
+            $search_where['area'] = $area;
+        }
+        //根据地址来排序
+
+
+        $search_where['page'] = $page;
+        //查询数据
+        $this->load->model('member/shop_model');
+        $res_data = $this->shop_model->search($search_where,'');
+
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"]['goods'] = $res_data;
+        echo json_encode($this->ResArr);exit;
+    }
+
+    //店铺商品
+    public function goods()
+    {
         $shop_id  = $this->input->get_post('shop_id', true);
         $shop_name  = $this->input->get_post('shop_name', true);
         $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
         if (!empty($shop_id)) {
-           $where['shop_id'] = $shop_id;
+            $where['shop_id'] = $shop_id;
         }
         if (!empty($shop_name)) {
             $where['shop_name'] = $shop_name;
@@ -30,7 +59,6 @@ class Shop extends CI_Controller
         if (!empty($shop_name)) {
             $where['shop_name'] = $shop_name;
         }
-
         //搜索条件
         /*
         $search_where = array(

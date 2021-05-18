@@ -77,4 +77,70 @@ class Shop_model extends CI_Model
         }
         return 1;
     }
+
+    /**
+     * 店铺列表
+     */
+
+    function search($search_where,$distance){
+        $this->db->from('member_shop as g');
+        $select = 'm_id,shop_name,logo,tel,email,business_license,prov,desc,goods_comment,level,banner_url,address';
+        //$this->db->select('m_id,shop_name,logo,tel,email,business_license,prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url');
+
+        if($search_where['city']){
+            //连接表单
+            $select .= ',ga.area_name as city';
+            $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=g.city");
+            $this->db->where('g.city',$search_where['city']);
+        }
+        if($search_where['area']){
+            //连接表单
+            $select .= ',gae.area_name as area';
+            $this->db->join( $this->db->dbprefix('areas') ." as gae", "gae.area_id=g.area");
+            $this->db->where('g.area',$search_where['area']);
+        }
+        $this->db->select($select);
+
+        if($search_where['shop_name']){
+            $this->db->like('shop_name', $search_where['shop_name']);
+        }
+
+        //分页
+        $page = (int)$search_where['page'];//是否有传入参数
+        if (empty($page)) $page = (int)$this->input->get_post('per_page', true);//接收url分页
+        if (empty($page)) $page = 1;
+        if (empty($limit)) $limit = config_item('shop_list_pagesize');
+        $this->db->limit($limit, $limit * ($page - 1));
+
+        //根据位置帅选
+        $query      = $this->db->get();
+        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+        //根据位置排序
+        return $goods_data;
+        //$this->db->order_by('sortnum', 'asc');
+    }
+
+    //计算距离
+    /**
+     * 计算两组经纬度坐标 之间的距离
+     * params ：lat1 纬度1； lng1 经度1； lat2 纬度2； lng2 经度2； len_type （1:m or 2:km);
+     * return m or km
+     */
+    public function GetDistance($lat1, $lng1, $lat2, $lng2, $len_type = 1, $decimal = 2)
+    {
+        define('EARTH_RADIUS', 6378.137);//地球半径
+        define('PI', 3.1415926);//圆周率
+        $radLat1 = $lat1 * PI / 180.0;
+        $radLat2 = $lat2 * PI / 180.0;
+        $a = $radLat1 - $radLat2;
+        $b = ($lng1 * PI / 180.0) - ($lng2 * PI / 180.0);
+        $s = 2 * asin(sqrt(pow(sin($a/2),2) + cos($radLat1) * cos($radLat2) * pow(sin($b/2),2)));
+        $s = $s * EARTH_RADIUS;
+        $s = round($s * 1000);
+        if ($len_type > 1)
+        {
+            $s /= 1000;
+        }
+        return round($s, $decimal);
+    }
 }
