@@ -31,9 +31,6 @@ class Shop extends CI_Controller
         if (!empty($area)) {
             $search_where['area'] = $area;
         }
-        //根据地址来排序
-
-
         $search_where['page'] = $page;
         //查询数据
         $this->load->model('member/shop_model');
@@ -44,7 +41,22 @@ class Shop extends CI_Controller
         echo json_encode($this->ResArr);exit;
     }
 
-    //店铺商品
+    //店铺详情
+    public function detail(){
+        $shop_id  = $this->input->get_post('shop_id', true);
+        if(!$shop_id){
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失";
+            echo json_encode($this->ResArr);exit;
+        }
+        $this->load->model('member/shop_model');
+        $res_data = $this->shop_model->shop_detail($shop_id);
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"] = $res_data;
+        echo json_encode($this->ResArr);exit;
+    }
+
+    //店铺上商品
     public function goods()
     {
         $shop_id  = $this->input->get_post('shop_id', true);
@@ -59,12 +71,7 @@ class Shop extends CI_Controller
         if (!empty($shop_name)) {
             $where['shop_name'] = $shop_name;
         }
-        //搜索条件
-        /*
-        $search_where = array(
-            'cat_id'       => $this->input->get_post('cat_id', true),
-        );
-        */
+
         //属性条件
         $attr = $this->input->get_post('attr', true);
         if (!empty($attr)) {
@@ -82,27 +89,5 @@ class Shop extends CI_Controller
         echo json_encode($this->ResArr);exit;
     }
 
-    /**
-     * 删除收藏商品
-     */
-    public function delete_favorite()
-    {
-        if (is_post()) {
-            $id = $this->input->get_post('id', true);
-            if (!empty($id)) {
-                if (is_array($id)) {
-                    $res = $this->loop_model->delete_where('member_shop_favorite', array('where_in' => array('id' => $id), 'where' => array('m_id' => $this->member_data['id'])));
-                } else {
-                    $id = (int)$id;
-                    $res = $this->loop_model->delete_where('member_shop_favorite', array('where' => array('m_id' => $this->member_data['id'], 'id' => $id)));
-                }
-                if (!empty($res)) {
-                    error_json('y');
-                } else {
-                    error_json('取消收藏失败');
-                }
-            }
-        }
-    }
 
 }

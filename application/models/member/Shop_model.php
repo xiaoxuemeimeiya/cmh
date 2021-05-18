@@ -143,4 +143,24 @@ class Shop_model extends CI_Model
         }
         return round($s, $decimal);
     }
+
+    /**
+     * 店铺详情
+     */
+    public function shop_detail($id){
+        $this->db->from('member_shop as l');
+        $select = 'm_id,shop_name,logo,tel,email,business_license,g.area_name as prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url';
+        $this->db->select($select);
+        $this->db->join( $this->db->dbprefix('areas') ." as g", "g.area_id=l.prov");
+        $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=l.city");
+        $this->db->join( $this->db->dbprefix('areas') ." as gae", "gae.area_id=l.area");
+
+        $this->db->where('l.m_id',$id);
+
+        $query      = $this->db->get();
+        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+        //根据位置排序
+        return $goods_data;
+        //$this->db->order_by('sortnum', 'asc');
+    }
 }
