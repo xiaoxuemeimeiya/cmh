@@ -14,7 +14,7 @@ class Index extends MY_Controller
     /**
      * 新版首页
      */
-    public function good(){
+    public function index(){
         $where_data['select'] = 'id,name,image,reid';
         $where_data['where']['reid'] = 1;//免费
         $this->load->model('goods/goods_model');
@@ -43,9 +43,9 @@ class Index extends MY_Controller
     }
 
     /**
-     * 首页
+     * 商品列表
      */
-    public function index()
+    public function goods_list()
     {
         $cat_id  = $this->input->get_post('cat_id', true);
         $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
@@ -61,7 +61,6 @@ class Index extends MY_Controller
             //'max_price'    => $this->input->get_post('max_price', true),
             //'limit'        => (int)$this->input->get_post('limit', true),//显示数量
         );
-
         //属性条件
         $attr = $this->input->get_post('attr', true);
         if (!empty($attr)) {

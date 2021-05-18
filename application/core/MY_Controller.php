@@ -1,7 +1,7 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+use think\facade\Request;
 class MY_Controller extends CI_Controller {
 
     private $whiteList = [
@@ -18,8 +18,9 @@ class MY_Controller extends CI_Controller {
         'api_mobile/user/info/validation_code',
         'api_mobile/user/info/free_card',
         'api_mobile/goods/index/adv',
-        'api_mobile/goods/index/good',
-        'api_mobile/order/invite/order_detail'
+        'api_mobile/goods/index/index',
+        'api_mobile/goods/index/goods_list',
+        'api_mobile/order/invite/order_detail',
     ];
 	
 	public function __construct()
@@ -37,7 +38,16 @@ class MY_Controller extends CI_Controller {
         // 响应头设置
         header('Access-Control-Allow-Headers:x-requested-with,content-type');
         $formData = $_REQUEST;
-        $url = $formData['url'];
+        $module_name = $this->uri->segment(1);//输出--模块名称
+        $class = $this->uri->segment(2);//输出--控制器名称--父
+        $controller_name = $this->uri->segment(3);//输出类名称---子
+        $action = $this->uri->segment(4);//输出--方法名称
+        //$active_url=$module_name.'/'.$controller_name.'/'.$action;
+        //$url = $formData['url'];
+        $url = $module_name.'/'.$class.'/'.$controller_name;
+        if($action){
+            $url = $url.'/'.$action;
+        }
         if (!in_array($url, $this->whiteList)) {
             /*
             if (empty($formData['m_id']) || empty($formData['timestamp']) ||
@@ -62,7 +72,6 @@ class MY_Controller extends CI_Controller {
             }
 
         }
-
         // sign verify
         /*暂时不验证签名
         if (!$this->signVerify($formData, $formData['sign'],$formData['m_id'])) {
