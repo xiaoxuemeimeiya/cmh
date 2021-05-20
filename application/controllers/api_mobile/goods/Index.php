@@ -77,7 +77,7 @@ class Index extends MY_Controller
         $res_data = $this->goods_model->search($search_where, '');
      
         $this->ResArr["code"] = 200;
-        $this->ResArr["data"]['goods'] = $res_data;
+        $this->ResArr["data"] = $res_data;
         echo json_encode($this->ResArr);exit;
     }
 
