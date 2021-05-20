@@ -550,7 +550,8 @@ class Goods_model extends CI_Model
                 //计算商品的价格区间end
             }
 
-            $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count, 'attr_list' => $attr_list, 'brand_list' => $brand_data, 'price_list' => $price_data);
+            //$reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count, 'attr_list' => $attr_list, 'brand_list' => $brand_data, 'price_list' => $price_data);
+            $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
             if($cache!='') {
                 cache('save', $cache_name, $reslut_array);
             }
