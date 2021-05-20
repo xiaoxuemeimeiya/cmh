@@ -9,6 +9,7 @@ class Shop extends CI_Controller
     {
         parent::__construct();
         $this->load->model('loop_model');
+        $this->load->model('member/shop_model');
     }
 
     /**
@@ -33,7 +34,6 @@ class Shop extends CI_Controller
         }
         $search_where['page'] = $page;
         //查询数据
-        $this->load->model('member/shop_model');
         $res_data = $this->shop_model->search($search_where,'');
 
         $this->ResArr["code"] = 200;
@@ -56,36 +56,28 @@ class Shop extends CI_Controller
         echo json_encode($this->ResArr);exit;
     }
 
-    //店铺上商品
+    //店铺商品
     public function goods()
     {
-        $shop_id  = $this->input->get_post('shop_id', true);
-        $shop_name  = $this->input->get_post('shop_name', true);
-        $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
-        if (!empty($shop_id)) {
-            $where['shop_id'] = $shop_id;
-        }
-        if (!empty($shop_name)) {
-            $where['shop_name'] = $shop_name;
-        }
-        if (!empty($shop_name)) {
-            $where['shop_name'] = $shop_name;
-        }
+        $type  = $this->input->get_post('type', true);//type：=1优惠券，=2套餐券，=3活动
+        $shop_id  = (int)$this->input->get_post('shop_id', true);//店铺id
 
-        //属性条件
-        $attr = $this->input->get_post('attr', true);
-        if (!empty($attr)) {
-            foreach ($attr as $v => $k) {
-                $search_where['attr'][$v] = $k;
-            }
+        switch($type){
+            case 2:
+                //套餐券
+                $data = $this->shop_model->shop_goods($type,$shop_id);
+                break;
+            case 3:
+                //活动
+                $data = $this->shop_model->shop_goods($type,$shop_id);
+                break;
+            default:
+                //优惠券
+                $data = $this->shop_model->shop_goods($type,$shop_id);
         }
-        $search_where['page'] = $page;
-        //查询数据
-        $this->load->model('goods/goods_model');
-        $res_data = $this->goods_model->search($search_where, '');
 
         $this->ResArr["code"] = 200;
-        $this->ResArr["data"]['goods'] = $res_data;
+        $this->ResArr["data"]['goods'] = $data;
         echo json_encode($this->ResArr);exit;
     }
 

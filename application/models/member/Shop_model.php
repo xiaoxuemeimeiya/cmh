@@ -163,4 +163,30 @@ class Shop_model extends CI_Model
         return $goods_data;
         //$this->db->order_by('sortnum', 'asc');
     }
+
+    /**
+     * 店铺商品
+     */
+    public function shop_goods($type,$shop_id){
+        //根据type选择不同类型的商品
+        switch($type){
+            case 3:
+                //活动(确定方案在进行)
+
+                break;
+            default:
+                //优惠券,套餐券
+                if(!$type) $type = 1;
+                $list = $this->db->from('goods as l');
+                $select = 'id,name,sell_price,market_price,image,store_nums,sale,g.desc';
+                $this->db->join( $this->db->dbprefix('goods_desc') ." as g", "g.goods_id=l.id");
+                $this->db->select($select);
+                $this->db->where('shop_id',$shop_id);
+                $this->db->where('cat_id',$type);
+                $query      = $this->db->get();
+                $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
+        }
+
+        return $goods_list;
+    }
 }
