@@ -172,7 +172,9 @@ class Shop_model extends CI_Model
         switch($type){
             case 3:
                 //活动(确定方案在进行)
-
+                break;
+            case 4:
+                //其他商品
                 break;
             default:
                 //优惠券,套餐券

@@ -15,17 +15,20 @@ class Index extends MY_Controller
      * 新版首页
      */
     public function index(){
-        $where_data['select'] = 'id,name,image,reid';
-        $where_data['where']['reid'] = 1;//免费
+        $cat_id  = $this->input->get_post('cat_id', true);
         $this->load->model('goods/goods_model');
+        /*
         $list_data            = $this->loop_model->get_list('goods_category', $where_data, '', '', 'sortnum asc,id asc');
         foreach($list_data as $k=>$v){
             $search_where['cat_id'] = $v['id'];
             $list = $this->goods_model->search($search_where, '');
             $list_data[$k]= array_merge($v,$list);
         }
+        */
+        $search_where['cat_id'] = $cat_id;
+        $list = $this->goods_model->search($search_where, '');
         $this->ResArr["code"] = 200;
-        $this->ResArr["data"] = $list_data;
+        $this->ResArr["data"] = $list;
         echo json_encode($this->ResArr);exit;
     }
 
