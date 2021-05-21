@@ -156,6 +156,7 @@ class Order extends MY_Controller
             'sku_price'           => price_format($goodData['market_price']),
             'sku_price_real'      => price_format($goodData['sell_price']),
             'addtime'             => time(),
+            'shop_id'             => $goodData['shop_id']
         );
         //订单总价
         $order_data['order_price'] =price_format($goodData['sell_price']);
@@ -173,9 +174,9 @@ class Order extends MY_Controller
         */
 
         $this->load->model('order/order_model');
-        //添加订单商品
+        //添加订单商品;
         $res = $this->order_model->add($order_data,'');
-        if($res <1){
+        if($res != 'y'){
             $this->ResArr["code"] = 13;
             $this->ResArr["msg"]= '生成订单失败 ';
             echo json_encode($this->ResArr);exit;
