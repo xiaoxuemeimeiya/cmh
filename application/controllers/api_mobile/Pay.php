@@ -103,7 +103,7 @@ class Pay extends CI_Controller
             'order_price' => $order_price > 0 ? $order_price : 1000 ,//支付金额
             'payment_id'  => $payment_id,//支付方式
         );
-        $user = $this->loop_model->get_where('user',array('id'=>$order_data['m_id']));
+        $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']));
         $openid = $user['openid'];
         $this->load->library('minipay/WxPayApi');
         $this->load->library('minipay/WxPayJsApiPay');
