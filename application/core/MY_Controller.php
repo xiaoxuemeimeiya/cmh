@@ -57,7 +57,7 @@ class MY_Controller extends CI_Controller {
                 error_json('参数缺失');
             }
 
-            $user = $this->loop_model->get_where('user',  array('id' => $formData['m_id'],'is_delete'=>0));
+            $user = $this->loop_model->get_where('member_oauth',  array('id' => $formData['m_id'],'is_delete'=>0));
             if(!$user) {
                 error_json('用户不存在');
             }

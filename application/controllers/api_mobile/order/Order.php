@@ -140,7 +140,7 @@ class Order extends MY_Controller
             $this->ResArr["msg"]= '该商品已购买';
             echo json_encode($this->ResArr);exit;
         }
-        $goodData = $this->loop_model->get_where('goods',array('id'=>$good_id,'status'=>0));
+        $goodData = $this->loop_model->get_where('goods',array('id'=>$good_id,'status'=>0));var_dump($goodData);
         if(!$goodData){
             $this->ResArr["code"] = 12;
             $this->ResArr["msg"]= '该商品已下架';
