@@ -22,14 +22,30 @@ class Notify extends CI_Controller
         libxml_disable_entity_loader(true);
         $data = json_decode(json_encode(simplexml_load_string($orderData,'simpleXMLElement',LIBXML_NOCDATA)),true);
         lyLog(var_export($data,true) , "paynotify" , true);
-
+$data = array (
+    'appid' => 'wxb2574206f6344b83',
+    'bank_type' => 'PAB_CREDIT',
+    'cash_fee' => '1',
+    'fee_type' => 'CNY',
+    'is_subscribe' => 'N',
+    'mch_id' => '1513878071',
+    'nonce_str' => '1xp17hnfz9a4mnr9kfu3ar4rvcf4l41o',
+    'openid' => 'oH4v_4rn-Ag7pfiU37DT1p3SiL_k',
+    'out_trade_no' => '20210521173909444255',
+    'result_code' => 'SUCCESS',
+    'return_code' => 'SUCCESS',
+    'sign' => '938034EB68B7363EFA7B9986B21659B373E637C3DDB32B1D16CC9E26A86FB37D',
+    'time_end' => '20210521173929',
+    'total_fee' => '1',
+    'trade_type' => 'JSAPI',
+    'transaction_id' => '4200001013202105211920534277',
+);
         if($data['return_code']=="SUCCESS"){
             //$UpdataWhere['openid']              = $data['openid'];
             $UpdataWhere['order_no']      = $data['out_trade_no'];
             $UpdataWhere['status']      = 1;//生成订单
             //$checkRes = Db::table('order')->where($UpdataWhere)->find();//生成订单数据
             $checkRes = $this->loop_model->get_where('order',$UpdataWhere);
-            $rakeres = $this->loop_model->get_where('order_rake',['order_id'=>$checkRes['id'],'state'=>0]);
             //$rakeres = $this->loop_model->update_where('order_rake',['order_id'=>$checkRes['id'],'state'=>1]);
             if($checkRes){
                 //$openid = $checkRes['openid'];
@@ -38,10 +54,7 @@ class Notify extends CI_Controller
                 $updateData['payment_no']           = $data['transaction_id'];
                 $updateData['paytime']              = time();
                 $updateData['status']               = 2;
-                if($rakeres){
-                    //$updateData['rake_id']              = 1;
-                    $this->loop_model->update_where('order_rake',['state'=>1],['order_id'=>$checkRes['id']]);
-                }
+
                 $this->db->trans_start();
                 $res = $this->loop_model->update_where('order',$updateData,$UpdataWhere);
                 if($res < 1 ){
@@ -58,37 +71,6 @@ class Notify extends CI_Controller
                     'admin_user' =>  0
                 );
                 $res1 = $this->loop_model->insert('order_collection_doc',$collection_data);
-                //插入记录
-                if($rakeres) {
-                    $cashdata['order_id'] = $checkRes['id'];
-                    $cashdata['m_id'] = $checkRes['share_uid'];
-                    $cashdata['type'] = 1;
-                    $cashdata['addtime'] = time();
-                    $cashdata['cash'] = $rakeres['rake_price'];
-                    //判断时间是不是当天22点前
-                    $endtime = strtotime(date("Y-m-d", time()))+22*60*60;
-                    if(time() > $endtime){
-                        //超过晚上10点钟了算在另外一天
-                        $cashdata['date'] = date('Y-m-d',strtotime('+1day',time()));
-                    }else{
-                        $cashdata['date'] = date("Y-m-d", time());
-                    }
-                    $cash = $this->loop_model->insert('cash', $cashdata);
-                    lyLog(var_export($cash,true) , "343paynotify" , true);
-                    lyLog(var_export($cashdata,true) , "343paynotify" , true);
-                    if($res1 > 0 && $cash > 0){
-                        $this->db->trans_commit();
-                    }else{
-                        $this->db->trans_rollback();
-                    }
-                }else{
-                    if($res1 > 0 ){
-                        $this->db->trans_commit();
-                    }else{
-                        $this->db->trans_rollback();
-                    }
-                }
-                
                 $temp["pay_money"] = $data["total_fee"]/100;
                 $temp["openid"] = $data["openid"];
                 $temp["prepay_id"] = $checkRes["prepay_id"];
