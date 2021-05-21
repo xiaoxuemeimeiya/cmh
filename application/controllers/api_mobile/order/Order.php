@@ -162,6 +162,7 @@ class Order extends MY_Controller
         if ($order_data['order_price'] <= 0) $order_data['order_price'] = 0;//订单少于0元的时候直接等于0元
 
         //查看该用户是否绑定其他用户
+        /*
         $userbind = $this->loop_model->get_where('user_bind',array('bind_id'=>$this->input->get_post('m_id'),'status'=>1));
         if($userbind && time()-$userbind['addtime'] < 180*24*3600){
             //判断绑定是否过期
@@ -169,6 +170,7 @@ class Order extends MY_Controller
         }else{
             $order_data['share_uid']  = $this->input->get_post('share_uid') ? $this->input->get_post('share_uid') : '';//分享者id
         }
+        */
 
         $this->load->model('order/order_model');
         //添加订单商品
