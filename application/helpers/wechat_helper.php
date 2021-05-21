@@ -214,3 +214,24 @@ if (!function_exists('reg_weixin_member')) {
         }
     }
 }
+
+if( ! function_exists('lyLog')) {
+//自定义系统写入
+    function lyLog($text, $dir = "", $byday = false)
+    {
+        $filename = $byday == true ? date("Ymd") : date("Y-m");
+        $log_filename = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] . '/runtime/syslog/' . date('Ymd', time()) . '/');
+        is_dir($log_filename) OR mkdir($log_filename, 0777, true);
+        $log_filename = $log_filename . $dir . $filename . '.log';
+        if (!empty ($text)) {
+            $fileType = mb_detect_encoding($text, array('UTF-8', 'GBK', 'GB2312', 'LATIN1', 'BIG5'));
+            if ($fileType != 'UTF-8') {
+                $text = mb_convert_encoding($text, 'UTF-8', $fileType);
+            }
+        }
+        try {
+            file_put_contents($log_filename, date("Y-m-d H:i:s") . " \r\n " . $text . "\r\n", FILE_APPEND | LOCK_EX);
+        } catch (Exception $e) {
+        }
+    }
+}
