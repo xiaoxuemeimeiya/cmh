@@ -73,7 +73,7 @@ class Order extends MY_Controller
        //搜索条件end
        $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,k.name,k.time,';
        $where_data['join']   = array(
-           array('user as m', 'o.m_id=m.id'),
+           array('member_oauth as m', 'o.m_id=m.id'),
            array('goods as k', 'o.good_id=k.id'),
        );
        //查到数据
@@ -108,7 +108,7 @@ class Order extends MY_Controller
             $this->ResArr['msg'] = '该订单不存在';
             echo json_encode($this->ResArr);exit;
         }
-        $user = $this->loop_model->get_where('user',array('id'=>$order_data['m_id']),'nickname');
+        $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname');
         $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'name');
         $order_data['nickname'] = $user['nickname'];
         $order_data['name'] = $good['name'];
