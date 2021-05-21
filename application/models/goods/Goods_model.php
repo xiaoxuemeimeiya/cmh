@@ -22,7 +22,7 @@ class Goods_model extends CI_Model
     {
         $id = (int)$id;
         if (!empty($id)) {
-            $goods_data = $this->loop_model->get_id('goods', $id);
+            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sell_price,market_price,image,store_nums,comments,sale');
             if (empty($goods_data)) msg('商品不存在');
             if ($goods_data['status'] != 0) msg('商品已下架');
             $goods_data['market_price'] = format_price($goods_data['market_price']);
@@ -34,6 +34,7 @@ class Goods_model extends CI_Model
             $goods_data['image_list'] = $this->loop_model->get_list('goods_image', array('where' => array('goods_id' => $id), 'select' => 'url'));
 
             //商品sku
+            /*
             $sku_list = $this->loop_model->get_list('goods_sku', array('where' => array('goods_id' => $id), 'select' => 'id,sku_no,value,store_nums,market_price,sell_price,weight,minimum'));
             $this->load->model('goods/goods_sum_model');
             foreach ($sku_list as $v => $k) {
@@ -59,6 +60,7 @@ class Goods_model extends CI_Model
                 $arr['sku_key'] = $sku_key;//skuid的属性名称组合为键值
                 $sku_data[]     = $arr;
             }
+
             //属性按名称集合
             if (!empty($spec_select_value)) {
                 foreach ($spec_select_value as $k) {
@@ -66,11 +68,13 @@ class Goods_model extends CI_Model
                     $spec_select_list[]       = array('name' => $k['name'], 'type' => $k['type'], 'value' => $spec_select_value_unique);//规格列表
                 }
             }
+
             $goods_data['spec_select_list']     = $spec_select_list;//规格名称和属性列表
             $goods_data['sku_list']             = $sku_data;//sku列表以属性组合为键值
             $goods_data['one_sku_data']         = current($sku_data);//第一个sku详情
             $goods_data['max_min_sell_price']   = $max_min_sell_price;//销售价格区间
             $goods_data['max_min_market_price'] = $max_min_market_price;//市场价区间
+            */
             return $goods_data;
         }
     }

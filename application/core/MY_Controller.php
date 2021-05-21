@@ -8,18 +8,14 @@ class MY_Controller extends CI_Controller {
         'api_mobile/user/reg/verify_code',//获取验证码(图片验证码)
         'api_mobile/user/reg/send',//发送验证码（手机验证码）
         'api_mobile/user/reg/user_reg',//用户注册,用户登入
-        'api_mobile/goods/index/ad',//广告列表
+        'api_mobile/goods/index/adv',//广告列表
         'api_mobile/goods/index/index',//首页列表
-        'api_mobile/goods/index/group',//首页列表
-        'api_mobile/goods/product/goods_list',//商品列表
-        'api_mobile/goods/product/product',//商品详情
+        'api_mobile/goods/index/goods_list',
+        'api_mobile/goods/index/detail',
         'api_mobile/pay/do_pay',//支付
         'api_mobile/pay/callback/2/mobile',
         'api_mobile/user/info/validation_code',
         'api_mobile/user/info/free_card',
-        'api_mobile/goods/index/adv',
-        'api_mobile/goods/index/index',
-        'api_mobile/goods/index/goods_list',
         'api_mobile/order/invite/order_detail',
     ];
 	
