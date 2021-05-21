@@ -22,24 +22,6 @@ class Notify extends CI_Controller
         libxml_disable_entity_loader(true);
         $data = json_decode(json_encode(simplexml_load_string($orderData,'simpleXMLElement',LIBXML_NOCDATA)),true);
         lyLog(var_export($data,true) , "paynotify" , true);
-$data = array (
-    'appid' => 'wxb2574206f6344b83',
-    'bank_type' => 'PAB_CREDIT',
-    'cash_fee' => '1',
-    'fee_type' => 'CNY',
-    'is_subscribe' => 'N',
-    'mch_id' => '1513878071',
-    'nonce_str' => '1xp17hnfz9a4mnr9kfu3ar4rvcf4l41o',
-    'openid' => 'oH4v_4rn-Ag7pfiU37DT1p3SiL_k',
-    'out_trade_no' => '20210521173909444255',
-    'result_code' => 'SUCCESS',
-    'return_code' => 'SUCCESS',
-    'sign' => '938034EB68B7363EFA7B9986B21659B373E637C3DDB32B1D16CC9E26A86FB37D',
-    'time_end' => '20210521173929',
-    'total_fee' => '1',
-    'trade_type' => 'JSAPI',
-    'transaction_id' => '4200001013202105211920534277',
-);
         if($data['return_code']=="SUCCESS"){
             //$UpdataWhere['openid']              = $data['openid'];
             $UpdataWhere['order_no']      = $data['out_trade_no'];
@@ -71,6 +53,9 @@ $data = array (
                     'admin_user' =>  0
                 );
                 $res1 = $this->loop_model->insert('order_collection_doc',$collection_data);
+                if($res1 > 0){
+                    $this->db->trans_commit();
+                }
                 $temp["pay_money"] = $data["total_fee"]/100;
                 $temp["openid"] = $data["openid"];
                 $temp["prepay_id"] = $checkRes["prepay_id"];
