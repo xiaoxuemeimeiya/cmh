@@ -214,4 +214,66 @@ class Pay extends CI_Controller
             echo '支付方式错误';
         }
     }
+
+    public function sub_pay(){
+        //https://api.mch.weixin.qq.com/secapi/pay/profitsharing
+        $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
+        if (empty($order_no)) {
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = '参数缺失';
+            echo json_encode($this->ResArr);exit;
+        }
+        $order_price  = 0;
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));
+        if (!empty($order_data)) {
+            $order_no_data = $order_no;
+            $order_price     = $order_price + $order_data['order_price'];//支付金额
+        } else {
+            $this->ResArr['code'] = 101;
+            $this->ResArr['msg'] = '订单信息错误,或者订单已支付';
+            echo json_encode($this->ResArr);exit;
+        }
+        $payment_id      = 3;//微信支付
+        $pay_data = array(
+            'order_body'  => '订单支付',
+            'order_no'    => $order_no,//支付单号
+            'order_price' => $order_price > 0 ? $order_price : 1000 ,//支付金额
+            'payment_id'  => $payment_id,//支付方式
+        );
+        $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']));
+        $openid = $user['openid'];
+        $this->load->library('minipay/WxPayApi');
+        $this->load->library('minipay/WxPayJsApiPay');
+        $this->load->library('minipay/WxPayConfig');
+        $this->load->library('minipay/JsApiPay');
+        //require_once Env::get('ROOT_PATH').'extend/minipay/WxPay.Api.php';
+        //require_once Env::get('ROOT_PATH').'extend/minipay/WxPay.JsApiPay.php';
+        //require_once Env::get('ROOT_PATH').'extend/minipay/WxPay.Config.php';
+        $input = new \WxPayUnifiedOrder();
+        $input->SetBody($pay_data["order_body"]);
+        $input->SetAttach("");
+        $input->SetOut_trade_no($pay_data['order_no']);
+        $input->SetTotal_fee($pay_data['order_price']/100);
+        $input->SetTime_start(date("YmdHis"));
+        $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetGoods_tag($pay_data["order_body"]);
+        //$input->SetNotify_url("https://".$_SERVER["SERVER_NAME"]."/miniapp/notify");
+        $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
+        //$input->SetNotify_url("https://".$_SERVER["SERVER_NAME"]."/miniapp/notify");
+        $input->SetTrade_type("JSAPI");
+        $input->SetOpenid($openid);
+        $config = new \WxPayConfig();
+        $order = \WxPayApi::unifiedOrder($config, $input);
+        $tools = new \JsApiPay();
+        $jsApiParameters = $tools->GetJsApiParameters($order);
+        if($order["return_code"]=="SUCCESS"){
+            //lyLog(var_export($order,true) , "oncourse" , true);
+            $this->ResArr['code'] = 200;
+            $this->ResArr['data'] = json_decode($jsApiParameters,true);
+        }else{
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = "pay data error!";
+        }
+        echo json_encode($this->ResArr);
+    }
 }

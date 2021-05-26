@@ -880,6 +880,35 @@ class WxPayUnifiedOrder extends WxPayDataBase
 	{
 		return array_key_exists('openid', $this->values);
 	}
+
+    /**
+     * 设置profit_sharing，是否需要分账,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @param string $value
+     **/
+    public function SetProfit_sharing($value)
+    {
+        $this->values['profit_sharing'] = $value;
+    }
+
+    /**
+     * 获取profit_sharing，是否需要分账,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @return true 或 false
+     **/
+    public function GetProfit_sharing()
+    {
+        return $this->values['profit_sharing'];
+    }
+
+    /**
+     * 判断是否需要分账,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @return true 或 false
+     **/
+    public function IsProfit_sharingSet()
+    {
+        return array_key_exists('profit_sharing', $this->values);
+    }
+
+
 }
 
 /**
