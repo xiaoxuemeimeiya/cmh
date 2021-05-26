@@ -95,7 +95,7 @@ class WxPayConfig extends WxPayConfigInterface
 	public function GetKey()
 	{
 		//return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应普通商户
-        return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应特殊商户
+        return 'AHIDHI29SDDS22DADA22DADA222D3564';//对应特殊商户
 	}
 	public function GetAppSecret()
 	{
