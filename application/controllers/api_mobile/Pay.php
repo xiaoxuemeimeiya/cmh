@@ -239,14 +239,15 @@ class Pay extends CI_Controller
         $input = new \WxPayUnifiedOrder();
         $input->SetTransaction_id($order_data['payment_no']);
         $input->SetOut_order_no($order_data['order_no']);
-        $input->SetReceivers($Receivers);
-        $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
+        $input->SetReceivers(json_encode($Receivers));
+        //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::subunifiedOrder($config, $input);var_dump($order);
         $tools = new \JsApiPay();
         $jsApiParameters = $tools->GetJsApiParameters($order);
         var_dump($jsApiParameters);
         var_dump($order);
+
         if($order["return_code"]=="SUCCESS"){
             //lyLog(var_export($order,true) , "oncourse" , true);
             $this->ResArr['code'] = 200;
