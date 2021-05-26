@@ -466,6 +466,31 @@ class WxPayUnifiedOrder extends WxPayDataBase
 		return array_key_exists('mch_id', $this->values);
 	}
 
+    /**
+     * 设置微信分配的公众账号ID
+     * @param string $value
+     **/
+    public function SetSubMch_id($value)
+    {
+        $this->values['sub_mch_id'] = $value;
+    }
+    /**
+     * 获取微信分配的公众账号ID的值
+     * @return 值
+     **/
+    public function GetSubMch_id()
+    {
+        return $this->values['sub_mch_id'];
+    }
+    /**
+     * 判断微信分配的公众账号ID是否存在
+     * @return true 或 false
+     **/
+    public function IsSubMch_idSet()
+    {
+        return array_key_exists('sub_mch_id', $this->values);
+    }
+
 
 	/**
 	* 设置微信支付分配的终端设备号，商户自定义
@@ -621,8 +646,84 @@ class WxPayUnifiedOrder extends WxPayDataBase
 		return array_key_exists('out_trade_no', $this->values);
 	}
 
+    /**
+     * 设置商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+     * @param string $value
+     **/
+    public function SetOut_order_no($value)
+    {
+        $this->values['out_order_no'] = $value;
+    }
+    /**
+     * 获取商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号的值
+     * @return 值
+     **/
+    public function GetOut_order_no()
+    {
+        return $this->values['out_order_no'];
+    }
+    /**
+     * 判断商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号是否存在
+     * @return true 或 false
+     **/
+    public function IsOut_order_noSet()
+    {
+        return array_key_exists('out_order_no', $this->values);
+    }
 
-	/**
+    /**
+     * 设置商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+     * @param string $value
+     **/
+    public function SetTransaction_id($value)
+    {
+        $this->values['transaction_id'] = $value;
+    }
+    /**
+     * 获取商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号的值
+     * @return 值
+     **/
+    public function GetTransaction_id()
+    {
+        return $this->values['transaction_id'];
+    }
+    /**
+     * 判断商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号是否存在
+     * @return true 或 false
+     **/
+    public function IsTransaction_idSet()
+    {
+        return array_key_exists('transaction_id', $this->values);
+    }
+
+    /**
+     * 设置商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+     * @param string $value
+     **/
+    public function SetReceivers($value)
+    {
+        $this->values['receivers'] = $value;
+    }
+    /**
+     * 获取商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号的值
+     * @return 值
+     **/
+    public function GetReceivers()
+    {
+        return $this->values['receivers'];
+    }
+    /**
+     * 判断商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号是否存在
+     * @return true 或 false
+     **/
+    public function IsReceiversSet()
+    {
+        return array_key_exists('receivers', $this->values);
+    }
+
+
+
+    /**
 	* 设置符合ISO 4217标准的三位字母代码，默认人民币：CNY，其他值列表详见货币类型
 	* @param string $value 
 	**/
