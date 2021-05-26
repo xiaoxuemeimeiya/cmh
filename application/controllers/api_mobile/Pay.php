@@ -20,7 +20,6 @@ class Pay extends CI_Controller
         $this->load->helpers('web_helper');
         $client      = $this->input->get_post('client');//来源客户端
         $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
-        var_dump($order_no);
         if (!empty($order_no)) {
             //判断订单状态
             $all_order_no = explode(',', $order_no);
@@ -87,7 +86,7 @@ class Pay extends CI_Controller
             echo json_encode($this->ResArr);exit;
         }
         $order_price  = 0;
-        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));var_dump($order_data);
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));
         if (!empty($order_data)) {
             $order_no_data = $order_no;
             $order_price     = $order_price + $order_data['order_price'];//支付金额
