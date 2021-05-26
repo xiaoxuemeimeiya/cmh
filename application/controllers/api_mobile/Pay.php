@@ -233,7 +233,7 @@ class Pay extends CI_Controller
             'type' => 'MERCHANT_ID',
             'account' => '1608890757',
             'amount' => '1',  //这里注意不能大过（支付金额*分账比例）之后的金额
-            'description' => '分账',  //备注 不可以少
+            'description' => '分账'  //备注 不可以少
         ];
 
         $input = new \WxPayUnifiedOrder();
@@ -242,16 +242,13 @@ class Pay extends CI_Controller
         $input->SetReceivers(json_encode($Receivers));
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
-        $order = \WxPayApi::subunifiedOrder($config, $input);var_dump($order);
-        $tools = new \JsApiPay();
-        $jsApiParameters = $tools->GetJsApiParameters($order);
-        var_dump($jsApiParameters);
+        $order = \WxPayApi::subunifiedOrder($config, $input);
         var_dump($order);
 
         if($order["return_code"]=="SUCCESS"){
             //lyLog(var_export($order,true) , "oncourse" , true);
             $this->ResArr['code'] = 200;
-            $this->ResArr['data'] = json_decode($jsApiParameters,true);
+
         }else{
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = "pay data error!";
