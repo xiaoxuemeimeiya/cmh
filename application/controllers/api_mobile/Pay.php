@@ -119,6 +119,7 @@ class Pay extends CI_Controller
         $input->SetTotal_fee($pay_data['order_price']/100);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetProfit_sharing("Y");
         $input->SetGoods_tag($pay_data["order_body"]);
         //$input->SetNotify_url("https://".$_SERVER["SERVER_NAME"]."/miniapp/notify");
         $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
