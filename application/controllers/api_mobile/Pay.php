@@ -87,7 +87,7 @@ class Pay extends CI_Controller
             echo json_encode($this->ResArr);exit;
         }
         $order_price  = 0;
-        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));var_dump($order_data);
         if (!empty($order_data)) {
             $order_no_data = $order_no;
             $order_price     = $order_price + $order_data['order_price'];//支付金额

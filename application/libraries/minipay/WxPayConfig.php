@@ -33,7 +33,8 @@ class WxPayConfig extends WxPayConfigInterface
 	}
 	public function GetMerchantId()
 	{
-		return '1513878071';
+		//return '1513878071';//普通
+        return '1515139181';//商户号（开通了特约商户的商户号）
 	}
     public function GetSubMerchantId()
     {
@@ -93,7 +94,8 @@ class WxPayConfig extends WxPayConfigInterface
 	 */
 	public function GetKey()
 	{
-		return 'AHIDHI29SDDS22DADA22DADA222D3ED5';
+		//return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应普通商户
+        return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应特殊商户
 	}
 	public function GetAppSecret()
 	{
