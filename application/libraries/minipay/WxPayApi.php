@@ -101,7 +101,7 @@ class WxPayApi
 
         //签名
         $inputObj->SetSign($config);
-        $xml = $inputObj->ToXml();var_dump($xml);
+        $xml = $inputObj->ToXml();
 
         $startTimeStamp = self::getMillisecond();//请求开始时间
         $response = self::postXmlCurl($config, $xml, $url, true, $timeOut);
