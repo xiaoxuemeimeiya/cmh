@@ -232,8 +232,8 @@ class Pay extends CI_Controller
         $Receivers = [
             'type' => 'MERCHANT_ID',
             'account' => '1608890757',
-            'amount' => '1',  //这里注意不能大过（支付金额*分账比例）之后的金额
-            'description' => '分账'  //备注 不可以少
+            'amount' => 1,
+            'description' => '分账'
         ];
 
         $input = new \WxPayUnifiedOrder();
