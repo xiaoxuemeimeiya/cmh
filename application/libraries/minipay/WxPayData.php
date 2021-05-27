@@ -1008,6 +1008,32 @@ class WxPayUnifiedOrder extends WxPayDataBase
     {
         return array_key_exists('profit_sharing', $this->values);
     }
+    /**
+     * 设置receipt，是否需要开票入口,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @param string $value
+     **/
+    public function SetReceipt($value)
+    {
+        $this->values['receipt'] = $value;
+    }
+
+    /**
+     * 获取receipt，是否需要开票入口,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @return true 或 false
+     **/
+    public function GetReceipt()
+    {
+        return $this->values['receipt'];
+    }
+
+    /**
+     * 判断是否出现开票入口,Y-是，N-否，不分账字母要求大写，不传默认不分账
+     * @return true 或 false
+     **/
+    public function IsReceiptSet()
+    {
+        return array_key_exists('receipt', $this->values);
+    }
 
 
 }

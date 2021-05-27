@@ -57,7 +57,7 @@ class WxPayApi
 		$inputObj->SetNonce_str(self::getNonceStr());//随机字符串
 		
 		//签名
-		$inputObj->SetSign($config);
+		$inputObj->SetSign($config);$inputObj->SetProfit_sharing("Y");
 		$xml = $inputObj->ToXml();
 		
 		$startTimeStamp = self::getMillisecond();//请求开始时间
