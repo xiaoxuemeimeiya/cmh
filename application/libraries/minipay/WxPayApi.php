@@ -80,7 +80,8 @@ class WxPayApi
      */
     public static function subunifiedOrder($config, $inputObj, $timeOut = 6)
     {
-        $url = "https://api.mch.weixin.qq.com/secapi/pay/profitsharing";
+        //$url = "https://api.mch.weixin.qq.com/secapi/pay/profitsharing";
+        $url = 'https://api.mch.weixin.qq.com/secapi/pay/multiprofitsharing';
         //检测必填参数
         if(!$inputObj->IsOut_order_noSet()) {
             throw new WxPayException("缺少统一支付接口必填参数out_order_no！");
