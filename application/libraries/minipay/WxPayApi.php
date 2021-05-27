@@ -35,7 +35,7 @@ class WxPayApi
 		}else if(!$inputObj->IsTrade_typeSet()) {
 			throw new WxPayException("缺少统一支付接口必填参数trade_type！");
 		}
-        $inputObj->SetProfit_sharing($inputObj->IsProfit_sharingSet());//是否分账
+        //$inputObj->SetProfit_sharing($inputObj->IsProfit_sharingSet());//是否分账
 		
 		//关联参数
 		if($inputObj->GetTrade_type() == "JSAPI" && !$inputObj->IsOpenidSet()){
@@ -103,10 +103,36 @@ class WxPayApi
 
         //签名
         $inputObj->SetSign($config);
-        $xml = $inputObj->ToXml();
+        $xml = $inputObj->ToXml();//var_dump($inputObj);exit;
 
         $startTimeStamp = self::getMillisecond();//请求开始时间
         $response = self::postXmlCurl($config, $xml, $url, true, $timeOut);
+        $result = WxPayResults::Init($config, $response);
+        self::reportCostTime($config, $url, $startTimeStamp, $result);//上报请求花费时间
+
+        return $result;
+    }
+
+    public static function reunifiedOrder($config, $inputObj, $timeOut = 6)
+    {
+        $url = "https://api.mch.weixin.qq.com/pay/orderquery";
+        //$url = 'https://api.mch.weixin.qq.com/pay/profitsharingorderamountquery';
+        //检测必填参数
+       if(!$inputObj->IsTransaction_idSet()) {
+            throw new WxPayException("缺少统一支付接口必填参数transaction_id ！");
+        }
+
+        $inputObj->SetAppid($config->GetAppId());//公众账号ID
+        $inputObj->SetMch_id($config->GetMerchantId());//商户号
+        $inputObj->SetSubMch_id($config->GetSubMerchantId());//子商户号
+        $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+
+        //签名
+        $inputObj->SetSign($config);
+        $xml = $inputObj->ToXml();//var_dump($inputObj);exit;
+
+        $startTimeStamp = self::getMillisecond();//请求开始时间
+        $response = self::postXmlCurl($config, $xml, $url, false, $timeOut);
         $result = WxPayResults::Init($config, $response);
         self::reportCostTime($config, $url, $startTimeStamp, $result);//上报请求花费时间
 
