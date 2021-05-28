@@ -119,6 +119,7 @@ class Pay extends CI_Controller
         $input->SetTotal_fee($pay_data['order_price']/100);
         $input->SetTime_start(date("YmdHis"));
         $input->SetTime_expire(date("YmdHis", time() + 600));
+        $input->SetSubMch_id('1608890757');
         $input->SetReceipt("Y");
         $input->SetProfit_sharing("Y");
         $input->SetGoods_tag($pay_data["order_body"]);
@@ -240,6 +241,7 @@ class Pay extends CI_Controller
         $input = new \WxPayUnifiedOrder();
         $input->SetTransaction_id($order_data['payment_no']);
         $input->SetOut_order_no($order_data['order_no']);
+        $input->SetSubMch_id('1608890757');
         $input->SetReceivers(json_encode($Receivers,256|64));
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
@@ -310,6 +312,7 @@ class Pay extends CI_Controller
         $input->SetTransaction_id($order_data['payment_no']);
         $input->SetOut_order_no($order_data['order_no']);
         $input->SetDescription ('分账已完结');
+        $input->SetSubMch_id('1608890757');
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::finishunifiedOrder($config, $input);

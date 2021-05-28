@@ -36,10 +36,12 @@ class WxPayConfig extends WxPayConfigInterface
 		//return '1513878071';//普通
         return '1515139181';//商户号（开通了特约商户的商户号）
 	}
+	/*
     public function GetSubMerchantId()
     {
         return '1608890757';
     }
+	*/
 	
 	//=======【支付相关配置：支付成功回调地址/签名方式】===================================
 	/**
