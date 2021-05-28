@@ -232,7 +232,7 @@ class Pay extends CI_Controller
         $this->load->library('minipay/JsApiPay');
         $Receivers = [
             'type' => 'MERCHANT_ID',
-            'account' => '1608890757',
+            'account' => '1515139181',
             'amount' => 500,
             'description' => '分账'
         ];
