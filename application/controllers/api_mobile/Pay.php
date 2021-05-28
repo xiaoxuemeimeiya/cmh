@@ -9,6 +9,7 @@ class Pay extends CI_Controller
     {
         parent::__construct();
         $this->load->model('loop_model');
+        $this->load->helpers('wechat_helper');
     }
 
     /**
