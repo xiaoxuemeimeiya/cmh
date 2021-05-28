@@ -218,6 +218,46 @@ class Pay extends CI_Controller
         }
     }
 
+    /**添加分账方**/
+    public function add_mch(){
+        $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
+        if (empty($order_no)) {
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = '参数缺失';
+            echo json_encode($this->ResArr);exit;
+        }
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
+
+        $this->load->library('minipay/WxPayApi');
+        $this->load->library('minipay/WxPayJsApiPay');
+        $this->load->library('minipay/WxPayConfig');
+        $this->load->library('minipay/JsApiPay');
+        $Receiver = [
+            'type' => 'MERCHANT_ID',
+            'account' => '1515139181',
+            'name' => '广州族迹信息技术有限公司',
+            'relation_type' => 'STORE_OWNER'
+        ];
+
+        $input = new \WxPayUnifiedOrder();
+        $input->SetSubMch_id('1608890757');
+        $input->SetReceiver(json_encode($Receiver,256|64));
+        //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
+        $config = new \WxPayConfig();
+        $order = \WxPayApi::addunifiedOrder($config, $input);
+        var_dump($order);
+
+        if($order["return_code"]=="SUCCESS"){
+            //lyLog(var_export($order,true) , "oncourse" , true);
+            $this->ResArr['code'] = 200;
+
+        }else{
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = "pay data error!";
+        }
+        echo json_encode($this->ResArr);
+    }
+    /**分账**/
     public function sub_pay(){
         $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
         if (empty($order_no)) {
@@ -234,7 +274,7 @@ class Pay extends CI_Controller
         $Receivers = [
             'type' => 'MERCHANT_ID',
             'account' => '1515139181',
-            'amount' => 200,
+            'amount' =>15,
             'description' => '分账'
         ];
 

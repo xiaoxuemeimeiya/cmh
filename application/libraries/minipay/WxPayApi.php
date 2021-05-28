@@ -163,6 +163,28 @@ class WxPayApi
 
         return $result;
     }
+
+    /**添加分账方*/
+    public static function addunifiedOrder($config, $inputObj, $timeOut = 6)
+    {
+        $url = 'https://api.mch.weixin.qq.com/pay/profitsharingaddreceiver';
+        //检测必填参数
+
+        $inputObj->SetAppid($config->GetAppId());//公众账号ID
+        $inputObj->SetMch_id($config->GetMerchantId());//商户号
+        $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+
+        //签名
+        $inputObj->SetSign($config);
+        $xml = $inputObj->ToXml();//var_dump($xml);exit;
+
+        $startTimeStamp = self::getMillisecond();//请求开始时间
+        $response = self::postXmlCurl($config, $xml, $url, false, $timeOut);
+        $result = WxPayResults::Init($config, $response);
+        self::reportCostTime($config, $url, $startTimeStamp, $result);//上报请求花费时间
+
+        return $result;
+    }
 	
 	/**
 	 * 

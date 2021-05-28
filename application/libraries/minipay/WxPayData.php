@@ -720,6 +720,30 @@ class WxPayUnifiedOrder extends WxPayDataBase
     {
         return array_key_exists('receivers', $this->values);
     }
+    /**
+     * 设置商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+     * @param string $value
+     **/
+    public function SetReceiver($value)
+    {
+        $this->values['receiver'] = $value;
+    }
+    /**
+     * 获取商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号的值
+     * @return 值
+     **/
+    public function GetReceiver()
+    {
+        return $this->values['receiver'];
+    }
+    /**
+     * 判断商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号是否存在
+     * @return true 或 false
+     **/
+    public function IsReceiverSet()
+    {
+        return array_key_exists('receiver', $this->values);
+    }
 
 
 
