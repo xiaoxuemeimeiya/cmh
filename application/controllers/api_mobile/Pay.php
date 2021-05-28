@@ -300,6 +300,13 @@ class Pay extends CI_Controller
         }
         $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
 
+        $Receivers = [
+            'type' => 'MERCHANT_ID',
+            'account' => '1608890757',
+            'amount' => 500,
+            'description' => '分账'
+        ];
+
         $this->load->library('minipay/WxPayApi');
         $this->load->library('minipay/WxPayJsApiPay');
         $this->load->library('minipay/WxPayConfig');
@@ -309,6 +316,7 @@ class Pay extends CI_Controller
         $input = new \WxPayUnifiedOrder();
         $input->SetTransaction_id($order_data['payment_no']);
         $input->SetOut_order_no($order_data['order_no']);
+        $input->SetReceivers(json_encode($Receivers,256|64));
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::finishunifiedOrder($config, $input);
