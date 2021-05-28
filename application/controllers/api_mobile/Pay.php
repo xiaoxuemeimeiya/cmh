@@ -324,4 +324,13 @@ class Pay extends CI_Controller
         }
         echo json_encode($this->ResArr);
     }
+    public function notify_cash (){
+        $postStr = file_get_contents("php://input");
+
+        lyLog(var_export($postStr,true) , "notify_cash111" , true);
+        $orderData = isset($postStr)? $postStr : '';
+        libxml_disable_entity_loader(true);
+        $data = json_decode(json_encode(simplexml_load_string($orderData,'simpleXMLElement',LIBXML_NOCDATA)),true);
+        lyLog(var_export($data,true) , "notify_cash" , true);
+    }
 }
