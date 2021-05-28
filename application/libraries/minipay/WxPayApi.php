@@ -113,12 +113,40 @@ class WxPayApi
         return $result;
     }
 
+    /**查询订单待分账金额*/
     public static function reunifiedOrder($config, $inputObj, $timeOut = 6)
     {
-        //$url = "https://api.mch.weixin.qq.com/pay/orderquery";
         $url = 'https://api.mch.weixin.qq.com/pay/profitsharingorderamountquery';
         //检测必填参数
-       if(!$inputObj->IsTransaction_idSet()) {
+        if(!$inputObj->IsTransaction_idSet()) {
+            throw new WxPayException("缺少统一支付接口必填参数transaction_id ！");
+        }
+
+        //$inputObj->SetAppid($config->GetAppId());//公众账号ID
+        $inputObj->SetMch_id($config->GetMerchantId());//商户号
+        //$inputObj->SetSubMch_id($config->GetSubMerchantId());//子商户号
+        $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+
+        //签名
+        $inputObj->SetSign($config);
+        $xml = $inputObj->ToXml();//var_dump($inputObj);exit;
+
+        $startTimeStamp = self::getMillisecond();//请求开始时间
+        $response = self::postXmlCurl($config, $xml, $url, true, $timeOut);
+        $result = WxPayResults::Init($config, $response);
+        self::reportCostTime($config, $url, $startTimeStamp, $result);//上报请求花费时间
+
+        return $result;
+    }
+
+    /**完结分账*/
+    public static function finishunifiedOrder($config, $inputObj, $timeOut = 6)
+    {
+        $url = 'https://api.mch.weixin.qq.com/secapi/pay/profitsharingfinish';
+        //检测必填参数
+        if(!$inputObj->IsOut_order_noSet()) {
+            throw new WxPayException("缺少统一支付接口必填参数out_order_no！");
+        }else if(!$inputObj->IsTransaction_idSet()) {
             throw new WxPayException("缺少统一支付接口必填参数transaction_id ！");
         }
 

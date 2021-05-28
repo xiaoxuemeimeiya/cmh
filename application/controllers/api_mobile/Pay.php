@@ -256,6 +256,7 @@ class Pay extends CI_Controller
         echo json_encode($this->ResArr);
     }
 
+    /**查询订单待分账金额*/
     public function re_pay(){
         $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
         if (empty($order_no)) {
@@ -276,6 +277,41 @@ class Pay extends CI_Controller
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::reunifiedOrder($config, $input);
+        var_dump($order);
+
+        if($order["return_code"]=="SUCCESS"){
+            //lyLog(var_export($order,true) , "oncourse" , true);
+            $this->ResArr['code'] = 200;
+
+        }else{
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = "pay data error!";
+        }
+        echo json_encode($this->ResArr);
+    }
+
+    /**完结分账*/
+    public function finish_pay(){
+        $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
+        if (empty($order_no)) {
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = '参数缺失';
+            echo json_encode($this->ResArr);exit;
+        }
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
+
+        $this->load->library('minipay/WxPayApi');
+        $this->load->library('minipay/WxPayJsApiPay');
+        $this->load->library('minipay/WxPayConfig');
+        $this->load->library('minipay/JsApiPay');
+
+
+        $input = new \WxPayUnifiedOrder();
+        $input->SetTransaction_id($order_data['payment_no']);
+        $input->SetOut_order_no($order_data['order_no']);
+        //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
+        $config = new \WxPayConfig();
+        $order = \WxPayApi::finishunifiedOrder($config, $input);
         var_dump($order);
 
         if($order["return_code"]=="SUCCESS"){
