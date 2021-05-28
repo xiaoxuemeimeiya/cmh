@@ -115,8 +115,8 @@ class WxPayApi
 
     public static function reunifiedOrder($config, $inputObj, $timeOut = 6)
     {
-        $url = "https://api.mch.weixin.qq.com/pay/orderquery";
-        //$url = 'https://api.mch.weixin.qq.com/pay/profitsharingorderamountquery';
+        //$url = "https://api.mch.weixin.qq.com/pay/orderquery";
+        $url = 'https://api.mch.weixin.qq.com/pay/profitsharingorderamountquery';
         //检测必填参数
        if(!$inputObj->IsTransaction_idSet()) {
             throw new WxPayException("缺少统一支付接口必填参数transaction_id ！");

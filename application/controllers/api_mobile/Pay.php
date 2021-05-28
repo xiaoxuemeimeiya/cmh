@@ -232,7 +232,7 @@ class Pay extends CI_Controller
         $Receivers = [
             'type' => 'MERCHANT_ID',
             'account' => '1608890757',
-            'amount' => 100,
+            'amount' => 500,
             'description' => '分账'
         ];
 
