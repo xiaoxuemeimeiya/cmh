@@ -234,8 +234,8 @@ class Pay extends CI_Controller
         $this->load->library('minipay/JsApiPay');
         $Receiver = [
             'type' => 'MERCHANT_ID',
-            'account' => '1515139181',
-            'name' => '广州族迹信息技术有限公司',
+            'account' => '1515139181',//根据商户查找商户的商户号
+            'name' => '广州族迹信息技术有限公司',//商户的名称（全称呼）
             'relation_type' => 'STORE_OWNER'
         ];
 
@@ -245,15 +245,15 @@ class Pay extends CI_Controller
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::addunifiedOrder($config, $input);
-        var_dump($order);
 
-        if($order["return_code"]=="SUCCESS"){
+        if($order["return_code"]=="SUCCESS" && $order["result_code"]=="SUCCESS" ){
             //lyLog(var_export($order,true) , "oncourse" , true);
             $this->ResArr['code'] = 200;
-
+            $this->ResArr['msg'] = '添加成功';
         }else{
             $this->ResArr['code'] = 3;
-            $this->ResArr['msg'] = "pay data error!";
+            $this->ResArr['msg'] = $order["err_code"];
+            $this->ResArr['data'] = $order["err_code_des"];
         }
         echo json_encode($this->ResArr);
     }

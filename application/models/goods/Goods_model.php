@@ -99,6 +99,7 @@ class Goods_model extends CI_Model
             $query       = $this->db->get_where('goods_desc', array('goods_id' => $id));//echo $this->db->last_query()."<br>";
             $row_desc    = $query->row_array();
             $row['desc'] = $row_desc['desc'];
+            $row['need_know'] = $row_desc['need_know'];
 
             //图片属性
             $this->db->where('goods_id', $id);
@@ -152,6 +153,7 @@ class Goods_model extends CI_Model
 
         $update_data = array(
             'name'         => $data_post['name'],
+            'sub_name'         => $data_post['sub_name'],
             'model_id'     => (int)$data_post['model_id'],
             'cat_id'       => (int)$data_post['cat_id'],
             'brand_id'     => (int)$data_post['brand_id'],
@@ -164,6 +166,7 @@ class Goods_model extends CI_Model
         );
 
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
+        $data_post['need_know'] = remove_xss($this->input->post('need_know'));//单独过滤详情xss
 
         //店铺分类
         if (!empty($data_post['shop_cat_id'])) {
@@ -228,7 +231,7 @@ class Goods_model extends CI_Model
                 $where['shop_id'] = $shop_id;
             }
             $res = $this->loop_model->update_where('goods', $update_data, $where);
-            $this->loop_model->update_where('goods_desc', array('desc' => $data_post['desc']), array('goods_id' => $where['id']));
+            $this->loop_model->update_where('goods_desc', array('desc' => $data_post['desc'],'need_know'=>$data_post['need_know']), array('goods_id' => $where['id']));
             $goods_id = $where['id'];
         } else {
             //增加数据

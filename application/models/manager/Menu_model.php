@@ -16,6 +16,9 @@ class Menu_model extends CI_Model
                 '<i class="Hui-iconfont">&#xe620;</i> 商品管理' => array(
                     '商品管理' => '/manager/goods/goods/index',
                 ),
+                '<i class="Hui-iconfont">&#xe620;</i> 优惠管理' => array(
+                    '优惠管理' => '/manager/goods/coupon/index',
+                ),
                 '<i class="Hui-iconfont">&#xe681;</i> 商品分类' => array(
                     '分类管理' => '/manager/goods/category/index',
                 ),
