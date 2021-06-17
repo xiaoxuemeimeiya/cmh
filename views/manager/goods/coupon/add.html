@@ -189,6 +189,14 @@
 			</div>
 		</div>
 		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>使用时间：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择开始日期！" style="width: 150px">-
+				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择结束日期！" style="width: 150px">
+			</div>
+		</div>
+
+		<div class="row cl">
 			<label class="form-label col-2"></label>
 			<input type="hidden" name="image" value="">
 			<div class="formControls col-10" id="goods_list_pic">
@@ -236,6 +244,7 @@
 <script type="text/javascript" src="/public/js/layer/layer.js"></script>
 <script type="text/javascript" src="/public/js/form.js"></script>
 <script type="text/javascript" src="/public/js/artTemplate.js"></script>
+<script type="text/javascript" src="/public/js/laydate/laydate.js"></script>
 <script type="text/javascript" src="/public/H-ui/js/H-ui.js"></script>
 <script type="text/javascript" src="/public/H-ui/js/H-ui.admin.js"></script>
 <{ajax_upload()}>

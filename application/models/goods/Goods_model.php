@@ -163,6 +163,8 @@ class Goods_model extends CI_Model
             'status'       => (int)$data_post['status'],
             'sortnum'      => (int)$data_post['sortnum'],
             'edittime'     => time(),
+            'start_time'   => strtotime($data_post['start_time']),
+            'end_time'     => strtotime($data_post['end_time']),
         );
 
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
@@ -368,7 +370,7 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale');
+            $this->db->select('g.id,name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale,(CASE WHEN start_time THEN start_time ELSE 0 END) as start_time,(CASE WHEN end_time THEN end_time ELSE 0 END) as end_time');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);

@@ -39,6 +39,44 @@ class Index extends MY_Controller
     }
 
     /**
+     * 优惠券列表
+     */
+    public function coupon_list()
+    {
+        //$cat_id  = $this->input->get_post('cat_id', true);
+        $cat_id = 1;//优惠券
+        $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
+        if (empty($cat_id)) {
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失cat_id";
+            echo json_encode($this->ResArr);exit;
+        }
+        //搜索条件
+        $search_where = array(
+            //'cat_id'       => $this->input->get_post('cat_id', true),
+            'cat_id'       => $cat_id,
+            //'min_price'    => $this->input->get_post('min_price', true),
+            //'max_price'    => $this->input->get_post('max_price', true),
+            //'limit'        => (int)$this->input->get_post('limit', true),//显示数量
+        );
+        //属性条件
+        $attr = $this->input->get_post('attr', true);
+        if (!empty($attr)) {
+            foreach ($attr as $v => $k) {
+                $search_where['attr'][$v] = $k;
+            }
+        }
+        $search_where['page'] = $page;
+        //查询数据
+        $this->load->model('goods/goods_model');
+        $res_data = $this->goods_model->search($search_where, '');
+
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"] = $res_data;
+        echo json_encode($this->ResArr);exit;
+    }
+
+    /**
      * 商品列表
      */
     public function goods_list()
