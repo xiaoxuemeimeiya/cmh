@@ -338,7 +338,7 @@ class Goods_model extends CI_Model
     {
 
         if (empty($is_cache)) {
-            $cat_id        = (int)$where_data['cat_id'];//分类id
+            $cat_id        = $where_data['cat_id'];//分类id
             $shop_cat_id   = (int)$where_data['shop_cat_id'];//店铺分类id
             $brand_id      = (int)$where_data['brand_id'];//品牌id
             $shop_id       = (int)$where_data['shop_id'];//店铺id
@@ -356,7 +356,7 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,cat_id,brand_id,shop_id,image');
+            $this->db->select('g.id,name,cat_id,image,f.shop_name');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
@@ -369,6 +369,8 @@ class Goods_model extends CI_Model
             if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
 
             $this->db->where('g.status', 0);
+
+            $this->db->join('member_shop f','g.shop_id=f.m_id','left');
             //开始排序
             $orderby      = $where_data['orderby'];//排序字段
             $orderby_type = $where_data['orderby_type'];//排序类型
