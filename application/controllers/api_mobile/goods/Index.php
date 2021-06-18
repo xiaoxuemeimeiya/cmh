@@ -15,6 +15,33 @@ class Index extends MY_Controller
      * 新版首页
      */
     public function index(){
+        $type = $this->input->get_post('type', true) ? $this->input->get_post('type', true) : 1 ;//1-优惠，2-产品服务
+        $this->load->model('goods/goods_model');
+        if($type == 1){
+            $search_where['cat_id'] = [2,3];
+            $res_data = $this->goods_model->search_index($search_where);
+        }else{
+            $search_where['cat_id'] = 3;
+            //热门
+            if(!empty($this->input->get_post('is_hot', true))){
+                $search_where['is_hot'] = $this->input->get_post('is_hot', true);
+                //查询数据
+                $res_data = $this->goods_model->search_index($search_where);
+            }
+            //最新
+            if(!empty($this->input->get_post('is_new', true))){
+                $search_where['is_new'] = $this->input->get_post('is_new', true);
+                //查询数据
+                $res_data = $this->goods_model->search_index($search_where);
+            }
+        }
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"] = $res_data;
+        echo json_encode($this->ResArr);exit;
+
+    }
+    /*
+    public function index(){
         $cat_id  = $this->input->get_post('cat_id', true);
         $this->load->model('goods/goods_model');
         $search_where['cat_id'] = $cat_id;
@@ -23,6 +50,7 @@ class Index extends MY_Controller
         $this->ResArr["data"] = $list;
         echo json_encode($this->ResArr);exit;
     }
+    */
 
     /**
      * 广告拿出来
@@ -96,7 +124,7 @@ class Index extends MY_Controller
         $search_where['page'] = $page;
         //查询数据
         $this->load->model('goods/goods_model');
-        $res_data = $this->goods_model->search($search_where, '');
+        $res_data = $this->goods_model->search_service($search_where);
      
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $res_data;
