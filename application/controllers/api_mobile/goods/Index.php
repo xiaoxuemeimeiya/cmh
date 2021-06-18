@@ -77,30 +77,21 @@ class Index extends MY_Controller
     }
 
     /**
-     * 商品列表
+     * 产品与服务列表
      */
     public function goods_list()
     {
-        $cat_id  = $this->input->get_post('cat_id', true);
+        $cat_id  = 3;
         $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
-        if (empty($cat_id)) {
-            $this->ResArr["code"] = 3;
-            $this->ResArr["msg"] = "参数缺失cat_id";
-            echo json_encode($this->ResArr);exit;
-        }
         //搜索条件
-        $search_where = array(
-            'cat_id'       => $this->input->get_post('cat_id', true),
-            //'min_price'    => $this->input->get_post('min_price', true),
-            //'max_price'    => $this->input->get_post('max_price', true),
-            //'limit'        => (int)$this->input->get_post('limit', true),//显示数量
-        );
-        //属性条件
-        $attr = $this->input->get_post('attr', true);
-        if (!empty($attr)) {
-            foreach ($attr as $v => $k) {
-                $search_where['attr'][$v] = $k;
-            }
+        $search_where['cat_id'] = $cat_id;
+        //热门
+        if(!empty($this->input->get_post('is_hot', true))){
+            $search_where['is_hot'] = $this->input->get_post('is_hot', true);
+        }
+        //最新
+        if(!empty($this->input->get_post('is_new', true))){
+            $search_where['is_new'] = $this->input->get_post('is_new', true);
         }
         $search_where['page'] = $page;
         //查询数据

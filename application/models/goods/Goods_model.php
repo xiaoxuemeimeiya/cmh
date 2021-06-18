@@ -336,6 +336,245 @@ class Goods_model extends CI_Model
      * @param int   $screening 是否需要筛选项,不为空时需要
      * @return array
      */
+    public function search_service($where_data = array(), $cache = '', $screening = '')
+    {
+        $is_cache = '';
+        if (!empty($cache)) {
+            $cache_name = md5(json_encode($where_data).$screening);
+            $reslut_array = cache('get', $cache_name);
+            if (!empty($reslut_array)) {
+                $is_cache = 'in';
+                return $reslut_array;
+            }
+        }
+        if (empty($is_cache)) {
+            $cat_id        = (int)$where_data['cat_id'];//分类id
+            $shop_cat_id   = (int)$where_data['shop_cat_id'];//店铺分类id
+            $brand_id      = (int)$where_data['brand_id'];//品牌id
+            $shop_id       = (int)$where_data['shop_id'];//店铺id
+            $min_price     = price_format((int)$where_data['min_price']);//最低价格
+            $max_price     = price_format((int)$where_data['max_price']);//最高价格
+            $up_time_start = $where_data['up_time_start'];//开始时间
+            $up_time_end   = $where_data['up_time_end'];//结束时间
+            $keyword       = $where_data['keyword'];//关键字
+            $limit         = (int)$where_data['limit'];//显示数量
+            $is_hot        = (int)$where_data['is_hot'];//最热
+            $is_new        = (int)$where_data['is_new'];//最新
+            $is_flag       = (int)$where_data['is_flag'];//推荐
+
+            if (!is_array($cat_id)) {
+                $this->load->model('goods/category_model');
+                $cat_id = $this->category_model->get_reid_down($cat_id);
+            }
+            //*******************************************************
+            //查询对应的商品start**************************************
+            //*******************************************************
+            $this->db->from('goods as g');
+            $this->db->select('g.id,name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale,(CASE WHEN start_time THEN start_time ELSE 0 END) as start_time,(CASE WHEN end_time THEN end_time ELSE 0 END) as end_time');
+
+            //搜索条件
+            if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+            if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+            if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+            if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+            if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+            if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+            if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+            if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+            if (!empty($keyword)) $this->db->like('g.name', $keyword);
+            if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+            if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+            if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+            //规格属性筛选start
+            if (!empty($where_data['attr'])) {
+                $where_attr = array_filter($where_data['attr']);
+                if (!empty($where_attr)) {
+                    $attr_sql = '';
+                    foreach ($where_attr as $val => $key) {
+                        $attr_sql[] = "(attr_id = $val and find_in_set('$key',attr_value))";
+                    }
+                    $this->db->join("(select * from " . $this->db->dbprefix('goods_attr') . " where " . join(' or ', $attr_sql) . " group by goods_id having count(goods_id)>=" . count($attr_sql) . ") as ga", 'ga.goods_id=g.id');
+                }
+            }
+            //规格属性筛选end
+
+            $this->db->where('g.status', 0);
+            //开始排序
+            $orderby      = $where_data['orderby'];//排序字段
+            $orderby_type = $where_data['orderby_type'];//排序类型
+            if ($orderby == '') $orderby = config_item('goods_list_orderby');
+            if ($orderby_type == '') $orderby_type = config_item('goods_list_orderby_type');
+            $this->db->order_by($orderby, $orderby_type);
+            $this->db->order_by('sortnum', 'asc');
+
+            //分页
+            $page = (int)$where_data['page'];//是否有传入参数
+            if (empty($page)) $page = (int)$this->input->get_post('per_page', true);//接收url分页
+            if (empty($page)) $page = 1;
+            if (empty($limit)) $limit = config_item('goods_list_pagesize');
+            $this->db->limit($limit, $limit * ($page - 1));
+            $query      = $this->db->get();
+            $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+            $this->load->model('goods/goods_sum_model');
+            foreach ($goods_data as $key) {
+                $key['sell_price']   = format_price($this->goods_sum_model->sku_member_group_price($key));
+                $key['market_price'] = format_price($key['market_price']);
+                $goods_list[]        = $key;
+            }
+            //查询对应的商品end
+
+            //*******************************************************
+            //查询对应的商品总数start**********************************
+            //*******************************************************
+            $this->db->from('goods as g');
+            //搜索条件
+            if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+            if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+            if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+            if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+            if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+            if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+            if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+            if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+            if (!empty($keyword)) $this->db->like('g.name', $keyword);
+            if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+            if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+            if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+            //规格属性筛选start
+            if (!empty($where_data['attr'])) {
+                $where_attr = array_filter($where_data['attr']);
+                if (!empty($where_attr)) {
+                    $attr_sql = '';
+                    foreach ($where_attr as $val => $key) {
+                        $attr_sql[] = "(attr_id = $val and find_in_set('$key',attr_value))";
+                    }
+                    $this->db->join("(select * from " . $this->db->dbprefix('goods_attr') . " where " . join(' or ', $attr_sql) . " group by goods_id having count(goods_id)>=" . count($attr_sql) . ") as ga", 'ga.goods_id=g.id');
+                }
+            }
+            //规格属性筛选end
+            //规格属性筛选end
+            $this->db->where('g.status', 0);
+            $goods_count = $this->db->count_all_results();
+            $page_count  = ceil($goods_count / $limit);
+            //查询对应的商品总数end
+
+
+            $attr_list = $brand_data = $price_data = array();
+            //是否需要查询筛选属性
+            $screening = (int)$screening;//是否需要筛选
+            if (!empty($screening)) {
+                //*******************************************************
+                //查询对应的商品属性start**********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('gma.id,gma.name,gma.value');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+                if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+
+                $this->db->where('g.status', 0);
+                $this->db->where('gma.search', 1);//是否是搜索项
+                $this->db->join('goods_attr as ga', 'g.id=ga.goods_id');
+                $this->db->group_by('ga.attr_id');
+                $this->db->join('goods_model_attr as gma', 'ga.attr_id=gma.id');
+                $query     = $this->db->get();
+                $attr_data = $query->result_array();//echo $this->db->last_query()."<br>";
+                foreach ($attr_data as $k) {
+                    $k['value']  = explode(',', $k['value']);
+                    $attr_list[] = $k;
+                }
+                //查询对应的商品属性end
+
+                //*******************************************************
+                //查询对应的商品品牌start***********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('gb.id,gb.name,gb.logo');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($min_price)) $this->db->where('g.sell_price>=', $min_price);
+                if (!empty($max_price)) $this->db->where('g.sell_price<=', $max_price);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+                $this->db->group_by('gb.id');
+                $this->db->where('g.status', 0);
+                $this->db->join('goods_brand as gb', 'g.brand_id=gb.id');
+                $query      = $this->db->get();
+                $brand_data = $query->result_array();//echo $this->db->last_query()."<br>";
+                //查询对应的商品品牌end
+
+                //*******************************************************
+                //计算商品的价格区间start***********************************
+                //*******************************************************
+                $this->db->from('goods as g');
+                $this->db->select('MIN(g.sell_price) as min,MAX(g.sell_price) as max');
+
+                //搜索条件
+                if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+                if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+                if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+                if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+                if (!empty($up_time_start)) $this->db->where('g.up_time>=', $up_time_start);
+                if (!empty($up_time_end)) $this->db->where('g.up_time<=', $up_time_end);
+                if (!empty($keyword)) $this->db->like('g.name', $keyword);
+                if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+                if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+                if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+                //规格属性筛选start
+                if (!empty($where_data['attr'])) {
+                    $where_attr = array_filter($where_data['attr']);
+                    if (!empty($where_attr)) {
+                        $attr_sql = '';
+                        foreach ($where_attr as $val => $key) {
+                            $attr_sql[] = "(attr_id = $val and find_in_set('$key',attr_value))";
+                        }
+                        $this->db->join("(select * from " . $this->db->dbprefix('goods_attr') . " where " . join(' or ', $attr_sql) . " group by goods_id having count(goods_id)>=" . count($attr_sql) . ") as ga", 'ga.goods_id=g.id');
+                    }
+                }
+                //规格属性筛选end
+
+                $this->db->where('g.status', 0);
+                $query       = $this->db->get();
+                $goods_price = $query->row_array();//echo $this->db->last_query()."<br>";
+
+                $price_data = self::get_goods_price(format_price($goods_price['min']), format_price($goods_price['max']));
+                //计算商品的价格区间end
+            }
+
+            //$reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count, 'attr_list' => $attr_list, 'brand_list' => $brand_data, 'price_list' => $price_data);
+            $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
+            if($cache!='') {
+                cache('save', $cache_name, $reslut_array);
+            }
+        }
+        return $reslut_array;
+    }
+
+    /**
+     * 根据指定条件搜索商品信息
+     * @param array $data_post 条件
+     * @param int   $cache     是否缓存,不为空时需要
+     * @param int   $screening 是否需要筛选项,不为空时需要
+     * @return array
+     */
     public function search($where_data = array(), $cache = '', $screening = '')
     {
         $is_cache = '';
