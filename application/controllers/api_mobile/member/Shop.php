@@ -56,24 +56,29 @@ class Shop extends CI_Controller
         echo json_encode($this->ResArr);exit;
     }
 
-    //店铺商品
+    //店铺优惠券/套餐
     public function goods()
     {
+        $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
         $type  = $this->input->get_post('type', true);//type：=1优惠券，=2套餐券，=3活动
         $shop_id  = (int)$this->input->get_post('shop_id', true);//店铺id
-
+        if(!$shop_id){
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失";
+            echo json_encode($this->ResArr);exit;
+        }
         switch($type){
             case 2:
                 //套餐券
-                $data = $this->shop_model->shop_goods($type,$shop_id);
+                $data = $this->shop_model->shop_goods($type,$shop_id,$page);
                 break;
             case 3:
                 //活动
-                $data = $this->shop_model->shop_goods($type,$shop_id);
+                $data = $this->shop_model->shop_goods($type,$shop_id,$page);
                 break;
             default:
                 //优惠券
-                $data = $this->shop_model->shop_goods($type,$shop_id);
+                $data = $this->shop_model->shop_goods($type,$shop_id,$page);
         }
 
         $this->ResArr["code"] = 200;

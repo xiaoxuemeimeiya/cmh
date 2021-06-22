@@ -15,24 +15,24 @@ class Index extends MY_Controller
      * 新版首页
      */
     public function index(){
-        $type = $this->input->get_post('type', true) ? $this->input->get_post('type', true) : 1 ;//1-优惠，2-产品服务
+        $type = $this->input->get_post('type', true) ? $this->input->get_post('type', true) : 1 ;//1-产品服务，2-优惠
         $this->load->model('goods/goods_model');
         if($type == 1){
-            $search_where['cat_id'] = [2,3];
-            $res_data = $this->goods_model->search_index($search_where);
+            $search_where['cat_id'] = [1,2];
+            $res_data = $this->goods_model->search_index($search_where,1);
         }else{
             $search_where['cat_id'] = 3;
             //热门
             if(!empty($this->input->get_post('is_hot', true))){
                 $search_where['is_hot'] = $this->input->get_post('is_hot', true);
                 //查询数据
-                $res_data = $this->goods_model->search_index($search_where);
+                $res_data = $this->goods_model->search_index($search_where,2);
             }
             //最新
             if(!empty($this->input->get_post('is_new', true))){
                 $search_where['is_new'] = $this->input->get_post('is_new', true);
                 //查询数据
-                $res_data = $this->goods_model->search_index($search_where);
+                $res_data = $this->goods_model->search_index($search_where,2);
             }
         }
         $this->ResArr["code"] = 200;
@@ -110,9 +110,16 @@ class Index extends MY_Controller
     public function goods_list()
     {
         $cat_id  = 3;
+        $search_where['cat_id'] = $cat_id;
         $page = $this->input->get_post('page', true) ? $this->input->get_post('page', true) : 1;
         //搜索条件
-        $search_where['cat_id'] = $cat_id;
+        $shop_id  = $this->input->get_post('shop_id', true);
+        if (empty($shop_id)) {
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失$shop_id";
+            echo json_encode($this->ResArr);exit;
+        }
+        $search_where['shop_id'] = $shop_id;
         //热门
         if(!empty($this->input->get_post('is_hot', true))){
             $search_where['is_hot'] = $this->input->get_post('is_hot', true);
@@ -148,7 +155,8 @@ class Index extends MY_Controller
             $this->ResArr["msg"] = "商品不存在或者已下架";
             echo json_encode($this->ResArr);exit;
         }
-        //查看用户是否购买过此商品
+        //查看用户是否购买过此商品(商品可多次购买)
+        /*
         $item['is_buy'] = 0;
         $m_id = $this->input->get_post('m_id', true);
         if($m_id){
@@ -161,6 +169,7 @@ class Index extends MY_Controller
                 $item['is_buy'] = 1;
             }
         }
+        */
 
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;

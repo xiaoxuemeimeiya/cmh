@@ -22,7 +22,7 @@ class Goods_model extends CI_Model
     {
         $id = (int)$id;
         if (!empty($id)) {
-            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sell_price,market_price,image,store_nums,comments,sale');
+            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,sell_price,market_price,image,store_nums,comments,sale,start_time,end_time');
             if (empty($goods_data)) msg('商品不存在');
             if ($goods_data['status'] != 0) msg('商品已下架');
             $goods_data['market_price'] = format_price($goods_data['market_price']);
@@ -334,7 +334,7 @@ class Goods_model extends CI_Model
      * @param array $data_post 条件
      * @return array
      */
-    public function search_index($where_data = array())
+    public function search_index($where_data = array(),$type)
     {
 
         if (empty($is_cache)) {
@@ -356,7 +356,7 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,cat_id,image,f.shop_name');
+            $this->db->select('g.id,name,sub_name,cat_id,image,f.shop_name');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
@@ -378,6 +378,9 @@ class Goods_model extends CI_Model
             if ($orderby_type == '') $orderby_type = config_item('goods_list_orderby_type');
             $this->db->order_by($orderby, $orderby_type);
             $this->db->order_by('sortnum', 'asc');
+            if($type == 1){
+                $this->db->group_by('g.shop_id');
+            }
 
             $this->db->limit(4);
             $query      = $this->db->get();
@@ -420,7 +423,8 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,cat_id,brand_id,shop_id,image');
+            //$this->db->select('g.id,name,cat_id,brand_id,shop_id,image');
+            $this->db->select('g.id,name,sub_name,image,f.shop_name');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
@@ -433,6 +437,8 @@ class Goods_model extends CI_Model
             if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
 
             $this->db->where('g.status', 0);
+
+            $this->db->join('member_shop f','g.shop_id=f.m_id','left');
             //开始排序
             $orderby      = $where_data['orderby'];//排序字段
             $orderby_type = $where_data['orderby_type'];//排序类型
@@ -523,7 +529,7 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale,(CASE WHEN start_time THEN start_time ELSE 0 END) as start_time,(CASE WHEN end_time THEN end_time ELSE 0 END) as end_time');
+            $this->db->select('g.id,name,sub_name,cat_id,brand_id,shop_id,sell_price,market_price,image,store_nums,unit,favorite,comments,sale,(CASE WHEN start_time THEN start_time ELSE 0 END) as start_time,(CASE WHEN end_time THEN end_time ELSE 0 END) as end_time');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);

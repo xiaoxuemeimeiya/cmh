@@ -90,14 +90,19 @@ class Shop_model extends CI_Model
         if($search_where['city']){
             //连接表单
             $select .= ',ga.area_name as city';
-            $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=g.city");
-            $this->db->where('g.city',$search_where['city']);
+            //$this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=g.city");//用编码
+            //$this->db->where('g.city',$search_where['city']);
+            $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=g.city","left");//用文字
+            $this->db->where('ga.area_name',$search_where['city']);
         }
         if($search_where['area']){
             //连接表单
             $select .= ',gae.area_name as area';
-            $this->db->join( $this->db->dbprefix('areas') ." as gae", "gae.area_id=g.area");
-            $this->db->where('g.area',$search_where['area']);
+            //$this->db->join( $this->db->dbprefix('areas') ." as gae", "gae.area_id=g.area");
+            //$this->db->where('g.area',$search_where['area']);
+            $this->db->join( $this->db->dbprefix('areas') ." as gae", "gae.area_id=g.area","left");
+            $this->db->where('gae.area_name',$search_where['area']);
+
         }
         $this->db->select($select);
 
@@ -114,7 +119,7 @@ class Shop_model extends CI_Model
 
         //根据位置帅选
         $query      = $this->db->get();
-        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+        $goods_data = $query->result_array();echo $this->db->last_query()."<br>";
         //根据位置排序
         return $goods_data;
         //$this->db->order_by('sortnum', 'asc');
@@ -167,7 +172,7 @@ class Shop_model extends CI_Model
     /**
      * 店铺商品
      */
-    public function shop_goods($type,$shop_id){
+    public function shop_goods($type,$shop_id,$page){
         //根据type选择不同类型的商品
         switch($type){
             case 3:
@@ -180,15 +185,27 @@ class Shop_model extends CI_Model
                 //优惠券,套餐券
                 if(!$type) $type = 1;
                 $list = $this->db->from('goods as l');
-                $select = 'id,name,sell_price,market_price,image,store_nums,sale,g.desc';
+                $select = 'id,name,sub_name,sell_price,market_price,image,store_nums,sale,start_time,end_time,g.desc';
                 $this->db->join( $this->db->dbprefix('goods_desc') ." as g", "g.goods_id=l.id");
                 $this->db->select($select);
                 $this->db->where('shop_id',$shop_id);
                 $this->db->where('cat_id',$type);
+
+                //分页
+                $page = (int)$page;//是否有传入参数
+                if (empty($page)) $page = (int)$this->input->get_post('per_page', true);//接收url分页
+                if (empty($page)) $page = 1;
+                if (empty($limit)) $limit = config_item('shop_list_pagesize');
+                $this->db->limit($limit, $limit * ($page - 1));
+
                 $query      = $this->db->get();
                 $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
+
+                $goods_count = $this->db->count_all_results();
+                $page_count  = ceil($goods_count / $limit);
+                $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
         }
 
-        return $goods_list;
+        return $reslut_array;
     }
 }
