@@ -13,69 +13,6 @@ class Pay extends CI_Controller
     }
 
     /**
-     * 订单或这个充值支付
-     */
-    public function do_pay()
-    {
-        //必须登录
-        $this->load->helpers('web_helper');
-        $client      = $this->input->get_post('client');//来源客户端
-        $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
-        if (!empty($order_no)) {
-            //判断订单状态
-            $all_order_no = explode(',', $order_no);
-            $order_price  = 0;
-            foreach ($all_order_no as $key) {
-                $order_data = $this->loop_model->get_where('order', array('order_no' => $key, 'status' => 1));
-                if (!empty($order_data)) {
-                    $order_no_data[] = $order_data['order_no'];
-                    $order_price     = $order_price + $order_data['price_real'];//支付金额
-                    //$payment_id      = $order_data['payment_id'];//支付方式
-
-                } else {
-                    error_json('订单信息错误,或者订单已支付');
-
-                }
-                $payment_id      = 3;//微信支付
-            }
-            cache('save', $order_no_data[0], $order_no_data, 7200);
-            $pay_data = array(
-                'order_body'  => '订单支付',
-                'order_no'    => $order_no_data[0],//支付单号
-                'order_price' => $order_price > 0 ? $order_price : 1 ,//支付金额
-                'payment_id'  => $payment_id,//支付方式
-            );
-        }else{
-            $this->ResArr['code'] = 3;
-            $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
-        }
-
-
-        $pay_data['client']          = $client;//当前客户端
-        $pay_data['callback']        = site_url('/api_mobile/pay/callback/' . $pay_data['payment_id'] . '/' . $client);//客户端回调地址
-        $pay_data['server_callback'] = site_url('/api_mobile/pay/server_callback/' . $pay_data['payment_id']);//服务端回调地址
-
-        if (!empty($pay_data)) {
-            //获取支付方式
-            $payment_data = $this->loop_model->get_where('payment', array('id' => $pay_data['payment_id'], 'status' => 0));
-            if (!empty($payment_data)) {
-                //开始支付
-                $patment_class_name = $payment_data['class_name'];var_dump($patment_class_name);
-                //$this->load->library($patment_class_name);var_dump($patment_class_name);
-                $this->load->library('payment/' . $patment_class_name . '/' . $patment_class_name);
-
-              //  var_dump($this->load->library('payment1/' . $patment_class_name . '/' . $patment_class_name));exit;
-                $this->$patment_class_name->do_pay($pay_data);
-            } else {
-                $this->ResArr['code'] = 1001;
-                $this->ResArr['msg'] = '支付方式不存在';
-                echo json_encode($this->ResArr);exit;
-            }
-        }
-    }
-
-    /**
      * 支付
      */
     public function index()
@@ -100,7 +37,7 @@ class Pay extends CI_Controller
         $pay_data = array(
             'order_body'  => '订单支付',
             'order_no'    => $order_no,//支付单号
-            'order_price' => $order_price > 0 ? $order_price : 1000 ,//支付金额
+            'order_price' => $order_price > 0 ? $order_price : 10 ,//支付金额(默认为支付0.1)
             'payment_id'  => $payment_id,//支付方式
         );
         $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']));
@@ -218,7 +155,9 @@ class Pay extends CI_Controller
         }
     }
 
-    /**添加分账方**/
+    /**
+     * 添加分账方（添加特约商户的时候需要先调用该接口）
+     */
     public function add_mch(){
         $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
         if (empty($order_no)) {
@@ -226,7 +165,7 @@ class Pay extends CI_Controller
             $this->ResArr['msg'] = '参数缺失';
             echo json_encode($this->ResArr);exit;
         }
-        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
+        //获取特约商户的信息
 
         $this->load->library('minipay/WxPayApi');
         $this->load->library('minipay/WxPayJsApiPay');

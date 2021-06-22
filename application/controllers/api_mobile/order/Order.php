@@ -18,7 +18,8 @@ class Order extends MY_Controller
 
     /**
      * 我的订单列表
-     * status(null-全部订单，1-代付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
+     //* status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
+     * status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
      * */
    public function order_list()
    {
@@ -71,7 +72,7 @@ class Order extends MY_Controller
        );
        //assign('search_where', $search_where);
        //搜索条件end
-       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,k.name,k.time,';
+       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,k.name';
        $where_data['join']   = array(
            array('member_oauth as m', 'o.m_id=m.id'),
            array('goods as k', 'o.good_id=k.id'),
@@ -88,7 +89,7 @@ class Order extends MY_Controller
            'list'=>$order_list,
            'page_count'=> ceil($all_rows / $pagesize)
        ];;
-       echo json_encode($this->ResArr);exit;
+       error_json($this->ResArr);
    }
 
     /**
@@ -228,9 +229,7 @@ class Order extends MY_Controller
                     $rakeres = $this->loop_model->insert('order_rake',$rakedata);
                 }
             }
-
         }
-       
         //订单金额为0时，订单自动完成
         if ($all_order_price <= 0) {
             $this->ResArr["code"] = 200;
