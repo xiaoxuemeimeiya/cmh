@@ -18,8 +18,8 @@ class Order extends MY_Controller
 
     /**
      * 我的订单列表
+     * type(null-全部订单，1-待付款，2-已支付，3-待收货，4-已完成，5-已退款，6-已取消，10-退款/售后）
      //* status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
-     * status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
      * */
    public function order_list()
    {
@@ -31,7 +31,7 @@ class Order extends MY_Controller
        $this->order_model->auto_confirm();//自动确认超时的订单
        //自动执行end**********************************************
 
-       $pagesize = 20;//分页大小
+       $pagesize = 10;//分页大小
        $page     = (int)$this->input->get_post('page');
        $page <= 1 ? $page = 1 : $page = $page;//当前页数
        //搜索条件start
@@ -43,16 +43,27 @@ class Order extends MY_Controller
            $where_data['where']['is_del'] = 0;
        }
        //状态
-       $status = $this->input->get_post('status');
+       $status = $this->input->get_post('type');
        if ($status == 1) {
            //待支付的
-           $where_data['where']['status']      = 1;
-           $where_data['where']['payment_id>'] = 1;
+           $where_data['where']['o.status']      = 1;
        } elseif ($status == 2) {
-           //待发货的
-           $where_data['sql'] = '((payment_id=1 and status=1) or (status=2))';
-       } elseif ($status != '') {
-           $where_data['where']['status'] = $status;
+           //已支付
+           $where_data['where']['o.status']      = 2;
+       } elseif ($status == 3) {
+           //待收货
+           $where_data['where']['o.status']      = 3;
+       } elseif ($status == 4) {
+           //已完成
+           $where_data['sql'] = '((o.status=4) or (o.status=5))';
+       }elseif ($status == 5) {
+           //已退款
+           $where_data['sql'] = '((o.status=6) or (o.status=7))';
+       }elseif ($status == 6) {
+           //已取消
+           $where_data['sql'] = '((o.status=8) or (o.status=9))';
+       }elseif ($status != '') {
+           $where_data['where']['o.status'] = $status;
        }
 
        //支付状态
@@ -72,7 +83,7 @@ class Order extends MY_Controller
        );
        //assign('search_where', $search_where);
        //搜索条件end
-       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,k.name';
+       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,m.headimgurl,k.name';
        $where_data['join']   = array(
            array('member_oauth as m', 'o.m_id=m.id'),
            array('goods as k', 'o.good_id=k.id'),
@@ -89,7 +100,7 @@ class Order extends MY_Controller
            'list'=>$order_list,
            'page_count'=> ceil($all_rows / $pagesize)
        ];;
-       error_json($this->ResArr);
+       echo json_encode($this->ResArr);exit;
    }
 
     /**
@@ -103,15 +114,16 @@ class Order extends MY_Controller
             $this->ResArr['msg'] = '订单id不能为空';
             echo json_encode($this->ResArr);exit;
         }
-        $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,payment_status,status,sku_price_real,addtime,paytime');
+        $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,status,sku_price_real,addtime,paytime');
         if (!$order_data){
             $this->ResArr['code'] = 16;
             $this->ResArr['msg'] = '该订单不存在';
             echo json_encode($this->ResArr);exit;
         }
-        $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname');
-        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'name');
+        $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname,headimgurl');
+        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'name,start_time,end_time');
         $order_data['nickname'] = $user['nickname'];
+        $order_data['headimgurl'] = $user['headimgurl'];
         $order_data['name'] = $good['name'];
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = $order_data;
