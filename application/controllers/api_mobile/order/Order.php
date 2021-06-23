@@ -132,6 +132,7 @@ class Order extends MY_Controller
             echo json_encode($this->ResArr);exit;
         }
         $payment_id    = 3;//支付方式（微信支付）
+        /*
         $where['where']['good_id'] = $good_id;
         $where['where']['m_id'] = $m_id;
         $where['where_in']['status'] = [2,3,4,5];
@@ -141,6 +142,7 @@ class Order extends MY_Controller
             $this->ResArr["msg"]= '该商品已购买';
             echo json_encode($this->ResArr);exit;
         }
+        */
         $goodData = $this->loop_model->get_where('goods',array('id'=>$good_id,'status'=>0));
         if(!$goodData){
             $this->ResArr["code"] = 12;
