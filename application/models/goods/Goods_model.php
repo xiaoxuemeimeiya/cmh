@@ -337,11 +337,80 @@ class Goods_model extends CI_Model
     public function search_index($where_data = array(),$type)
     {
 
-        if (empty($is_cache)) {
+
+        $cat_id        = $where_data['cat_id'];//分类id
+        $shop_cat_id   = (int)$where_data['shop_cat_id'];//店铺分类id
+        $brand_id      = (int)$where_data['brand_id'];//品牌id
+        $shop_id       = (int)$where_data['shop_id'];//店铺id
+        $keyword       = $where_data['keyword'];//关键字
+        $limit         = (int)$where_data['limit'];//显示数量
+        $is_hot        = (int)$where_data['is_hot'];//最热
+        $is_new        = (int)$where_data['is_new'];//最新
+        $is_flag       = (int)$where_data['is_flag'];//推荐
+
+        if (!is_array($cat_id)) {
+            $this->load->model('goods/category_model');
+            $cat_id = $this->category_model->get_reid_down($cat_id);
+        }
+        //*******************************************************
+        //查询对应的商品start**************************************
+        //*******************************************************
+        $this->db->from('goods as g');
+        $this->db->select('g.id,name,sub_name,cat_id,image,sell_price,market_price,f.shop_name');
+
+        //搜索条件
+        if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+        if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
+        if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
+        if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
+        if (!empty($keyword)) $this->db->like('g.name', $keyword);
+        if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
+        if (!empty($is_new)) $this->db->where('g.is_new', $is_new);
+        if (!empty($is_flag)) $this->db->where('g.is_flag', $is_flag);
+
+        $this->db->where('g.status', 0);
+
+        $this->db->join('member_shop f','g.shop_id=f.m_id','left');
+        //开始排序
+        $orderby      = $where_data['orderby'];//排序字段
+        $orderby_type = $where_data['orderby_type'];//排序类型
+        if ($orderby == '') $orderby = config_item('goods_list_orderby');
+        if ($orderby_type == '') $orderby_type = config_item('goods_list_orderby_type');
+        $this->db->order_by($orderby, $orderby_type);
+        $this->db->order_by('sortnum', 'asc');
+        if($type == 1){
+            $this->db->group_by('g.shop_id');
+        }
+
+        $this->db->limit(4);
+        $query      = $this->db->get();
+        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+        $this->load->model('goods/goods_sum_model');
+        //查询对应的商品end
+
+        //*******************************************************
+        //查询对应的商品总数start**********************************
+        //*******************************************************
+        $reslut_array = $goods_data;
+    
+        return $reslut_array;
+    }
+
+    /**
+     * 首页特殊展示
+     * @param array $data_post 条件
+     * @return array
+     */
+    public function search_index1($where_data = array(),$type)
+    {
+        $this->db->from('member_shop');
+        $this->db->select('m_id,shop_name');
+        $this->db->limit(6);
+        $query      = $this->db->get();
+        $shop_data = $query->result_array();
+        foreach($shop_data as $k=>$v){
             $cat_id        = $where_data['cat_id'];//分类id
-            $shop_cat_id   = (int)$where_data['shop_cat_id'];//店铺分类id
-            $brand_id      = (int)$where_data['brand_id'];//品牌id
-            $shop_id       = (int)$where_data['shop_id'];//店铺id
+            $shop_id       = $v['m_id'];//店铺id
             $keyword       = $where_data['keyword'];//关键字
             $limit         = (int)$where_data['limit'];//显示数量
             $is_hot        = (int)$where_data['is_hot'];//最热
@@ -356,12 +425,10 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,name,sub_name,cat_id,image,f.shop_name');
+            $this->db->select('g.id,name,sub_name,cat_id,image,sell_price,market_price,FORMAT(sell_price/market_price*10,2) as discount,f.shop_name');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
-            if (!empty($shop_cat_id)) $this->db->where('g.shop_cat_id', $shop_cat_id);
-            if (!empty($brand_id)) $this->db->where('g.brand_id', $brand_id);
             if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
             if (!empty($keyword)) $this->db->like('g.name', $keyword);
             if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);
@@ -372,17 +439,11 @@ class Goods_model extends CI_Model
 
             $this->db->join('member_shop f','g.shop_id=f.m_id','left');
             //开始排序
-            $orderby      = $where_data['orderby'];//排序字段
-            $orderby_type = $where_data['orderby_type'];//排序类型
-            if ($orderby == '') $orderby = config_item('goods_list_orderby');
-            if ($orderby_type == '') $orderby_type = config_item('goods_list_orderby_type');
-            $this->db->order_by($orderby, $orderby_type);
+            //$this->db->order_by('sell_price/market_price', 'asc');
+            $this->db->order_by('discount', 'asc');
             $this->db->order_by('sortnum', 'asc');
-            if($type == 1){
-                $this->db->group_by('g.shop_id');
-            }
-
-            $this->db->limit(4);
+            
+            $this->db->limit(3);
             $query      = $this->db->get();
             $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
             $this->load->model('goods/goods_sum_model');
@@ -391,11 +452,14 @@ class Goods_model extends CI_Model
             //*******************************************************
             //查询对应的商品总数start**********************************
             //*******************************************************
-            $reslut_array = $goods_data;
+            //$reslut_array = $goods_data;
+            $shop_data[$k]['discount'] = $goods_data ? $goods_data[0]['discount'] : 10 ;
+            $shop_data[$k]['good_list'] = $goods_data;
+            
         }
-        return $reslut_array;
+        
+        return $shop_data;
     }
-
     /**
      * 根据指定条件搜索商品信息
      * @param array $data_post 条件

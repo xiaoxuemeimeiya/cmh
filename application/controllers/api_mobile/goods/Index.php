@@ -19,7 +19,8 @@ class Index extends MY_Controller
         $this->load->model('goods/goods_model');
         if($type == 1){
             $search_where['cat_id'] = [1,2];
-            $res_data = $this->goods_model->search_index($search_where,1);
+            //$res_data = $this->goods_model->search_index($search_where,1);
+            $res_data = $this->goods_model->search_index1($search_where,1);
         }else{
             $search_where['cat_id'] = 3;
             //热门
