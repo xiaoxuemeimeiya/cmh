@@ -83,10 +83,11 @@ class Order extends MY_Controller
        );
        //assign('search_where', $search_where);
        //搜索条件end
-       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,m.headimgurl,k.name';
+       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,m.headimgurl,k.name,k.image,s.shop_name,k.start_time,k.end_time';
        $where_data['join']   = array(
            array('member_oauth as m', 'o.m_id=m.id'),
            array('goods as k', 'o.good_id=k.id'),
+           array('member_shop as s', 's.m_id=o.shop_id'),
        );
        //查到数据
        $order_list = $this->loop_model->get_list('order as o', $where_data, $pagesize, $pagesize * ($page - 1), 'o.id desc');//列表
@@ -121,10 +122,14 @@ class Order extends MY_Controller
             echo json_encode($this->ResArr);exit;
         }
         $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname,headimgurl');
-        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'name,start_time,end_time');
+        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'shop_id,name,image,start_time,end_time');
+        $shop = $this->loop_model->get_where('member_shop',array('m_id'=>$good['shop_id']),'shop_name');
         $order_data['nickname'] = $user['nickname'];
         $order_data['headimgurl'] = $user['headimgurl'];
         $order_data['name'] = $good['name'];
+        $order_data['shop_name'] = $shop['shop_name'];
+        $order_data['start_time'] = $good['start_time'];
+        $order_data['end_time'] = $good['end_time'];
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = $order_data;
         echo json_encode($this->ResArr);exit;
