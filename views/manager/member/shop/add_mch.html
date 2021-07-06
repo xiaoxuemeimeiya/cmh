@@ -6,7 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 	<meta http-equiv="Cache-Control" content="no-siteapp" />
-	<title><{config_item('manager_title')}></title>
+	<title></title>
 	<link href="/public/H-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
 	<link href="/public/H-ui/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
 	<link href="/public/H-ui/hui-iconfont/iconfont.css" rel="stylesheet" type="text/css">
@@ -18,8 +18,6 @@
 <div class="pd-20" style="padding-top: 0px;">
 	<div class="text-c pt-20">
 		<form action="<{site_url('/manager/member/shop/')}>" method="post" class="form form-horizontal" id="search" name="search">
-
-			<input type="text" name="shop_name" placeholder="店铺名称" style="width:150px" class="input-text">
 			<input type="text" name="username" placeholder="用户名" style="width:150px" class="input-text">
 			<span class="select-box" style="width:150px">
 				<select name="status" class="select">
@@ -33,16 +31,10 @@
 		</form>
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
-		<{if $search_where['status']==1}>
 		<a href="<{site_url('/manager/member/shop/')}>" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe678;</i> 返回列表</a>
-		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/delete/')}>','')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe60b;</i> 彻底删除</a>
-		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/reduction_recycle/')}>','')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe66b;</i> 还原</a>
-		<{else}>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/update_status/')}>?status=0')" class="btn btn-primary radius">审核</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/update_status/')}>?status=2')" class="btn btn-primary radius">锁定</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/delete_recycle/')}>','')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe60b;</i> 批量删除</a>
-		<a href="<{site_url('/manager/member/shop/')}>?status=1" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe6e2;</i> 回收站</a>
-		<{/if}>
 	</span></div>
 	<div class="mt-20">
 		<table class="table table-border table-bordered table-bg table-hover table-sort">
@@ -51,12 +43,9 @@
 				<th width="40"><input name="" type="checkbox" value=""></th>
 				<th width="50">ID</th>
 				<th>会员名</th>
-				<th width="80">店铺名称</th>
-				<th width="80">电话</th>
-				<th width="100">邮箱</th>
-				<th width="50">营业执照</th>
-				<th width="70">注册时间</th>
-				<th width="80">最后登录时间</th>
+				<th width="80">商户号</th>
+				<th width="80">商户名称（全称）</th>
+				<th width="70">添加时间</th>
 				<th width="90">状态</th>
 				<th width="60">操作</th>
 			</tr>
@@ -66,17 +55,9 @@
 			<tr class="text-c">
 				<td><input name="id[]" type="checkbox" value="<{$key.id}>"></td>
 				<td><{$key.id}></td>
-				<td class="text-l"><{$key.username}></td>
-				<td class="text-l"><{$key.shop_name}></td>
-				<td class="text-l"><{$key.tel}></td>
-				<td class="text-l"><{$key.email}></td>
-				<td>
-					<{if $key.business_license!=''}>
-					<a href="<{$key.business_license}>" target="_blank"><img src="<{$key.business_license}>" width="30" href="30"></a>
-					<{/if}>
-				</td>
+				<td class="text-l"><{$key.mch_id}></td>
+				<td class="text-l"><{$key.name}></td>
 				<td><{date('Y-m-d',$key.addtime)}></td>
-				<td><{date('Y-m-d',$key.endtime)}></td>
 				<td>
 					<span class="select-box">
 						<select name="status" class="select" onchange="update_status('<{$key.id}>',this.value);">
@@ -87,13 +68,8 @@
 					</span>
 				</td>
 				<td class="f-14 td-manage">
-					<a style="text-decoration:none" class="ml-5" onClick="open_iframe('添加分帐方','<{site_url("/manager/member/shop/add_mch/<{$key.id}>")}>','100%')" href="javascript:;" title="添加分帐方"><i class="Hui-iconfont">&#xe600;</i></a>
 					<a style="text-decoration:none" class="ml-5" onClick="open_iframe('编辑','<{site_url("/manager/member/shop/edit/<{$key.id}>")}>','100%')" href="javascript:;" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
-					<{if $search_where['status']==1}>
-					<a style="text-decoration:none" class="ml-5" onClick="data_del(this,'<{site_url('/manager/member/shop/delete/')}>','<{$key.id}>')" href="javascript:;" title="彻底删除"><i class="Hui-iconfont">&#xe6e2;</i></a>
-					<{else}>
-					<a style="text-decoration:none" class="ml-5" onClick="data_del(this,'<{site_url('/manager/member/shop/delete_recycle/')}>','<{$key.id}>')" href="javascript:;" title="删除到回收站"><i class="Hui-iconfont">&#xe6e2;</i></a>
-					<{/if}>
+					<a style="text-decoration:none" class="ml-5" onClick="data_del(this,'<{site_url('/manager/member/shop/delete/')}>','<{$key.id}>')" href="javascript:;" title="删除"><i class="Hui-iconfont">&#xe6e2;</i></a>
 				</td>
 			</tr>
 			<{/foreach}>

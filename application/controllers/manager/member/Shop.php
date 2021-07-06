@@ -78,6 +78,43 @@ class Shop extends CI_Controller
     }
 
     /**
+     * 添加收账方列表
+     */
+    public function add_mch($m_id){
+        $m_id = (int)$m_id;
+        $pagesize = 20;//分页大小
+        $page     = (int)$this->input->get('per_page');
+        $page <= 1 ? $page = 1 : $page = $page;//当前页数
+        $where_data['where']['shop_id'] = $m_id;
+        $list = $this->loop_model->get_list('merchant_detail',$where_data,$pagesize, $pagesize * ($page - 1), 'id desc');
+        assign('list', $list);
+        //开始分页start
+        $all_rows = $this->loop_model->get_list_num('merchant_detail', $where_data);//所有数量
+        assign('page_count', ceil($all_rows / $pagesize));
+        //开始分页end
+        assign('status', array('0' => '正常', 1 => '删除', 2 => '锁定'));//状态
+
+        display('/member/shop/add_mch.html');
+    }
+
+    /**
+     * 添加收账方
+     */
+    public function add_mch_edit($m_id){
+        $m_id = (int)$m_id;
+        if(empty($m_id)){
+            //添加
+        }else{
+            //修改
+            $where_data['where']['shop_id'] = $m_id;
+            $detail = $this->loop_model->get_where('merchant_detail',array('shop_id'=>$m_id));
+            assign('detail', $detail);
+        }
+
+        display('/member/shop/add_mch_edit.html');
+    }
+
+    /**
      * 编辑
      */
     public function edit($m_id)
