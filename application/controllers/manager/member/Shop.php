@@ -93,6 +93,7 @@ class Shop extends CI_Controller
         assign('page_count', ceil($all_rows / $pagesize));
         //开始分页end
         assign('status', array('0' => '正常', 1 => '删除', 2 => '锁定'));//状态
+        assign('shop_id', $m_id);
 
         display('/member/shop/add_mch.html');
     }
@@ -104,14 +105,30 @@ class Shop extends CI_Controller
         $m_id = (int)$m_id;
         if(empty($m_id)){
             //添加
+            assign('shop_id', $m_id);
         }else{
             //修改
             $where_data['where']['shop_id'] = $m_id;
             $detail = $this->loop_model->get_where('merchant_detail',array('shop_id'=>$m_id));
             assign('detail', $detail);
+            assign('shop_id', $m_id);
         }
-
         display('/member/shop/add_mch_edit.html');
+    }
+
+    public function add_mch_save(){
+        if (is_post()) {
+            $data_post = $this->input->post(NULL, true);
+            $this->load->model('member/shop_model');
+            $res = $this->shop_model->update_mch($data_post);
+            if (!empty($res)) {
+                error_json($res);
+            } else {
+                error_json('保存失败');
+            }
+        } else {
+            error_json('提交方式错误');
+        }
     }
 
     /**

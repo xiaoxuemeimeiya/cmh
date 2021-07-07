@@ -32,6 +32,7 @@
 	</div>
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
 		<a href="<{site_url('/manager/member/shop/')}>" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe678;</i> 返回列表</a>
+		<a href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('添加','<{site_url("/manager/member/shop/add_mch_edit/<{$shop_id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/update_status/')}>?status=0')" class="btn btn-primary radius">审核</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/update_status/')}>?status=2')" class="btn btn-primary radius">锁定</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/member/shop/delete_recycle/')}>','')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe60b;</i> 批量删除</a>
@@ -42,7 +43,6 @@
 			<tr class="text-c">
 				<th width="40"><input name="" type="checkbox" value=""></th>
 				<th width="50">ID</th>
-				<th>会员名</th>
 				<th width="80">商户号</th>
 				<th width="80">商户名称（全称）</th>
 				<th width="70">添加时间</th>

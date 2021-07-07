@@ -63,6 +63,58 @@ class Shop_model extends CI_Model
             }
         }
     }
+    /**
+     * 更新商户
+     * @return array
+     */
+    public function update_mch($data_post = array())
+    {
+        $update_data = array(
+            'name'             => $data_post['name'],
+            'mch_id'           => $data_post['mch_id'],
+            'shop_id'          => $data_post['shop_id'],
+            'status'           =>1
+        );
+
+        if (empty($update_data['name'])) return '商户名称不能为空';
+        if (empty($update_data['mch_id'])) return '商户号不能为空';
+        if (empty($update_data['shop_id'])) return '店铺id不能为空';
+        $this->load->model('loop_model');
+        if (!empty($data_post['id'])) {
+            //查询是否有数据
+            $member_data = $this->loop_model->get_id('merchant_detail', $data_post['id']);
+            if (!empty($member_data)) {
+                    $update_data['endtime'] = time();
+                    $res                    = $this->loop_model->update_where('merchant_detail', $update_data, array('m_id' => $data_post['m_id']));
+
+                if (!empty($res)) {
+                    return 'y';
+                } else {
+                    return '保存失败';
+                }
+            } else {
+                //增加
+                $update_data['addtime'] = time();
+                $res                    = $this->loop_model->insert('merchant_detail', $update_data);
+
+                if (!empty($res)) {
+                    return 'y';
+                } else {
+                    return '保存失败';
+                }
+            }
+        }else{
+            //增加
+            $update_data['addtime'] = time();
+            $res                    = $this->loop_model->insert('merchant_detail', $update_data);
+
+            if (!empty($res)) {
+                return 'y';
+            } else {
+                return '保存失败';
+            }
+        }
+    }
 
 
     /**
