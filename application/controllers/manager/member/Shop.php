@@ -116,6 +116,9 @@ class Shop extends CI_Controller
         display('/member/shop/add_mch_edit.html');
     }
 
+    /**
+     * 保存收账房
+     */
     public function add_mch_save(){
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
@@ -129,6 +132,69 @@ class Shop extends CI_Controller
         } else {
             error_json('提交方式错误');
         }
+    }
+
+    /**
+     * 收账方状态改变
+     */
+    public function add_mch_status(){
+        $data_post = $this->input->post(NULL, true);
+
+        //获取特约商户的信息
+        $detail = $this->loop_model->get_where('merchant_detail',array('id'=>$data_post['id']));
+        if(!$detail){
+            error_json('商家不存在');
+        }
+        //获取店铺详情
+        $shop = $this->loop_model->get_where('member_shop',array('m_id'=>$data_post['m_id']));
+        if(!$shop){
+            error_json('店家不存在');
+        }else{
+            if(!$shop['mch_id']){
+                error_json('店家商户号缺失');
+            }
+        }
+        $this->load->library('minipay/WxPayApi');
+        $this->load->library('minipay/WxPayJsApiPay');
+        $this->load->library('minipay/WxPayConfig');
+        $this->load->library('minipay/JsApiPay');
+        /*
+        $Receiver = [
+            'type' => 'MERCHANT_ID',
+            'account' => '1515139181',//根据商户查找商户的商户号
+            'name' => '广州族迹信息技术有限公司',//商户的名称（全称呼）
+            'relation_type' => 'STORE_OWNER'
+        ];
+        */
+        $Receiver = [
+            'type' => 'MERCHANT_ID',
+            'account' => $detail['mch_id'],//根据商户查找商户的商户号
+            'name' => $detail['name'],//商户的名称（全称呼）
+            'relation_type' => 'STORE_OWNER'
+        ];
+
+        $input = new \WxPayUnifiedOrder();
+        $input->SetSubMch_id($shop['m_id']);
+        $input->SetReceiver(json_encode($Receiver,256|64));
+        //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
+        $config = new \WxPayConfig();
+        $order = \WxPayApi::addunifiedOrder($config, $input);
+
+        if($order["return_code"]=="SUCCESS" && $order["result_code"]=="SUCCESS" ){
+           /*
+            $this->ResArr['code'] = 200;
+            $this->ResArr['msg'] = '添加成功';
+           */
+            error_json('y');
+        }else{
+            /*
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = $order["err_code"];
+            $this->ResArr['data'] = $order["err_code_des"];
+            */
+            error_json($order["err_code_des"]);
+        }
+        //echo json_encode($this->ResArr);
     }
 
     /**
