@@ -84,8 +84,8 @@ class Shop_model extends CI_Model
             //查询是否有数据
             $member_data = $this->loop_model->get_id('merchant_detail', $data_post['id']);
             if (!empty($member_data)) {
-                    $update_data['endtime'] = time();
-                    $res                    = $this->loop_model->update_where('merchant_detail', $update_data, array('m_id' => $data_post['m_id']));
+                    $update_data['addtime'] = time();
+                    $res                    = $this->loop_model->update_where('merchant_detail', $update_data, array('id' => $data_post['id']));
 
                 if (!empty($res)) {
                     return 'y';

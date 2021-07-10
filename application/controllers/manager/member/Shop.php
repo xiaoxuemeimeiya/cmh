@@ -103,13 +103,14 @@ class Shop extends CI_Controller
      */
     public function add_mch_edit($m_id){
         $m_id = (int)$m_id;
-        if(empty($m_id)){
+        $id = $this->input->get('id');
+        if(empty($id)){
             //添加
             assign('shop_id', $m_id);
         }else{
             //修改
-            $where_data['where']['shop_id'] = $m_id;
-            $detail = $this->loop_model->get_where('merchant_detail',array('shop_id'=>$m_id));
+            $where_data['id'] = $id;
+            $detail = $this->loop_model->get_where('merchant_detail',$where_data);
             assign('detail', $detail);
             assign('shop_id', $m_id);
         }
