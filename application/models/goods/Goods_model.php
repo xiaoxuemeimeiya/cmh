@@ -356,7 +356,7 @@ class Goods_model extends CI_Model
         //查询对应的商品start**************************************
         //*******************************************************
         $this->db->from('goods as g');
-        $this->db->select('g.id,name,sub_name,cat_id,image,sell_price,market_price,f.shop_name');
+        $this->db->select('g.id,g.name,sub_name,cat_id,image,sell_price,market_price,f.shop_name');
 
         //搜索条件
         if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
