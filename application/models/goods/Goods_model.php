@@ -382,16 +382,20 @@ class Goods_model extends CI_Model
             $this->db->group_by('g.shop_id');
         }
 
-        $this->db->limit(4);
+        $this->db->limit(10);
         $query      = $this->db->get();
         $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
-        $this->load->model('goods/goods_sum_model');
+        $goods_count = $this->db->count_all_results();
         //查询对应的商品end
 
         //*******************************************************
         //查询对应的商品总数start**********************************
         //*******************************************************
         $reslut_array = $goods_data;
+        
+        $page_count  = ceil($goods_count / $limit);
+
+        $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
     
         return $reslut_array;
     }
