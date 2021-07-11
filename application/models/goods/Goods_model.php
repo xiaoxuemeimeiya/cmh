@@ -382,7 +382,12 @@ class Goods_model extends CI_Model
             $this->db->group_by('g.shop_id');
         }
 
-        $this->db->limit(10);
+        //分页
+        $page = (int)$where_data['page'];//是否有传入参数
+        if (empty($page)) $page = (int)$this->input->get_post('per_page', true);//接收url分页
+        if (empty($page)) $page = 1;
+        if (empty($limit)) $limit = config_item('goods_list_pagesize');
+        $this->db->limit($limit, $limit * ($page - 1));
         $query      = $this->db->get();
         $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
         $goods_count = $this->db->count_all_results();
@@ -391,11 +396,10 @@ class Goods_model extends CI_Model
         //*******************************************************
         //查询对应的商品总数start**********************************
         //*******************************************************
-        $reslut_array = $goods_data;
         
         $page_count  = ceil($goods_count / $limit);
 
-        $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
+        $reslut_array = array('goods_list' => $goods_data, 'page_count' => $page_count);
     
         return $reslut_array;
     }
