@@ -22,6 +22,7 @@ class Shop_model extends CI_Model
         $update_data = array(
             'shop_name'        => $data_post['shop_name'],
             'logo'             => $data_post['logo'],
+            'cove_img'         => $data_post['cove_img'],
             'tel'              => $data_post['tel'],
             'email'            => $data_post['email'],
             'customer_url'     => $data_post['customer_url'],
@@ -136,7 +137,7 @@ class Shop_model extends CI_Model
 
     function search($search_where,$distance){
         $this->db->from('member_shop as g');
-        $select = 'm_id,shop_name,logo,tel,email,business_license,prov,desc,goods_comment,level,banner_url,address';
+        $select = 'm_id,shop_name,logo,cove_img,tel,email,business_license,prov,desc,goods_comment,level,banner_url,address';
         //$this->db->select('m_id,shop_name,logo,tel,email,business_license,prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url');
 
         if($search_where['city']){
@@ -206,7 +207,7 @@ class Shop_model extends CI_Model
      */
     public function shop_detail($id){
         $this->db->from('member_shop as l');
-        $select = 'm_id,shop_name,logo,tel,email,business_license,g.area_name as prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url';
+        $select = 'm_id,shop_name,logo,cove_img,tel,email,business_license,g.area_name as prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url';
         $this->db->select($select);
         $this->db->join( $this->db->dbprefix('areas') ." as g", "g.area_id=l.prov");
         $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=l.city");
