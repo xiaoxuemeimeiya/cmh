@@ -24,6 +24,8 @@ class Shop_model extends CI_Model
             'logo'             => $data_post['logo'],
             'cove_img'         => $data_post['cove_img'],
             'tel'              => $data_post['tel'],
+            'open'             => $data_post['open'],
+            'per_price'        => $data_post['per_price'],
             'email'            => $data_post['email'],
             'customer_url'     => $data_post['customer_url'],
             'business_license' => $data_post['business_license'],
@@ -172,7 +174,7 @@ class Shop_model extends CI_Model
 
         //根据位置帅选
         $query      = $this->db->get();
-        $goods_data = $query->result_array();echo $this->db->last_query()."<br>";
+        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
         //根据位置排序
         return $goods_data;
         //$this->db->order_by('sortnum', 'asc');
@@ -207,7 +209,7 @@ class Shop_model extends CI_Model
      */
     public function shop_detail($id){
         $this->db->from('member_shop as l');
-        $select = 'm_id,shop_name,logo,cove_img,tel,email,business_license,g.area_name as prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url';
+        $select = 'm_id,shop_name,logo,cove_img,tel,email,business_license,g.area_name as prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url,open,per_price';
         $this->db->select($select);
         $this->db->join( $this->db->dbprefix('areas') ." as g", "g.area_id=l.prov");
         $this->db->join( $this->db->dbprefix('areas') ." as ga", "ga.area_id=l.city");
