@@ -11,6 +11,11 @@
 	<link href="/public/H-ui/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
 	<link href="/public/H-ui/hui-iconfont/iconfont.css" rel="stylesheet" type="text/css">
 	<link href="/public/H-ui/css/style.css" rel="stylesheet" type="text/css">
+	<style>
+		.per-date{display:inline-block;width:50px;height:30px;line-height:30px;border:1px solid #D9D9D9;text-align:center;margin-bottom:10px;cursor:pointer; }
+		.per-date.active{color:#fff;background: #0f9ae0;cursor:pointer;}
+		.display-n{display:none;}
+	</style>
 </head>
 <body>
 <div class="pd-20">
@@ -191,9 +196,37 @@
 		</div>
 		<div class="row cl">
 			<label class="form-label col-2">排除时间</label>
-			<div class="formControls col-10">
-				<input type="text" class="input-text" value="" name="eliminate_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择日期！" style="width: 150px">
+			<div class="formControls col-2">
+				<span class="select-box">
+					<select name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select(this.value)">
+						<option value="">请选择月份</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7">7</option>
+						<option value="8">8</option>
+						<option value="9">9</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+					</select>
+				</span>
 			</div>
+
+
+		</div>
+		<div class="row cl">
+			<label class="form-label col-2"></label>
+			<{foreach $date as $k=>$v}>
+			<div class="formControls col-10 list_date list_date<{$k}> display-n">
+				<{foreach $v as $v1}>
+				<span class="per-date" onclick="elemite_date(this,<{$v1}>)"><{$v1}></span>
+				<{/foreach}>
+			</div>
+			<{/foreach}>
 		</div>
 
 		<div class="row cl">
@@ -235,6 +268,9 @@
 			</div>
 		</div>
 		<input type="hidden" name="model_id" value="0"/>
+		<div class="display-n date-list-input">
+			<input class="date" type="hidden" name="date" value=""/>
+		</div>
 	</form>
 </div>
 </div>
@@ -250,6 +286,29 @@
 <{ajax_upload()}>
 <{plupload('select_goods_pic',['num'=>5])}>
 <script language="JavaScript">
+
+	function date_select(value){
+		$('.list_date').addClass('display-n');
+	 	$('.list_date'+value).removeClass('display-n');
+	}
+
+	function elemite_date(thi,v){
+		//获取日期
+		if($(thi).hasClass('active')){
+			$(thi).removeClass('active')
+			//删除日期
+
+		}else{
+			$(thi).addClass('active')
+			//添加日期
+			//获取月份
+			var month = $(input['name=month']).val();
+			str = '<input class="date-"'+month+"-"+v type="hidden" name="date" value=v/>';
+			$(".date-list-input").append(str);
+		}
+
+	}
+
 	var spec_num = 0;
 	$(function() {
 		//验证表单

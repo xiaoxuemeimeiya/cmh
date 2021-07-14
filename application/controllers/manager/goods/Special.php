@@ -129,6 +129,22 @@ class Special extends CI_Controller
         assign('shop_list', $shop_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
+
+        //获取时间表
+        //$year_start=strtotime(date("Y")."-01-01");
+        //$year_end=strtotime(date("Y")."-12-31");
+        $date = [];
+        for($i=1;$i<=12 ;$i++){
+            //月初，月末
+            $start_time = strtotime(date("Y")."-".$i."-01");
+            $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
+            $j = 1;
+            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                $date[$i][] = $j;
+                $j++;
+            }
+        }
+        assign('date',$date);
         display('/goods/special/add.html');
     }
 
