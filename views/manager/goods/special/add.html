@@ -198,7 +198,7 @@
 			<label class="form-label col-2">排除时间</label>
 			<div class="formControls col-2">
 				<span class="select-box">
-					<select name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select(this.value)">
+					<select name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select_month(1)">
 						<option value="">请选择月份</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
@@ -287,9 +287,10 @@
 <{plupload('select_goods_pic',['num'=>5])}>
 <script language="JavaScript">
 
-	function date_select(value){
+	function date_select_month(va){
+	    console.log(value)
 		$('.list_date').addClass('display-n');
-	 	$('.list_date'+value).removeClass('display-n');
+	 	$('.list_date'+va).removeClass('display-n');
 	}
 
 	function elemite_date(thi,v){
