@@ -22,7 +22,7 @@ class Goods_model extends CI_Model
     {
         $id = (int)$id;
         if (!empty($id)) {
-            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,sell_price,market_price,image,store_nums,comments,sale,start_time,end_time');
+            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,sell_price,market_price,cat_id,type,image,store_nums,comments,sale,start_time,end_time');
             if (empty($goods_data)) msg('商品不存在');
             if ($goods_data['status'] != 0) msg('商品已下架');
             $goods_data['market_price'] = format_price($goods_data['market_price']);
