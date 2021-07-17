@@ -198,7 +198,7 @@
 			<label class="form-label col-2">排除时间</label>
 			<div class="formControls col-2">
 				<span class="select-box">
-					<select name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select_month(1)">
+					<select id="month" name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select_month(this.value)">
 						<option value="">请选择月份</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
@@ -223,7 +223,7 @@
 			<{foreach $date as $k=>$v}>
 			<div class="formControls col-10 list_date list_date<{$k}> display-n">
 				<{foreach $v as $v1}>
-				<span class="per-date" onclick="elemite_date(this,<{$v1}>)"><{$v1}></span>
+				<span class=<{if $v1.status==1}>"per-date active"<{else}>"per-date"<{/if}> onclick="elemite_date(this,<{$v1.date}>)"><{$v1.date}></span>
 				<{/foreach}>
 			</div>
 			<{/foreach}>
@@ -269,7 +269,7 @@
 		</div>
 		<input type="hidden" name="model_id" value="0"/>
 		<div class="display-n date-list-input">
-			<input class="date" type="hidden" name="date" value=""/>
+			<!--<input class="date" type="hidden" name="date" value=""/>-->     ,                                                                                                       
 		</div>
 	</form>
 </div>
@@ -286,29 +286,6 @@
 <{ajax_upload()}>
 <{plupload('select_goods_pic',['num'=>5])}>
 <script language="JavaScript">
-
-	function date_select_month(va){
-	    console.log(value)
-		$('.list_date').addClass('display-n');
-	 	$('.list_date'+va).removeClass('display-n');
-	}
-
-	function elemite_date(thi,v){
-		//获取日期
-		if($(thi).hasClass('active')){
-			$(thi).removeClass('active')
-			//删除日期
-
-		}else{
-			$(thi).addClass('active')
-			//添加日期
-			//获取月份
-			var month = $(input['name=month']).val();
-			str = '<input class="date-"'+month+"-"+v type="hidden" name="date" value=v/>';
-			$(".date-list-input").append(str);
-		}
-
-	}
 
 	var spec_num = 0;
 	$(function() {
@@ -327,6 +304,74 @@
 			}
 		});
 	});
+
+	function date_select_month(va){
+	    console.log(va)
+		$('.list_date').addClass('display-n');
+	 	$('.list_date'+va).removeClass('display-n');
+	}
+
+	function elemite_date(thi,v){
+		//判断是否修改
+		if('<{$item.id}>'){
+			//修改
+			if($(thi).hasClass('active')){
+				$(thi).removeClass('active')
+				//删除日期
+				var month = $('#month').val();
+				$.ajax({
+					type:"POST",
+					url: '<{site_url("/manager/goods/special/date_update/")}>',
+					data: {id:'<{$item.id}>',month:month,date:v,type:2},
+					dataType:"json",
+					success: function(data){
+						if (data.status == 'y') {
+							layer.msg('成功');
+						}else{
+							layer.msg(data.info);
+						}
+					}
+				});
+			}else{
+				$(thi).addClass('active')
+				//添加日期
+				//获取月份
+				var month = $('#month').val();
+				$.ajax({
+					type:"POST",
+					url: '<{site_url("/manager/goods/special/date_update/")}>',
+					data: {id:'<{$item.id}>',month:month,date:v,type:1},
+					dataType:"json",
+					success: function(data){
+						if (data.status == 'y') {
+							layer.msg('成功');
+						}else{
+							layer.msg(data.info);
+						}
+					}
+				});
+			}
+		}else{
+			//添加
+			if($(thi).hasClass('active')){
+				$(thi).removeClass('active')
+				//删除日期
+				var month = $('#month').val();
+				$('.date-'+month+'-'+v).remove();
+
+			}else{
+				$(thi).addClass('active')
+				//添加日期
+				//获取月份
+				var month = $('#month').val();
+				console.log(month)
+				str = '<input class="date-'+month+'-'+v+'" type="hidden" name="date" value='+month+'-'+v+' />';
+				$(".date-list-input").append(str);
+			}
+		}
+		
+
+	}
 
 	//选择分类加载品牌和模型
 	function cat_id_select(cat_id) {

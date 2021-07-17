@@ -71,6 +71,29 @@ class Shop extends CI_Controller
             case 2:
                 //套餐券
                 $data = $this->shop_model->shop_goods($type,$shop_id,$page);
+                foreach($data['goods_list'] as $k=>$v){
+                    if($v['type'] == 2){
+                        //限量
+                        $start_time = date('m月d',time()-24*3600);//昨天
+                        $data['goods_list'][$k]['date'][0]['day'] = $start_time;
+                        $data['goods_list'][$k]['date'][0]['status'] = 0;//结束
+                        for($i=1 ; $i<7 ; $i++){
+                            $data['goods_list'][$k]['date'][$i]['day'] = date('m月d',time()+($i-1)*24*3600);
+                            //查看是否有选中i
+                            $where['year'] = date("Y",time());
+                            $where['goods_id'] = $v['id'];
+                            $where['month'] = date('n',time()+($i-1)*24*3600);//m加0，n不加0
+                            $where['date'] = date('d',time()+($i-1)*24*3600);
+                            $isset_date = $this->loop_model->get_where('goods_date',$where); 
+                            if($isset_date){
+                                $data['goods_list'][$k]['date'][$i]['status'] = 2;//不可抢
+                            }else{
+                                $data['goods_list'][$k]['date'][$i]['status'] = 1;//可抢
+                                //查看是否还有数量
+                            }
+                        }
+                    }
+                }
                 break;
             case 3:
                 //活动
@@ -80,9 +103,8 @@ class Shop extends CI_Controller
                 //优惠券
                 $data = $this->shop_model->shop_goods($type,$shop_id,$page);
         }
-
         $this->ResArr["code"] = 200;
-        $this->ResArr["data"]['goods'] = $data;
+        $this->ResArr["data"] = $data;
         echo json_encode($this->ResArr);exit;
     }
 

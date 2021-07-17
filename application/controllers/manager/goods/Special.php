@@ -140,7 +140,26 @@ class Special extends CI_Controller
             $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
             $j = 1;
             for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
-                $date[$i][] = $j;
+                //判断是否选中
+                if($id){
+                     //查看是否有选时间
+                    $where['year'] = date("Y",time());
+                    $where['goods_id'] = $id;
+                    $where['month'] = $i;
+                    $where['date'] = $j;
+                    $isset_date = $this->loop_model->get_where('goods_date',$where);
+                    if($isset_date){
+                        $date[$i][$j-1]['date'] = $j;
+                        $date[$i][$j-1]['status'] = 1;
+                    }else{
+                        $date[$i][$j-1]['date'] = $j;
+                        $date[$i][$j-1]['status'] = 0;
+                    }
+                }else{
+                    $date[$i][$j-1]['date'] = $j;
+                    $date[$i][$j-1]['status'] = 0;
+                }
+                
                 $j++;
             }
         }
@@ -276,6 +295,56 @@ class Special extends CI_Controller
             error_json($list);
         } else {
             error_json('没有数据');
+        }
+    }
+
+    /**
+     * 添加删除日期
+     */
+    public function date_update(){
+        $id     = $this->input->post('id', true);
+        if(!$id){
+            error_json('参数缺失'); 
+        }
+        $month  = $this->input->post('month', true);
+        $date   = $this->input->post('date', true);
+        $type   = $this->input->post('type', true);
+        if($type == 1){
+            //添加
+            $insert_data['goods_id'] = $id;
+            $insert_data['month'] = $month;
+            $insert_data['date'] = $date;
+            $insert_data['year'] = date("Y",time());
+            $insert_data['addtime'] = time();
+
+            $where['goods_id'] = $id;
+            $where['month'] = $month;
+            $where['date'] = $date;
+            $where['year'] = date("Y",time());
+            $res1                = $this->loop_model->get_where('goods_date', $where);
+            if (!empty($res1)) {
+                error_json('y');
+            }else{
+                $res                = $this->loop_model->insert('goods_date', $insert_data);
+                if (!empty($res)) {
+                    error_json('y');
+                } else {
+                    error_json('修改失败');
+                }
+            }
+           
+        }else{
+            //删除
+            $where['goods_id'] = $id;
+            $where['month'] = $month;
+            $where['date'] = $date;
+            $where['year'] = date("Y",time());
+            $res                = $this->loop_model->delete_where('goods_date', $where);
+            if (!empty($res)) {
+                error_json('y');
+            } else {
+                error_json('修改失败');
+            }
         }
     }
 

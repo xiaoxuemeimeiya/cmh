@@ -240,7 +240,7 @@ class Shop_model extends CI_Model
                 //优惠券,套餐券
                 if(!$type) $type = 1;
                 $list = $this->db->from('goods as l');
-                $select = 'id,name,sub_name,sell_price,market_price,image,store_nums,sale,start_time,end_time,g.desc';
+                $select = 'id,name,sub_name,sell_price,market_price,image,store_nums,sale,start_time,end_time,type,g.desc';
                 $this->db->join( $this->db->dbprefix('goods_desc') ." as g", "g.goods_id=l.id");
                 $this->db->select($select);
                 $this->db->where('shop_id',$shop_id);
