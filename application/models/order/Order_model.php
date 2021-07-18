@@ -67,11 +67,17 @@ class Order_model extends CI_Model
             }
             $this->db->trans_complete();
         }
-
+/*
         if (!empty($res)) {
             return 'y';
         } else {
             return '保存失败';
+        }
+        */
+        if (!empty($res)) {
+            return $res;
+        } else {
+            return false;
         }
     }
 

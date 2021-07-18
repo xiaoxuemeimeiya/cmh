@@ -19,7 +19,7 @@ class Order extends MY_Controller
     /**
      * 我的订单列表
      * type(null-全部订单，1-待付款，2-已支付，3-待收货，4-已完成，5-已退款，6-已取消，10-退款/售后）
-     //* status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
+     * status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
      * */
    public function order_list()
    {
@@ -142,7 +142,7 @@ class Order extends MY_Controller
     {
         $good_id   = $this->input->get_post('good_id');//选择的商品,
         $m_id   = $this->input->get_post('m_id');//用户,
-      
+
         if (empty($good_id)) {
             $this->ResArr["code"] = 14;
             $this->ResArr["msg"]= '缺失商品id';
@@ -192,15 +192,38 @@ class Order extends MY_Controller
             $order_data['share_uid']  = $this->input->get_post('share_uid') ? $this->input->get_post('share_uid') : '';//分享者id
         }
         */
-
         $this->load->model('order/order_model');
         //添加订单商品;
-        $res = $this->order_model->add($order_data,'');
-        if($res != 'y'){
-            $this->ResArr["code"] = 13;
-            $this->ResArr["msg"]= '生成订单失败 ';
-            echo json_encode($this->ResArr);exit;
+        //判断是否是限时套餐
+        if($goodData['cat_id'] == 2 && $goodData['type'] == 2){
+            //判断是否传日期
+            if(!empty($this->input->get_post('date'))){
+                $res = $this->order_model->add($order_data,'');
+                if(!$res){
+                    $this->ResArr["code"] = 13;
+                    $this->ResArr["msg"]= '生成订单失败 ';
+                    echo json_encode($this->ResArr);exit;
+                }
+                //插入数据
+                $date_insert['order_id'] = $res;
+                $date_insert['date'] = $this->input->get_post('date');
+                $date_insert['addtime'] = time();
+                $res1 = $this->loop_model->insert('order_limit_date',$date_insert);
+            }else{
+                //限量商品，请选择时间
+                $this->ResArr["code"] = 12;
+                $this->ResArr["msg"]= '请选择购买的使用时间';
+                echo json_encode($this->ResArr);exit;
+            }
+        }else{
+            $res = $this->order_model->add($order_data,'');
+            if(!$res){
+                $this->ResArr["code"] = 13;
+                $this->ResArr["msg"]= '生成订单失败 ';
+                echo json_encode($this->ResArr);exit;
+            }
         }
+
         //订单金额为0时，订单自动完成
         if ($order_data['order_price'] == 0) {
             $this->order_model->update_pay_status($order_data['order_no']);
