@@ -14,6 +14,7 @@ class Order extends MY_Controller
         // 响应头设置
         header('Access-Control-Allow-Headers:x-requested-with,content-type');
         $this->load->model('loop_model');
+        $this->load->helpers('order_helper');
     }
 
     /**
@@ -284,6 +285,76 @@ class Order extends MY_Controller
             $this->ResArr["data"] = $order_no;
             $this->ResArr["msg"]= '生成订单请去支付';
             echo json_encode($this->ResArr);exit;
+        }
+    }
+
+    /**
+     * 订单评论提交
+     */
+    public function comment()
+    {
+        if (is_post()) {
+            $id = (int)$this->input->get_post('order_id', true);
+            $m_id = (int)$this->input->get_post('m_id', true);
+            if (empty($id)) error_json('订单ID错误');
+            $order_data = $this->loop_model->get_where('order', array('id' => $id));
+            if (is_comment($order_data)) {
+                //$order_sku     = $this->loop_model->get_list('order_sku', array('where' => array('order_id' => $order_data['id'])));//商品列表
+                $comment_level = $this->input->get_post('comment_level', true);//评价等级
+                $desc          = $this->input->get_post('desc', true);//评价内容
+
+                //开始修改订单状态
+                $res = $this->loop_model->update_where('order', array('status' => 5), array('id' => $id, 'm_id' => $m_id));
+                if (!empty($res)) {
+                    $level_goods_num = 0;//好评数量
+                    $level_bad_num   = 0;//差评数量
+
+                    if ($comment_level == 1) $level_goods_num++;
+                    if ($comment_level == 3) $level_bad_num++;
+                    $comment_data = array(
+                        'goods_id'     => $order_data['good_id'],
+                        'shop_id'      => $order_data['shop_id'],
+                        'm_id'         => $this->input->get_post('m_id'),
+                        'order_id'     => $id,
+                        //'order_sku_id' => $key['id'],
+                        //'sku_value'    => $key['sku_value'],
+                        'level'        => $comment_level,
+                        'desc'         => $desc,
+                        'addtime'      => time(),
+                    );
+                    $this->loop_model->insert('goods_comment', $comment_data);
+
+                    //修改商品评论数量
+                    $this->loop_model->update_id('goods', array('set' => array(array('comments', 'comments+1'))), $order_data['good_id']);
+                    //判断是否有图片
+                    $image_list = $this->input->get_post('image_list',true);
+                    if(!empty($image_list)){
+                        $image_data = [];
+                        foreach($image_list as $k=>$v){
+                            $image_data[$k]['order_id'] = $id;
+                            $image_data[$k]['url'] = $v;
+                        }
+                        $image_res = $this->loop_model->insert('goods_comment_image', $image_data,true);
+                    }
+
+                    //修改店铺评价数
+                    if ($level_goods_num > 0 || $level_bad_num > 0) {
+                        //查询目前好评数
+                        $shop_data     = $this->loop_model->get_where('member_shop', array('m_id' => $order_data['shop_id']));
+                        $goods_comment = $shop_data['goods_comment'] + $level_goods_num - $level_bad_num;//计算本次修改好评数
+                        if ($goods_comment < 0) $goods_comment = 0;
+                        $this->load->model('member/shop_model');
+                        $shop_level = $this->shop_model->shop_level($goods_comment);//店铺等级
+                        $this->loop_model->update_where('member_shop', array('goods_comment' => $goods_comment, 'level' => $shop_level), array('m_id' => $order_data['shop_id']));
+                    }
+                    error_json('y');
+                }
+
+            } elseif ($order_data['status'] == 5) {
+                error_json('订单已经评价');
+            } else {
+                error_json('订单还不能评价');
+            }
         }
     }
 }
