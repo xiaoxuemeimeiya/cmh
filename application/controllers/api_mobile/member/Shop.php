@@ -56,6 +56,36 @@ class Shop extends CI_Controller
         echo json_encode($this->ResArr);exit;
     }
 
+    /**
+     * 店铺优惠券/套餐顶部标题
+     *
+     */
+    public function goods_cat(){
+        $type  = $this->input->get_post('type', true);//type：=1优惠券，=2套餐券，=3活动
+        $shop_id  = (int)$this->input->get_post('shop_id', true);//店铺id
+        if(!$shop_id){
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失";
+            echo json_encode($this->ResArr);exit;
+        }
+        switch($type){
+            case 2:
+                //套餐券
+                $data = $this->shop_model->shop_goods_cat($type,$shop_id);
+                break;
+            case 3:
+                //活动
+                $data = $this->shop_model->shop_goods_cat($type,$shop_id);
+                break;
+            default:
+                //优惠券
+                $data = $this->shop_model->shop_goods_cat($type,$shop_id);
+        }
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"] = $data;
+        echo json_encode($this->ResArr);exit;
+    }
+
     //店铺优惠券/套餐
     public function goods()
     {

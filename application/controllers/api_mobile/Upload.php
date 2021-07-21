@@ -5,8 +5,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Upload extends CI_Controller
 {
 
-    private $admin_data;//后台用户登录信息
-
     public function __construct()
     {
         parent::__construct();
@@ -29,7 +27,15 @@ class Upload extends CI_Controller
             $orientation = (int)$this->input->get_post('orientation', true);//图片方向
             $this->load->model('upload_model');
             $res = $this->upload_model->comment_upload($file_name, $width, $height, $crop, $orientation);
-            echo json_encode($res);
+            if(isset($res['status']) && $res['status'] == 'success' ){
+                $this->ResArr['code'] = 200;
+                $this->ResArr['msg'] = '添加成功';
+            }else{
+                $this->ResArr['code'] = 15;
+                $this->ResArr['msg'] = $res['error'];
+            }
+            //echo json_encode($res);
+            echo json_encode($this->ResArr);exit;
         }
     }
 }
