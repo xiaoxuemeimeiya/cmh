@@ -319,6 +319,9 @@ class Order extends MY_Controller
                         //'order_sku_id' => $key['id'],
                         //'sku_value'    => $key['sku_value'],
                         'level'        => $comment_level,
+                        'service_level'       => $this->input->get_post('service_level'),
+                        'environment_level'   => $this->input->get_post('environment_level'),
+                        'social_level'        => $this->input->get_post('social_level'),
                         'desc'         => $desc,
                         'addtime'      => time(),
                     );
