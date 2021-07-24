@@ -412,7 +412,7 @@ class Goods_model extends CI_Model
     public function search_index1($where_data = array(),$type)
     {
         $this->db->from('member_shop');
-        $this->db->select('m_id,shop_name');
+        $this->db->select('m_id,shop_name,logo');
         $this->db->limit(6);
         $query      = $this->db->get();
         $shop_data = $query->result_array();
