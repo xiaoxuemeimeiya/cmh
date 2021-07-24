@@ -34,13 +34,12 @@
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-2"><span class="c-red">*</span>分类栏目：</label>
+			<label class="form-label col-2"><span class="c-red">*</span>套餐栏目：</label>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="cat_id" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
-					<option value="">请选择分类</option>
-					<option value="1">普通</option>
+					<option value="">请选择套餐分类</option>
 					<option value="2">限量</option>
-					<option value="3">套餐卡</option>
+					<option value="3">月卡</option>
 				</select>
 				</span>
 			</div>
@@ -194,7 +193,15 @@
 				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择结束日期！" style="width: 150px">
 			</div>
 		</div>
-		<div class="row cl">
+
+		<div class="row cl cat-2">
+			<label class="form-label col-2">可用次数：</label>
+			<div class="formControls col-10">
+				<button class="btn btn-primary radius" type="button" id="select_goods_pic">选择图片</button>
+			</div>
+		</div>
+
+		<div class="row cl cat-1">
 			<label class="form-label col-2">排除时间</label>
 			<div class="formControls col-2">
 				<span class="select-box">
@@ -374,7 +381,8 @@
 	}
 
 	//选择分类加载品牌和模型
-	function cat_id_select(cat_id) {
+	function cat_id_select(type) {
+		var cat_id = 2;//套餐
 		//品牌
 		$.ajax({
 			type:"POST",
