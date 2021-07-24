@@ -22,7 +22,7 @@ class Goods_model extends CI_Model
     {
         $id = (int)$id;
         if (!empty($id)) {
-            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,sell_price,market_price,cat_id,type,image,store_nums,comments,sale,start_time,end_time');
+            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,active,service,sell_price,market_price,cat_id,type,image,store_nums,comments,sale,start_time,end_time');
             if (empty($goods_data)) msg('商品不存在');
             if ($goods_data['status'] != 0) msg('商品已下架');
             $goods_data['market_price'] = format_price($goods_data['market_price']);
@@ -165,8 +165,12 @@ class Goods_model extends CI_Model
             'edittime'     => time(),
             'start_time'   => strtotime($data_post['start_time']),
             'end_time'     => strtotime($data_post['end_time']),
+            'type'         => $data_post['type'] ? $data_post['type'] : 1,
+            'num'          => $data_post['num'] ? $data_post['num'] : '',
+            'active'       => $data_post['active'] ? $data_post['active'] : '',
+            'service'      => $data_post['service'] ? $data_post['service'] : '',
         );
-
+       
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
         $data_post['need_know'] = remove_xss($this->input->post('need_know'));//单独过滤详情xss
 

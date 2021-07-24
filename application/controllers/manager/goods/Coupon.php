@@ -44,6 +44,8 @@ class Coupon extends CI_Controller
             $where_data['where_in']['cat_id'] = $cat_id_list;
         }
 
+        $where_data['where']['type'] = 1;//普通套餐，普通优惠券
+
         //品牌
         $brand_id = $this->input->post_get('brand_id');
         if (!empty($brand_id)) $where_data['where']['brand_id'] = $brand_id;
@@ -118,7 +120,6 @@ class Coupon extends CI_Controller
             $item['end_time']   = date('Y-m-d H:i:s', $item['end_time']);
             assign('item', $item);
         }
-
         //商品分类
         $this->load->model('goods/category_model');
         $cat_list = $this->category_model->get_all();

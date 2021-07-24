@@ -21,6 +21,7 @@
 <div class="pd-20">
 	<form action="<{site_url('/manager/goods/goods/save')}>" method="post" class="form form-horizontal" id="add" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="">
+		<input type="hidden" name="cat_id" value="2">
 		<div class="row cl">
 			<label class="form-label col-2"><span class="c-red">*</span>名称：</label>
 			<div class="formControls col-10">
@@ -28,21 +29,41 @@
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-2"><span class="c-red">*</span>描述：</label>
+			<label class="form-label col-2"><span class="c-red">*</span>简称：</label>
 			<div class="formControls col-10">
-				<input type="text" class="input-text" value="" name="sub_name" datatype="*1-50" nullmsg="描述不能为空">
+				<input type="text" class="input-text" value="" name="sub_name" datatype="*1-50" nullmsg="简称不能为空">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>活动：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="active" datatype="*1-50" nullmsg="活动不能为空">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>服务：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="service" datatype="*1-50" nullmsg="服务不能为空">
 			</div>
 		</div>
 		<div class="row cl">
 			<label class="form-label col-2"><span class="c-red">*</span>套餐栏目：</label>
+			<{if $item}>
+			<div class="formControls col-2"> 
+				<span class="select-box cat-name">
+				<input type="hidden" name="type" value="<{$item.type}>">
+				</span>
+			</div>
+			<{else}>
 			<div class="formControls col-2"> <span class="select-box">
-				<select name="cat_id" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
+				<select name="type" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
 					<option value="">请选择套餐分类</option>
 					<option value="2">限量</option>
 					<option value="3">月卡</option>
 				</select>
 				</span>
 			</div>
+			<{/if}>
 			<label class="form-label col-1"><span class="c-red">*</span>商户：</label>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="shop_id" class="select">
@@ -101,12 +122,9 @@
 					<thead>
 					<tr class="text-c">
 						<th width="100">商品货号</th>
-						<th width="70">库存</th>
+						<th width="70">每日限制张数</th>
 						<th width="70">市场价格</th>
 						<th width="70">销售价格</th>
-						<th width="70">重量(克)</th>
-						<th width="70">起订量</th>
-						<th width="40">操作</th>
 					</tr>
 					</thead>
 					<tbody id="spec_list">
@@ -158,13 +176,6 @@
 						<td>
 							<input type="text" class="input-text" value="{{$value.sell_price}}" name="sell_price[]" style="width: 60px;" datatype="price" nullmsg="销售价格不能为空" errormsg="销售价格格式错误">
 						</td>
-						<td>
-							<input type="text" class="input-text" value="{{$value.weight}}" name="weight[]" style="width: 60px;" datatype="n" nullmsg="重量不能为空" errormsg="重量只能是数字">
-						</td>
-						<td>
-							<input type="text" class="input-text" value="{{if $value.minimum}}{{$value.minimum}}{{else}}1{{/if}}" name="minimum[]" style="width: 60px;" datatype="n" nullmsg="起订量不能为空" errormsg="起订量只能是数字">
-						</td>
-						<td class="f-14 spec_delete">{{if $index>0}}<i id="delete_tr" class="Hui-iconfont">&#xe609;</i>{{/if}}</td>
 					</tr>
 					{{/each}}
 				</script>
@@ -186,18 +197,18 @@
 				<button class="btn btn-primary radius" type="button" id="select_goods_pic">选择图片</button>
 			</div>
 		</div>
-		<div class="row cl">
-			<label class="form-label col-2"><span class="c-red">*</span>使用时间：</label>
+		<div class="row cl cat-1">
+			<label class="form-label col-2">使用时间：</label>
 			<div class="formControls col-10">
-				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择开始日期！" style="width: 150px">-
-				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly datatype="*" nullmsg="请选择结束日期！" style="width: 150px">
+				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly  style="width: 150px">-
+				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" readonly  style="width: 150px">
 			</div>
 		</div>
 
 		<div class="row cl cat-2">
 			<label class="form-label col-2">可用次数：</label>
 			<div class="formControls col-10">
-				<button class="btn btn-primary radius" type="button" id="select_goods_pic">选择图片</button>
+				<input style="width:200px;" type="text" class="input-text" value="" name="num" >
 			</div>
 		</div>
 
@@ -205,7 +216,7 @@
 			<label class="form-label col-2">排除时间</label>
 			<div class="formControls col-2">
 				<span class="select-box">
-					<select id="month" name="month" class="select" datatype="*" nullmsg="请选择月份" onchange="date_select_month(this.value)">
+					<select id="month" name="month" class="select" nullmsg="请选择月份" onchange="date_select_month(this.value)">
 						<option value="">请选择月份</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
@@ -299,7 +310,7 @@
 		//验证表单
 		$.Tipmsg.r = null;
 		$("#add").Validform({
-			tiptype: function (msg) {
+			tiptype: function (msg) {console.log(msg);
 				layer.msg(msg);
 			},
 			tipSweep: true,
@@ -382,6 +393,13 @@
 
 	//选择分类加载品牌和模型
 	function cat_id_select(type) {
+		if(type == 2){
+			$('.cat-1').show();
+			$('.cat-2').hide();
+		}else{
+			$('.cat-2').show();
+			$('.cat-1').hide();
+		}
 		var cat_id = 2;//套餐
 		//品牌
 		$.ajax({
@@ -560,6 +578,16 @@
 		var formObj = new Form();
 		formObj.init(<{ch_json_encode($item)}>);
 
+		<{if $item.type ==3}>
+			$('.cat-2').show();
+			$('.cat-1').hide();
+			$('.cat-name').html('月卡');
+		<{else}>
+			$('.cat-1').show();
+			$('.cat-2').hide();
+			$('.cat-name').html('限时');
+		<{/if}>
+
 		//商品图片回填
 		<{if $item.image_list!=''}>
 			var html = template('goods_picTemplate',<{ch_json_encode($item.image_list)}>);
@@ -587,8 +615,8 @@
 		<{/foreach}>
 
 		//分类默认数据加载
-		<{if $item.cat_id!=''}>
-			cat_id_select(<{$item.cat_id}>);
+		<{if $item.type!=''}>
+			cat_id_select(<{$item.type}>);
 		<{/if}>
 	})
 </script>

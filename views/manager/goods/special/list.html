@@ -20,17 +20,10 @@
 		<form action="<{site_url('/manager/goods/special/')}>" method="post" class="form form-horizontal" id="search" name="search">
 			<input type="text" name="name" placeholder="商品标题" style="width:150px" class="input-text">
 			<span class="select-box" style="width:150px">
-				<select name="cat_id" class="select">
-					<option value="">商品分类</option>
-					<!--分类模板-->
-					<{function name=type level=0}>
-					<{foreach $data as $key}>
-					<option value="<{$key.id}>"><{section name=loop loop=$level}>├<{/section}><{$key.name}></option>
-					<{call name=type data=$key.down level=$level+1}>
-					<{/foreach}>
-					<{/function}>
-					<!--调用模板函数-->
-					<{call name=type data=$cat_list}>
+				<select name="type" class="select">
+					<option value="">套餐分类</option>
+					<option value="2">限时</option>
+					<option value="3">月卡</option>
 				</select>
 			</span>
 			<span class="select-box" style="width:100px">
@@ -116,7 +109,12 @@
 					<{if $key.is_new}><span class="label label-success radius">新品</span><{/if}>
 					<{if $key.is_flag}><span class="label label-success radius">推荐</span><{/if}>
 				</td>
-				<td class="text-l"><{$key.cat_name}></td>
+				<!--<td class="text-l"><{$key.cat_name}></td>-->
+				<{if $key.type ==2}>
+				<td class="text-l"> 限时</td>
+				<{else}>
+				<td class="text-l">月卡</td>
+				<{/if}>
 				<td class="text-l"><{$key.store_nums}></td>
 				<td class="text-l">￥<{$key.market_price}></td>
 				<td class="text-l">￥<{$key.sell_price}></td>

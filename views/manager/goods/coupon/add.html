@@ -23,9 +23,21 @@
 			</div>
 		</div>
 		<div class="row cl">
-			<label class="form-label col-2"><span class="c-red">*</span>描述：</label>
+			<label class="form-label col-2"><span class="c-red">*</span>简称：</label>
 			<div class="formControls col-10">
-				<input type="text" class="input-text" value="" name="sub_name" datatype="*1-50" nullmsg="描述不能为空">
+				<input type="text" class="input-text" value="" name="sub_name" datatype="*1-50" nullmsg="简称不能为空">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>活动：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="active" datatype="*1-50" nullmsg="活动不能为空">
+			</div>
+		</div>
+		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>服务：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="service" datatype="*1-50" nullmsg="服务不能为空">
 			</div>
 		</div>
 		<div class="row cl">
@@ -216,16 +228,14 @@
 		<div class="row cl">
 			<label class="form-label col-2">详细：</label>
 			<div class="formControls col-10">
-				<script type="text/javascript" src="/public/kindeditor/kindeditor.js"></script>
-				<{load_editer('desc', $item.desc)}>
+				<a style="color:#fff;" href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('详情','<{site_url("/manager/goods/category/list1/<{$item.id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加详情</a>
 			</div>
 		</div>
 
 		<div class="row cl">
 			<label class="form-label col-2">须知：</label>
 			<div class="formControls col-10">
-				<script type="text/javascript" src="/public/kindeditor/kindeditor.js"></script>
-				<{load_editer('need_know', $item.need_know)}>
+				<a style="color:#fff;"  href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('须知','<{site_url("/manager/goods/category/list2/<{$item.id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加须知</a>
 			</div>
 		</div>
 		<div class="row cl">

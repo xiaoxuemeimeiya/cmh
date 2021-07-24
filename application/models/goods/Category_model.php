@@ -73,4 +73,86 @@ class Category_model extends CI_Model
             }
         }
     }
+
+    /**
+     * 后台查询所有数据
+     * @return array
+     */
+    public function get_all_cat1($goods_id,$reid = 0)
+    {
+        $reid = (int)$reid;
+        $this->db->where('reid', $reid);
+        $this->db->where('goods_id', $goods_id);
+        $this->db->order_by('sortnum asc,id asc');
+        $query = $this->db->get('goods_cat1');
+        $list = $query->result_array();//echo $this->db->last_query();
+        foreach ($list as $key) {
+            $key['down'] = self::get_all_cat1($goods_id,$key['id']);
+            $cat_list[] = $key;
+        }
+        return $cat_list;
+    }
+
+    /**
+     * 后台查询所有数据
+     * @return array
+     */
+    public function get_all_cat2($goods_id,$reid = 0)
+    {
+        $reid = (int)$reid;
+        $this->db->where('reid', $reid);
+        $this->db->where('goods_id', $goods_id);
+        $this->db->order_by('sortnum asc,id asc');
+        $query = $this->db->get('goods_cat2');
+        $list = $query->result_array();//echo $this->db->last_query();
+        foreach ($list as $key) {
+            $key['down'] = self::get_all_cat2($goods_id,$key['id']);
+            $cat_list[] = $key;
+        }
+        return $cat_list;
+    }
+
+    /**
+     * 后台查询所有数据
+     * @return array
+     */
+    public function get_all_name_cat1($goods_id,$reid = 0)
+    {
+        $reid = (int)$reid;
+        if($reid == 0){
+            $this->db->select('id,name');
+        }else{
+            $this->db->select('id,name,desc,price,flag');
+        }
+        $this->db->where('reid', $reid);
+        $this->db->where('goods_id', $goods_id);
+        $this->db->order_by('sortnum asc,id asc');
+        $query = $this->db->get('goods_cat1');
+        $list = $query->result_array();//echo $this->db->last_query();
+        foreach ($list as $key) {
+            $key['down'] = self::get_all_name_cat1($goods_id,$key['id']);
+            $cat_list[] = $key;
+        }
+        return $cat_list;
+    }
+
+    /**
+     * 后台查询所有数据
+     * @return array
+     */
+    public function get_all_name_cat2($goods_id,$reid = 0)
+    {
+        $reid = (int)$reid;
+        $this->db->select('id,name');
+        $this->db->where('reid', $reid);
+        $this->db->where('goods_id', $goods_id);
+        $this->db->order_by('sortnum asc,id asc');
+        $query = $this->db->get('goods_cat2');
+        $list = $query->result_array();//echo $this->db->last_query();
+        foreach ($list as $key) {
+            $key['down'] = self::get_all_name_cat2($goods_id,$key['id']);
+            $cat_list[] = $key;
+        }
+        return $cat_list;
+    }
 }

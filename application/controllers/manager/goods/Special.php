@@ -37,11 +37,19 @@ class Special extends CI_Controller
         if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
 
         //分类
-        $cat_id = $this->input->post_get('cat_id');
+        //$cat_id = $this->input->post_get('cat_id');
+        $cat_id = 2;//套餐
         if (!empty($cat_id)) {
             $this->load->model('goods/category_model');
             $cat_id_list                      = $this->category_model->get_reid_down($cat_id);
             $where_data['where_in']['cat_id'] = $cat_id_list;
+        }
+        //套餐分类
+        $type = $this->input->post_get('type');
+        if (!empty($type)) {
+            $where_data['where_in']['type'] = $type;
+        }else{
+            $where_data['where_in']['type'] = [2,3];
         }
 
         //品牌
@@ -133,37 +141,40 @@ class Special extends CI_Controller
         //获取时间表
         //$year_start=strtotime(date("Y")."-01-01");
         //$year_end=strtotime(date("Y")."-12-31");
-        $date = [];
-        for($i=1;$i<=12 ;$i++){
-            //月初，月末
-            $start_time = strtotime(date("Y")."-".$i."-01");
-            $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
-            $j = 1;
-            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
-                //判断是否选中
-                if($id){
-                     //查看是否有选时间
-                    $where['year'] = date("Y",time());
-                    $where['goods_id'] = $id;
-                    $where['month'] = $i;
-                    $where['date'] = $j;
-                    $isset_date = $this->loop_model->get_where('goods_date',$where);
-                    if($isset_date){
-                        $date[$i][$j-1]['date'] = $j;
-                        $date[$i][$j-1]['status'] = 1;
+        if(!empty($id) && $item['type'] == 2){
+            $date = [];
+            for($i=1;$i<=12 ;$i++){
+                //月初，月末
+                $start_time = strtotime(date("Y")."-".$i."-01");
+                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
+                $j = 1;
+                for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                    //判断是否选中
+                    if($id){
+                        //查看是否有选时间
+                        $where['year'] = date("Y",time());
+                        $where['goods_id'] = $id;
+                        $where['month'] = $i;
+                        $where['date'] = $j;
+                        $isset_date = $this->loop_model->get_where('goods_date',$where);
+                        if($isset_date){
+                            $date[$i][$j-1]['date'] = $j;
+                            $date[$i][$j-1]['status'] = 1;
+                        }else{
+                            $date[$i][$j-1]['date'] = $j;
+                            $date[$i][$j-1]['status'] = 0;
+                        }
                     }else{
                         $date[$i][$j-1]['date'] = $j;
                         $date[$i][$j-1]['status'] = 0;
                     }
-                }else{
-                    $date[$i][$j-1]['date'] = $j;
-                    $date[$i][$j-1]['status'] = 0;
+                    
+                    $j++;
                 }
-                
-                $j++;
             }
+            assign('date',$date);
         }
-        assign('date',$date);
+        
         display('/goods/special/add.html');
     }
 
@@ -175,6 +186,7 @@ class Special extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
+            var_dump($data_post);
             $res = $this->goods_model->update($data_post, 0);
             error_json($res);
         } else {

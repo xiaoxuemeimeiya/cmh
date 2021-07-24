@@ -193,6 +193,11 @@ class Index extends MY_Controller
                 }
             }
         }
+        $this->load->model('goods/category_model');
+        $detail = $this->category_model->get_all_name_cat1($item['id']);
+        $item['desc'] = $detail;
+        $need_know = $this->category_model->get_all_name_cat2($item['id']);
+        $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
         echo json_encode($this->ResArr);exit;
