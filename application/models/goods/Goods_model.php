@@ -22,7 +22,7 @@ class Goods_model extends CI_Model
     {
         $id = (int)$id;
         if (!empty($id)) {
-            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,active,service,sell_price,market_price,cat_id,type,image,store_nums,comments,sale,start_time,end_time');
+            $goods_data = $this->loop_model->get_id('goods', $id,'id,name,sub_name,cat_type,active,service,sell_price,market_price,cat_id,type,image,store_nums,comments,sale,start_time,end_time');
             if (empty($goods_data)) msg('商品不存在');
             if ($goods_data['status'] != 0) msg('商品已下架');
             $goods_data['market_price'] = format_price($goods_data['market_price']);
@@ -138,7 +138,7 @@ class Goods_model extends CI_Model
      * @param int   $shop_id   店铺id,后台默认为0,店铺后台为店铺id
      * @return array
      */
-    public function update($data_post = array(), $shop_id)
+    public function update($data_post = array(), $shop_id,$cat_type)
     {
         //数据验证
         if (empty($data_post['name'])) {
@@ -153,7 +153,7 @@ class Goods_model extends CI_Model
 
         $update_data = array(
             'name'         => $data_post['name'],
-            'sub_name'         => $data_post['sub_name'],
+            'sub_name'     => $data_post['sub_name'],
             'model_id'     => (int)$data_post['model_id'],
             'cat_id'       => (int)$data_post['cat_id'],
             'brand_id'     => (int)$data_post['brand_id'],
@@ -169,6 +169,7 @@ class Goods_model extends CI_Model
             'num'          => $data_post['num'] ? $data_post['num'] : '',
             'active'       => $data_post['active'] ? $data_post['active'] : '',
             'service'      => $data_post['service'] ? $data_post['service'] : '',
+            'cat_type'     => $cat_type,
         );
        
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
@@ -360,7 +361,7 @@ class Goods_model extends CI_Model
         //查询对应的商品start**************************************
         //*******************************************************
         $this->db->from('goods as g');
-        $this->db->select('g.id,g.name,sub_name,cat_id,image,sell_price,market_price,f.shop_name');
+        $this->db->select('g.id,g.name,sub_name,cat_type as cat_id,image,sell_price,market_price,f.shop_name');
 
         //搜索条件
         if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
@@ -421,7 +422,7 @@ class Goods_model extends CI_Model
         $query      = $this->db->get();
         $shop_data = $query->result_array();
         foreach($shop_data as $k=>$v){
-            $cat_id        = $where_data['cat_id'];//分类id
+            $cat_type        = $where_data['cat_type'];//分类id
             $shop_id       = $v['m_id'];//店铺id
             $keyword       = $where_data['keyword'];//关键字
             $limit         = (int)$where_data['limit'];//显示数量
@@ -437,10 +438,11 @@ class Goods_model extends CI_Model
             //查询对应的商品start**************************************
             //*******************************************************
             $this->db->from('goods as g');
-            $this->db->select('g.id,g.name,sub_name,cat_id,image,sell_price,market_price,FORMAT(sell_price/market_price*10,1) as discount,f.shop_name,f.logo');
+            $this->db->select('g.id,g.name,sub_name,cat_type as cat_id,image,sell_price,market_price,FORMAT(sell_price/market_price*10,1) as discount,f.shop_name,f.logo');
 
             //搜索条件
-            if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+            //if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
+            if (!empty($cat_type)) $this->db->where_in('g.cat_type', $cat_type);
             if (!empty($shop_id)) $this->db->where('g.shop_id', $shop_id);
             if (!empty($keyword)) $this->db->like('g.name', $keyword);
             if (!empty($is_hot)) $this->db->where('g.is_hot', $is_hot);

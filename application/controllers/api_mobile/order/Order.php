@@ -196,7 +196,7 @@ class Order extends MY_Controller
         $this->load->model('order/order_model');
         //添加订单商品;
         //判断是否是限时套餐
-        if($goodData['cat_id'] == 2 && $goodData['type'] == 2){
+        if($goodData['cat_type'] == 2 && $goodData['type'] == 2){
             //判断是否传日期
             if(!empty($this->input->get_post('date'))){
                 $res = $this->order_model->add($order_data,'');

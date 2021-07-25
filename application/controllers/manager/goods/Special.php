@@ -36,9 +36,11 @@ class Special extends CI_Controller
         $shop_id = $this->input->post_get('shop_id');
         if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
 
+        //类目
+        $where_data['where']['cat_type'] = 2;
+
         //分类
-        //$cat_id = $this->input->post_get('cat_id');
-        $cat_id = 2;//套餐
+        $cat_id = $this->input->post_get('cat_id');
         if (!empty($cat_id)) {
             $this->load->model('goods/category_model');
             $cat_id_list                      = $this->category_model->get_reid_down($cat_id);
@@ -173,6 +175,21 @@ class Special extends CI_Controller
                 }
             }
             assign('date',$date);
+        }else{
+            $date = [];
+            for($i=1;$i<=12 ;$i++){
+                //月初，月末
+                $start_time = strtotime(date("Y")."-".$i."-01");
+                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
+                $j = 1;
+                for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                    //判断是否选中
+                    $date[$i][$j-1]['date'] = $j;
+                    $date[$i][$j-1]['status'] = 0;
+                    $j++;
+                }
+            }
+            assign('date',$date);
         }
         
         display('/goods/special/add.html');
@@ -186,8 +203,7 @@ class Special extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
-            var_dump($data_post);
-            $res = $this->goods_model->update($data_post, 0);
+            $res = $this->goods_model->update($data_post, 0,2);
             error_json($res);
         } else {
             error_json('提交方式错误');

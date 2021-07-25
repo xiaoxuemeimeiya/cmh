@@ -17,7 +17,7 @@ class Coupon extends CI_Controller
     }
 
     /**
-     * 列表
+     * 优惠券/代金券列表
      */
     public function index()
     {
@@ -36,6 +36,9 @@ class Coupon extends CI_Controller
         $shop_id = $this->input->post_get('shop_id');
         if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
 
+        //类目
+        $where_data['where']['cat_type'] = 1;
+
         //分类
         $cat_id = $this->input->post_get('cat_id');
         if (!empty($cat_id)) {
@@ -43,7 +46,7 @@ class Coupon extends CI_Controller
             $cat_id_list                      = $this->category_model->get_reid_down($cat_id);
             $where_data['where_in']['cat_id'] = $cat_id_list;
         }
-
+        
         $where_data['where']['type'] = 1;//普通套餐，普通优惠券
 
         //品牌
@@ -141,7 +144,7 @@ class Coupon extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
-            $res = $this->goods_model->update($data_post, 0);
+            $res = $this->goods_model->update($data_post, 0,1);
             error_json($res);
         } else {
             error_json('提交方式错误');

@@ -244,7 +244,8 @@ class Shop_model extends CI_Model
                 $this->db->join( $this->db->dbprefix('goods_desc') ." as g", "g.goods_id=l.id");
                 $this->db->select($select);
                 $this->db->where('shop_id',$shop_id);
-                $this->db->where('cat_id',$type);
+                //$this->db->where('cat_id',$type);
+                $this->db->where('cat_type',$type);
 
                 //分页
                 $page = (int)$page;//是否有传入参数
@@ -280,10 +281,10 @@ class Shop_model extends CI_Model
                 //优惠券,套餐券
                 if(!$type) $type = 1;
                 $list = $this->db->from('goods as l');
-                $select = 'id,name';
+                $select = 'id,sub_name as name';
                 $this->db->select($select);
                 $this->db->where('shop_id',$shop_id);
-                $this->db->where('cat_id',$type);
+                $this->db->where('cat_type',$type);
                 $query      = $this->db->get();
                 $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
         }

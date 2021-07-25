@@ -15,11 +15,13 @@ class Menu_model extends CI_Model
             'goods' => array(
                 '<i class="Hui-iconfont">&#xe620;</i> 产品管理' => array(
                     '商品管理' => '/manager/goods/goods/index',
-                    '优惠管理' => '/manager/goods/coupon/index',
-                    '特殊管理' => '/manager/goods/special/index',
+                    '优惠券管理' => '/manager/goods/coupon/index',
+                    '套餐券管理' => '/manager/goods/special/index',
                 ),
-                '<i class="Hui-iconfont">&#xe681;</i> 商品分类' => array(
-                    '分类管理' => '/manager/goods/category/index',
+                '<i class="Hui-iconfont">&#xe681;</i> 分类管理' => array(
+                    '通用分类' => '/manager/goods/category/index',
+                    '品名分类' => '/manager/goods/category/list1',
+                    '须知分类' => '/manager/goods/category/list2',
                 ),
                 '<i class="Hui-iconfont">&#xe64b;</i> 商品品牌' => array(
                     '品牌管理' => '/manager/goods/brand/index',

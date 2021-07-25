@@ -18,11 +18,11 @@ class Index extends MY_Controller
         $type = $this->input->get_post('type', true) ? $this->input->get_post('type', true) : 1 ;//1-产品服务，2-优惠
         $this->load->model('goods/goods_model');
         if($type == 1){
-            $search_where['cat_id'] = [1,2];
+            $search_where['cat_type'] = [1,2];
             //$res_data = $this->goods_model->search_index($search_where,1);
             $res_data = $this->goods_model->search_index1($search_where,1);
         }else{
-            $search_where['cat_id'] = 3;
+            $search_where['cat_type'] = 3;
             //热门
             if(!empty($this->input->get_post('is_hot', true))){
                 $search_where['is_hot'] = $this->input->get_post('is_hot', true);
@@ -172,7 +172,7 @@ class Index extends MY_Controller
         }
         */
         //是否是套餐券
-        if($item['cat_id'] == 2 && $item['type'] == 2){
+        if($item['cat_type'] == 2 && $item['type'] == 2){
             //限量
             $start_time = date('m月d',time()-24*3600);//昨天
             $item['date'][0]['day'] = $start_time;

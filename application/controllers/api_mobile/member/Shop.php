@@ -107,7 +107,7 @@ class Shop extends CI_Controller
                         $start_time = date('m月d',time()-24*3600);//昨天
                         $data['goods_list'][$k]['date'][0]['day'] = $start_time;
                         $data['goods_list'][$k]['date'][0]['status'] = 0;//结束
-                        for($i=1 ; $i<7 ; $i++){
+                        for($i=1 ; $i<15 ; $i++){
                             $data['goods_list'][$k]['date'][$i]['day'] = date('m月d',time()+($i-1)*24*3600);
                             //查看是否有选中i
                             $where['year'] = date("Y",time());

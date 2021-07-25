@@ -114,6 +114,15 @@ class Category extends CI_Controller
     }
 
 
+    public function index1($goods_id)
+    {
+        //查到数据
+        $this->load->model('goods/category_model');
+        $list = $this->loop_model->get_list();//列表
+        assign('list', $list);//print_r($list);
+        assign('goods_id', $goods_id);
+        display('/goods/category/index1.html');
+    }
     /**
      * 列表
      */
