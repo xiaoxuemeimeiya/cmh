@@ -84,7 +84,7 @@ class Order extends MY_Controller
        );
        //assign('search_where', $search_where);
        //搜索条件end
-       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,m.headimgurl,k.name,k.image,s.shop_name,k.start_time,k.end_time';
+       $where_data['select'] = 'o.id,o.order_no,o.payment_status,o.status,o.sku_price_real,o.addtime,o.paytime,m.nickname,m.headimgurl,k.name,k.image,s.m_id as shop_id,s.shop_name,k.start_time,k.end_time';
        $where_data['join']   = array(
            array('member_oauth as m', 'o.m_id=m.id'),
            array('goods as k', 'o.good_id=k.id'),
