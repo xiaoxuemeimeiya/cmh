@@ -2,18 +2,19 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Goods extends CI_Controller
+class Special extends CI_Controller
 {
 
-    private $admin_data;//后台用户登录信息
+    private $shop_data;//后台用户登录信息
 
     public function __construct()
     {
         parent::__construct();
-        $this->load->helpers('manager_helper');
-        $this->admin_data = manager_login();
-        assign('admin_data', $this->admin_data);
+        $this->load->helpers('shop_helper');
+        $this->shop_data = shop_login();
+        assign('shop_data', $this->shop_data);
         $this->load->model('loop_model');
+        $this->shop_id = $this->shop_data['id'];
     }
 
     /**
@@ -28,15 +29,20 @@ class Goods extends CI_Controller
         //状态
         $status = $this->input->post_get('status');
         if (isset($status) && $status != '') {
-            $where_data['where']['g.status'] = $status;
+            $where_data['where']['status'] = $status;
         } else {
-            $where_data['where']['g.status!='] = '1';
+            $where_data['where']['status!='] = '1';
         }
-        //来源店铺
-        $shop_id = $this->input->post_get('shop_id');
-        if ($shop_id != '') $where_data['where']['shop_id'] = $shop_id;
 
-        $where_data['where']['cat_type'] = 3;
+        //店铺分类
+        $shop_cat_id = $this->input->post_get('shop_cat_id');
+        if ($shop_cat_id != '') {
+            $this->load->model('goods/shop_category_model');
+            $shop_cat_id_list                      = $this->shop_category_model->get_reid_down($shop_cat_id);
+            $where_data['where_in']['shop_cat_id'] = $shop_cat_id_list;
+        }
+
+        $where_data['where']['cat_type'] = 2;
         //分类
         $cat_id = $this->input->post_get('cat_id');
         if (!empty($cat_id)) {
@@ -51,7 +57,7 @@ class Goods extends CI_Controller
 
         //关键字
         $name = $this->input->post_get('name');
-        if (!empty($name)) $where_data['like']['g.name'] = $name;
+        if (!empty($name)) $where_data['like']['name'] = $name;
 
         //推荐类型
         $flag_type = $this->input->post_get('flag_type');
@@ -62,17 +68,16 @@ class Goods extends CI_Controller
         if (!empty($goods_store_nums)) $where_data['where']['g.store_nums<='] = config_item('goods_store_nums');
         $search_where = array(
             'status'           => $status,
-            'shop_id'          => $shop_id,
-            'cat_type'         => $cat_type,
+            'cat_id'           => $cat_id,
             'brand_id'         => $brand_id,
             'name'             => $name,
             'flag_type'        => $flag_type,
             'goods_store_nums' => $goods_store_nums,
         );
         assign('search_where', $search_where);
-
-        $where_data['select'] = array('g.*,cat.name as cat_name');
-        $where_data['join']   = array(
+        $where_data['where']['g.shop_id'] = $this->shop_id;
+        $where_data['select']             = array('g.*,cat.name as cat_name');
+        $where_data['join']               = array(
             array('goods_category as cat', 'g.cat_id=cat.id', 'left')
         );
         //搜索条件end
@@ -95,14 +100,15 @@ class Goods extends CI_Controller
         $cat_list = $this->category_model->get_all();
         assign('cat_list', $cat_list);
 
-        //店铺列表
-        $shop_list = $this->loop_model->get_list('member_shop', array('select' => 'm_id,shop_name', 'where' => array('status' => '0')), '', '', 'm_id asc');
-        assign('shop_list', $shop_list);
+        //店铺分类
+        $this->load->model('goods/shop_category_model');
+        $shop_cat_list = $this->shop_category_model->get_all($this->shop_id);
+        assign('shop_cat_list', $shop_cat_list);
 
         //品牌列表
         $brand_list = $this->loop_model->get_list('goods_brand', array('select' => 'id,name'), '', '', 'sortnum asc,id desc');
         assign('brand_list', $brand_list);
-        display('/goods/goods/list.html');
+        display('/goods/special/list.html');
     }
 
 
@@ -114,7 +120,7 @@ class Goods extends CI_Controller
         $id = (int)$id;
         if (!empty($id)) {
             $this->load->model('goods/goods_model');
-            $item = $this->goods_model->admin_edit($id);
+            $item = $this->goods_model->admin_edit($id, $this->shop_id);
             assign('item', $item);
         }
 
@@ -123,12 +129,13 @@ class Goods extends CI_Controller
         $cat_list = $this->category_model->get_all();
         assign('cat_list', $cat_list);
 
-        //店铺列表
-        $shop_list = $this->loop_model->get_list('member_shop', array('select' => 'm_id,shop_name', 'where' => array('status' => '0')), '', '', 'm_id asc');
-        assign('shop_list', $shop_list);
+        //店铺分类
+        $this->load->model('goods/shop_category_model');
+        $shop_cat_list = $this->shop_category_model->get_all($this->shop_id);
+        assign('shop_cat_list', $shop_cat_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
-        display('/goods/goods/add.html');
+        display('/goods/special/add.html');
     }
 
     /**
@@ -139,7 +146,7 @@ class Goods extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
-            $res = $this->goods_model->update($data_post, 0);
+            $res = $this->goods_model->update($data_post, $this->shop_id,3);
             error_json($res);
         } else {
             error_json('提交方式错误');
@@ -154,10 +161,14 @@ class Goods extends CI_Controller
     {
         $id = $this->input->post('id', true);
         if (empty($id)) error_json('id错误');
-        $res = $this->loop_model->update_id('goods', array('status' => 1), $id);
+        $update_where = array(
+            'where_in' => array('id' => $id),
+            'where'    => array('shop_id' => $this->shop_id),
+        );
+        $res          = $this->loop_model->update_where('goods', array('status' => 1), $update_where);
         if (!empty($res)) {
             if (is_array($id)) $id = join(',', $id);
-            admin_log_insert('删除商品到回收站' . $id);
+            shop_admin_log_insert('删除商品到回收站' . $id);
             error_json('y');
         } else {
             error_json('删除失败');
@@ -171,10 +182,14 @@ class Goods extends CI_Controller
     {
         $id = $this->input->post('id', true);
         if (empty($id)) error_json('id错误');
-        $res = $this->loop_model->update_id('goods', array('status' => 3), $id);
+        $update_where = array(
+            'where_in' => array('id' => $id),
+            'where'    => array('shop_id' => $this->shop_id),
+        );
+        $res          = $this->loop_model->update_where('goods', array('status' => 3), $update_where);
         if (!empty($res)) {
             if (is_array($id)) $id = join(',', $id);
-            admin_log_insert('还原商品' . $id);
+            shop_admin_log_insert('还原商品' . $id);
             error_json('y');
         } else {
             error_json('还原失败');
@@ -188,10 +203,14 @@ class Goods extends CI_Controller
     {
         $id = $this->input->post('id', true);
         if (empty($id)) error_json('id错误');
-        $res = $this->loop_model->delete_id('goods', $id);
+        $update_where = array(
+            'where_in' => array('id' => $id),
+            'where'    => array('shop_id' => $this->shop_id),
+        );
+        $res          = $this->loop_model->delete_where('goods', $update_where);
         if (!empty($res)) {
             if (is_array($id)) $id = join(',', $id);
-            admin_log_insert('彻底删除商品' . $id);
+            shop_admin_log_insert('彻底删除商品' . $id);
             error_json('y');
         } else {
             error_json('删除失败');
@@ -212,11 +231,14 @@ class Goods extends CI_Controller
         } elseif ($status == 3) {
             $update_data['down_time'] = time();
         }
-
-        $res = $this->loop_model->update_id('goods', $update_data, $id);
+        $update_where = array(
+            'where_in' => array('id' => $id),
+            'where'    => array('shop_id' => $this->shop_id),
+        );
+        $res          = $this->loop_model->update_where('goods', $update_data, $update_where);
         if (!empty($res)) {
             if (is_array($id)) $id = join(',', $id);
-            admin_log_insert('修改商品status为' . $status . 'id为' . $id);
+            shop_admin_log_insert('修改商品status为' . $status . 'id为' . $id);
             error_json('y');
         } else {
             error_json('修改失败');
@@ -233,12 +255,12 @@ class Goods extends CI_Controller
         $value = $this->input->get_post('value', true);
         if (empty($id) || empty($type) || $value == '') error_json('参数错误');
         $value = (int)$value;
-        if ($type == 'is_hot' || $type == 'is_new' || $type == 'is_flag') {
+        if ($type == 'is_shop_flag') {
             $update_data[$type] = $value;
             $res                = $this->loop_model->update_id('goods', $update_data, $id);
             if (!empty($res)) {
                 if (is_array($id)) $id = join(',', $id);
-                admin_log_insert('修改商品' . $type . '为' . $value . 'id为' . $id);
+                shop_admin_log_insert('修改商品' . $type . '为' . $value . 'id为' . $id);
                 error_json('y');
             } else {
                 error_json('修改失败');

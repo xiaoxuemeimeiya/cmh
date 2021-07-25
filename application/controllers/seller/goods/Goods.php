@@ -42,6 +42,7 @@ class Goods extends CI_Controller
             $where_data['where_in']['shop_cat_id'] = $shop_cat_id_list;
         }
 
+        $where_data['where']['cat_type'] = 3;
         //分类
         $cat_id = $this->input->post_get('cat_id');
         if (!empty($cat_id)) {
@@ -145,7 +146,7 @@ class Goods extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
-            $res = $this->goods_model->update($data_post, $this->shop_id);
+            $res = $this->goods_model->update($data_post, $this->shop_id,3);
             error_json($res);
         } else {
             error_json('提交方式错误');

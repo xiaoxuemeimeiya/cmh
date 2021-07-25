@@ -15,9 +15,13 @@ class Menu_model extends CI_Model
             'goods' => array(
                 '<i class="Hui-iconfont">&#xe620;</i> 商品管理' => array(
                     '商品管理' => '/seller/goods/goods/index',
+                    '优惠券管理' => '/seller/goods/coupon/index',
+                    '套餐券管理' => '/seller/goods/special/index',
                 ),
                 '<i class="Hui-iconfont">&#xe681;</i> 商品分类' => array(
                     '分类管理' => '/seller/goods/category/index',
+                    '品名管理' => '/seller/goods/category/index1',
+                    '须知管理' => '/seller/goods/category/index1',
                 ),
             ),
             'order' => array(
