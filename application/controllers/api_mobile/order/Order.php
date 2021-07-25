@@ -63,6 +63,9 @@ class Order extends MY_Controller
        }elseif ($status == 6) {
            //已取消
            $where_data['sql'] = '((o.status=8) or (o.status=9))';
+       }elseif ($status == 7) {
+           //退款中
+           $where_data['where']['o.status']      = 10;
        }elseif ($status != '' && $status >0) {
            $where_data['where']['o.status'] = $status;
        }

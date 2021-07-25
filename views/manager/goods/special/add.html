@@ -233,18 +233,23 @@
 					</select>
 				</span>
 			</div>
-
-
 		</div>
 		<div class="row cl">
 			<label class="form-label col-2"></label>
-			<{foreach $date as $k=>$v}>
-			<div class="formControls col-10 list_date list_date<{$k}> display-n">
-				<{foreach $v as $v1}>
-				<span class=<{if $v1.status==1}>"per-date active"<{else}>"per-date"<{/if}> onclick="elemite_date(this,<{$v1.date}>)"><{$v1.date}></span>
-				<{/foreach}>
+			<div class="formControls col-10">
+				<table style="width: auto;" class="table table-border table-bordered table-bg table-hover table-sort" id="spec_list_th">
+					<thead>
+					<tr class="text-c">
+						<th width="100">日期</th>
+						<th width="70">每日限制张数</th>
+					</tr>
+					</thead>
+					<tbody id="spec_list">
+
+					</tbody>
+				</table>
 			</div>
-			<{/foreach}>
+			
 		</div>
 
 		<div class="row cl">
