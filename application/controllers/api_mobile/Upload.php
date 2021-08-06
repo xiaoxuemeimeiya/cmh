@@ -20,11 +20,11 @@ class Upload extends CI_Controller
         //只有登录用户存在的时候才能上传
         if (!empty($m_id)) {
             $file_name = $this->input->get_post('file_name', true);//上传文件的文本域名称
-            if (empty($file_name)) $file_name = 'file';
-            $width       = (int)$this->input->get_post('width', true);//裁剪的宽度
-            $height      = (int)$this->input->get_post('height', true);//裁剪的宽度
-            $crop        = (int)$this->input->get_post('crop', true);//裁剪的宽度
-            $orientation = (int)$this->input->get_post('orientation', true);//图片方向
+            if (empty($file_name)) $file_name = 'file_name';
+            //$width       = (int)$this->input->get_post('width', true);//裁剪的宽度
+            //$height      = (int)$this->input->get_post('height', true);//裁剪的宽度
+            //$crop        = (int)$this->input->get_post('crop', true);//裁剪的宽度
+            //$orientation = (int)$this->input->get_post('orientation', true);//图片方向
             $this->load->model('upload_model');
             $res = $this->upload_model->comment_upload($file_name, $width, $height, $crop, $orientation);
             if(isset($res['status']) && $res['status'] == 'success' ){
