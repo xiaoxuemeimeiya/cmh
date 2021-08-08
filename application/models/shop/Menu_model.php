@@ -21,7 +21,7 @@ class Menu_model extends CI_Model
                 '<i class="Hui-iconfont">&#xe681;</i> 商品分类' => array(
                     '分类管理' => '/seller/goods/category/index',
                     '品名管理' => '/seller/goods/category/index1',
-                    '须知管理' => '/seller/goods/category/index1',
+                    '须知管理' => '/seller/goods/category/index2',
                 ),
             ),
             'order' => array(

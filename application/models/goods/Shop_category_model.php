@@ -80,4 +80,29 @@ class Shop_category_model extends CI_Model
         
         return $list;
     }
+
+    /**
+     * 后台查询所有数据
+     * @return array
+     */
+    public function get_all_cat2($shop_id, $reid = 0,$goods_id)
+    {
+        $reid = (int)$reid;
+        if($reid>0){
+            $this->db->select('g.name as reid_name,a.id,a.name,a.flag');
+            $this->db->where('a.reid', $reid);
+            $this->db->where('a.shop_id', $shop_id);
+            $this->db->where('a.goods_id', $goods_id);
+            $this->db->join('goods_shop_cat2 b','a.reid=b.id','left');
+        }else{
+            $this->db->select('a.id,a.name,a.flag');
+            $this->db->where('a.reid', $reid);
+            $this->db->where('a.shop_id', $shop_id);
+        }
+        $this->db->order_by('a.sortnum asc,a.id asc');
+        $query = $this->db->get('goods_shop_cat2 a');
+        $list = $query->result_array();//echo $this->db->last_query();
+
+        return $list;
+    }
 }
