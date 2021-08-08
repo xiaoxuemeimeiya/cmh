@@ -26,9 +26,10 @@ class Upload extends CI_Controller
             //$crop        = (int)$this->input->get_post('crop', true);//裁剪的宽度
             //$orientation = (int)$this->input->get_post('orientation', true);//图片方向
             $this->load->model('upload_model');
-            $res = $this->upload_model->comment_upload($file_name, $width, $height, $crop, $orientation);
+            $res = $this->upload_model->comment_upload($file_name, $width='', $height='', $crop='', $orientation='');
             if(isset($res['status']) && $res['status'] == 'success' ){
                 $this->ResArr['code'] = 200;
+                $this->ResArr['url'] = $res['url'];
                 $this->ResArr['msg'] = '添加成功';
             }else{
                 $this->ResArr['code'] = 15;
