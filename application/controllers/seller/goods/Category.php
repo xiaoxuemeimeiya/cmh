@@ -310,14 +310,15 @@ class Category extends CI_Controller
     }
 
     /**
-     * 列表
+     * 添加商品详情
      */
-    public function goods_index1()
+    public function goods_index1($goods_id)
     {
         //查到数据
         $this->load->model('goods/shop_category_model');
-        $list = $this->shop_category_model->get_all_cat1($this->shop_id,0,'');//列表
-        assign('list', $list);//print_r($list);
+        $list = $this->shop_category_model->get_all_cat1($this->shop_id,1,$goods_id);//列表
+        assign('list', $list);
+        assign('goods_id', $goods_id);
         display('/goods/category/good_list1.html');
     }
 
@@ -329,6 +330,15 @@ class Category extends CI_Controller
         $reid = (int)$reid;
         assign('reid', $reid);
         $this->load->helpers('upload_helper');//加载上传文件插件
+        /*
+        $reid = (int)$reid;
+        //$goods_id = (int)$this->input->post('good_id', true);
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat1($this->shop_id,0,'');//列表
+        var_dump($top_list);
+        assign('top_list', $top_list);
+        $this->load->helpers('upload_helper');//加载上传文件插件
+        */
         display('/goods/category/good_add1.html');
     }
 

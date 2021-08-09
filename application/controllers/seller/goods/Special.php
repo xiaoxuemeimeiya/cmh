@@ -186,7 +186,6 @@ class Special extends CI_Controller
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
             $res = $this->goods_model->update($data_post, $this->shop_id,2);
-            exit;
             error_json($res);
         } else {
             error_json('提交方式错误');

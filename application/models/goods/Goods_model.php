@@ -328,6 +328,23 @@ class Goods_model extends CI_Model
                     }
                 }
             }
+            //判断是否是限时
+            if($cat_type == 2 && $data_post['type'] == 2 && $data_post['date']){
+                //限时套餐
+                $date_list = $data_post['date'];
+                $insert = [];
+                foreach($date_list as $k=>$v){
+                    $insert[$k]['goods_id'] = $goods_id;
+                    $insert[$k]['date'] = $v;
+                    $insert[$k]['year'] = date('Y');
+                    $insert[$k]['month'] = $data_post['month'];
+                    $insert[$k]['limit'] = $data_post['limit'][$v];
+                    $insert[$k]['addtime'] = time();
+                }
+                if($insert){
+                    $this->loop_model->insert('goods_date', $insert,true);
+                }
+            }
             return 'y';
         } else {
             return '信息保存失败';
