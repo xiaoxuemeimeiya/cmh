@@ -201,10 +201,10 @@ class Index extends MY_Controller
                 }
             }
         }
-        $this->load->model('goods/category_model');
-        $detail = $this->category_model->get_all_name_cat1($item['id']);
+        $this->load->model('goods/shop_category_model');
+        $detail = $this->shop_category_model->get_all_name_cat1($item['id'],0);
         $item['desc'] = $detail;
-        $need_know = $this->category_model->get_all_name_cat2($item['id']);
+        $need_know = $this->shop_category_model->get_all_name_cat2($item['id'],0);
         $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
