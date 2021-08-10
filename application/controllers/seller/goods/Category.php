@@ -325,20 +325,14 @@ class Category extends CI_Controller
     /**
      * 添加
      */
-    public function goods_add1($reid = 0)
+    public function goods_add1()
     {
-        $reid = (int)$reid;
-        assign('reid', $reid);
-        $this->load->helpers('upload_helper');//加载上传文件插件
-        /*
-        $reid = (int)$reid;
-        //$goods_id = (int)$this->input->post('good_id', true);
+        $goods_id = (int)$this->input->get('goods_id', true);
         $this->load->model('goods/shop_category_model');
         $top_list = $this->shop_category_model->get_all_cat1($this->shop_id,0,'');//列表
-        var_dump($top_list);
         assign('top_list', $top_list);
+        assign('goods_id', $goods_id);
         $this->load->helpers('upload_helper');//加载上传文件插件
-        */
         display('/goods/category/good_add1.html');
     }
 
@@ -352,6 +346,12 @@ class Category extends CI_Controller
             $item = $this->loop_model->get_where('goods_shop_cat1', array('id' => $id, 'shop_id' => $this->shop_id));
             assign('item', $item);
         }
+        $goods_id = (int)$this->input->get('goods_id', true);
+        assign('goods_id', $goods_id);
+
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat1($this->shop_id,0,'');//列表
+        assign('top_list', $top_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/goods/category/good_add1.html');
@@ -366,9 +366,13 @@ class Category extends CI_Controller
             $data_post   = $this->input->post(NULL, true);
             $update_data = array(
                 'name'    => $data_post['name'],
+                'desc'    => $data_post['desc'],
+                'price'    => $data_post['price'],
+                'flag'    => $data_post['flag'],
                 'sortnum' => (int)$data_post['sortnum'],
                 'reid'    => $data_post['reid'] != '' ? $data_post['reid'] : 0,
                 'image'   => $data_post['image'],
+                'goods_id'   => $data_post['goods_id'],
             );
 
             if (empty($update_data['name'])) {
@@ -419,22 +423,26 @@ class Category extends CI_Controller
     /**
      * 列表
      */
-    public function goods_index2()
+    public function goods_index2($goods_id)
     {
         //查到数据
         $this->load->model('goods/shop_category_model');
-        $list = $this->shop_category_model->get_all_cat2($this->shop_id,0,'');//列表
+        $list = $this->shop_category_model->get_all_cat2($this->shop_id,1,$goods_id);//列表
         assign('list', $list);//print_r($list);
+        assign('goods_id', $goods_id);
         display('/goods/category/good_list2.html');
     }
 
     /**
      * 添加
      */
-    public function goods_add2($reid = 0)
+    public function goods_add2()
     {
-        $reid = (int)$reid;
-        assign('reid', $reid);
+        $goods_id = (int)$this->input->get('goods_id', true);
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat2($this->shop_id,0,'');//列表
+        assign('top_list', $top_list);
+        assign('goods_id', $goods_id);
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/goods/category/good_add2.html');
     }
@@ -449,6 +457,12 @@ class Category extends CI_Controller
             $item = $this->loop_model->get_where('goods_shop_cat2', array('id' => $id, 'shop_id' => $this->shop_id));
             assign('item', $item);
         }
+        $goods_id = (int)$this->input->get('goods_id', true);
+        assign('goods_id', $goods_id);
+
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat2($this->shop_id,0,'');//列表
+        assign('top_list', $top_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/goods/category/good_add2.html');
@@ -466,6 +480,8 @@ class Category extends CI_Controller
                 'sortnum' => (int)$data_post['sortnum'],
                 'reid'    => $data_post['reid'] != '' ? $data_post['reid'] : 0,
                 'image'   => $data_post['image'],
+                'flag'    => $data_post['flag'],
+                'goods_id'   => $data_post['goods_id'],
             );
 
             if (empty($update_data['name'])) {

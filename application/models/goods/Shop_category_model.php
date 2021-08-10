@@ -65,8 +65,8 @@ class Shop_category_model extends CI_Model
         $reid = (int)$reid;
         $this->db->from('goods_shop_cat1 a');
         if($reid>0){
-            $this->db->select('b.name as reid_name,a.id,a.name,a.desc,a.price,a.flag');
-            $this->db->where('a.reid !=',0);
+            $this->db->select('b.name as reid_name,a.id,a.name,a.desc,a.price,a.flag,a.image');
+            $this->db->where('a.reid !=', 0);
             $this->db->where('a.shop_id', $shop_id);
             $this->db->where('a.goods_id', $goods_id);
             $this->db->join('goods_shop_cat1 b','a.reid=b.id','left');
@@ -78,7 +78,6 @@ class Shop_category_model extends CI_Model
         $this->db->order_by('a.sortnum asc,a.id asc');
         $query = $this->db->get();
         $list = $query->result_array();//echo $this->db->last_query();
-        
         return $list;
     }
 
@@ -91,7 +90,7 @@ class Shop_category_model extends CI_Model
         $reid = (int)$reid;
         $this->db->from('goods_shop_cat2 a');
         if($reid>0){
-            $this->db->select('g.name as reid_name,a.id,a.name,a.flag');
+            $this->db->select('a.name as reid_name,a.id,a.name,a.flag');
             $this->db->where('a.reid !=', 0);
             $this->db->where('a.shop_id', $shop_id);
             $this->db->where('a.goods_id', $goods_id);

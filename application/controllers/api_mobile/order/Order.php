@@ -215,6 +215,10 @@ class Order extends MY_Controller
                 //插入数据
                 $date_insert['order_id'] = $res;
                 $date_insert['date'] = $this->input->get_post('date');
+                $date = $date_insert['date'];
+                $date_insert['year'] = date("Y",strtotime($date));
+                $date_insert['month'] = date("n",strtotime($date));
+                $date_insert['day'] = date("d",strtotime($date));
                 $date_insert['addtime'] = time();
                 $res1 = $this->loop_model->insert('order_limit_date',$date_insert);
             }else{

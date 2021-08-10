@@ -80,6 +80,7 @@ class Order_model extends CI_Model
             return false;
         }
     }
+    //获取消费的订单数
 
     /**
      * 支付成功后修改订单状态

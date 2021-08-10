@@ -63,6 +63,19 @@ class Notify extends CI_Controller
                 $temp["order_type"] = $checkRes['order_type'];
                 $ee = self::sendmsg($temp); lyLog(var_export($ee,true) , "343paynotify" , true);
                 $re = $this->echoCallBack(true);
+
+                //
+                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 2){
+                    //获取日期
+                    $where_date['order_id']           = $checkRes['id'];
+                    $date = $this->loop_model->get_where('order_limit_date',$where_date);
+                    $where_up['goods_id'] = $checkRes['good_id'];
+                    $where_up['year'] = $date['year'];
+                    $where_up['month'] = $date['month'];
+                    $where_up['date'] = $date['day'];
+                    $this->loop_model->get_where('goods_date',$where_date)->setInc('use');
+
+                }
             }
         }
     }

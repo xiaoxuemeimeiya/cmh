@@ -13,46 +13,30 @@
 </head>
 <body>
 <div class="pd-20">
-	<form action="<{site_url('/seller/goods/category/goods_save1')}>" method="post" class="form form-horizontal" id="add">
+	<form action="<{site_url('/seller/goods/category/goods_save2')}>" method="post" class="form form-horizontal" id="add">
         <div class="row cl">
             <label class="form-label col-3"><span class="c-red">*</span>上级分类：</label>
             <div class="formControls col-5">
-                <select name="reid" class="select" datatype="*" nullmsg="上级详情" onchange="cat_id_select(this.value)">
-                    <option value="">请选择顶级详情</option>
-                    <{foreach $top_list as $key}>
-                    <option value="<{$key.id}>"><{$key.name}></option>
-                    <{/foreach}>
-                </select>
+                <span class="select-box">
+                    <select name="reid" class="select" datatype="*" nullmsg="上级详情">
+                        <option value="">请选择顶级详情</option>
+                        <{foreach $top_list as $key}>
+                        <{if $item['reid'] == $key.id}>
+                        <option selected value="<{$key.id}>" ><{$key.name}></option>
+                        <{else}>
+                        <option value="<{$key.id}>" ><{$key.name}></option>
+                        <{/if}>
+                        <{/foreach}>
+                    </select>
+                </span>
             </div>
         </div>
-        <div class="row cl">
+		<div class="row cl">
 			<label class="form-label col-3"><span class="c-red">*</span>名称：</label>
 			<div class="formControls col-5">
-				<input type="text" class="input-text" value="" name="name" datatype="*" nullmsg="请输入分类名称！">
+				<input type="text" class="input-text" value="" name="name" datatype="*" nullmsg="请输入名称！">
 			</div>
 		</div>
-        <{if $reid>0 }>
-        <div class="row cl">
-			<label class="form-label col-3">描述：</label>
-			<div class="formControls col-5">
-				<input type="text" class="input-text" value="" name="desc">
-			</div>
-		</div>
-        <div class="row cl">
-			<label class="form-label col-3"><span class="c-red">*</span>价格：</label>
-			<div class="formControls col-5">
-				<input type="text" class="input-text" value="" name="price">
-			</div>
-		</div>
-        <{/if}>
-        <div class="row cl">
-            <label class="form-label col-3"><span class="c-red">*</span>图片：</label>
-            <div class="formControls col-6">
-                <a href="<{$item.image}>" target="_blank"><img src="<{$item.image}>" width="50" <{if $item.image==''}>style="display: none;"<{/if}>></a>
-                <input type="hidden" value="" name="image">
-                <input type="file" name="image_pic" id="image_pic" onchange="upload_file(this);" style="width: 150px;">
-            </div>
-        </div>
 		<div class="row cl">
 			<label class="form-label col-3">排序值：</label>
 			<div class="formControls col-5">
@@ -74,10 +58,8 @@
         </div>
 		<div class="row cl">
 			<div class="col-10 col-offset-2">
-                <input type="hidden" name="reid" value="<{$reid}>">
                 <input type="hidden" name="id" value="">
                 <input type="hidden" name="goods_id" value="<{$goods_id}>">
-
 				<button onClick="$('#add').submit();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存</button>
 				<button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
 			</div>

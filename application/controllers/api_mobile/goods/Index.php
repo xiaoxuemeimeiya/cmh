@@ -174,21 +174,29 @@ class Index extends MY_Controller
         //是否是套餐券
         if($item['cat_type'] == 2 && $item['type'] == 2){
             //限量
-            $start_time = date('m月d',time()-24*3600);//昨天
+            $start_time = date('m月d',time());//今天
             $item['date'][0]['day'] = $start_time;
             $item['date'][0]['status'] = 0;//结束
             for($i=1 ; $i<7 ; $i++){
                 $item['date'][$i]['day'] = date('m月d',time()+($i-1)*24*3600);
                 //查看是否有选中i
                 $where['year'] = date("Y",time());
-                $where['goods_id'] = $v['id'];
+                $where['goods_id'] = $id;
                 $where['month'] = date('n',time()+($i-1)*24*3600);//m加0，n不加0
                 $where['date'] = date('d',time()+($i-1)*24*3600);
                 $isset_date = $this->loop_model->get_where('goods_date',$where); 
                 if($isset_date){
+                    //有
+                    //$count =
+                    if($isset_date['limit']){
+                        $item['date'][$i]['limit'] = $isset_date['limit'];
+                        $item['date'][$i]['re_limit'] = $isset_date['re_limit'];
+                        $item['date'][$i]['status'] = 1;//不可抢
+                    }
                     $item['date'][$i]['status'] = 2;//不可抢
                 }else{
-                    $item['date'][$i]['status'] = 1;//可抢
+                    //没有，不可抢
+                    $item['date'][$i]['status'] = 2;//不可抢
                     //查看是否还有数量
                 }
             }
@@ -200,6 +208,7 @@ class Index extends MY_Controller
         $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
+        var_dump($this->ResArr);
         echo json_encode($this->ResArr);exit;
     }
 
