@@ -208,7 +208,6 @@ class Index extends MY_Controller
         $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
-        var_dump($this->ResArr);
         echo json_encode($this->ResArr);exit;
     }
 

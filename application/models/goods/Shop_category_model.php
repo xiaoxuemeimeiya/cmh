@@ -121,6 +121,7 @@ class Shop_category_model extends CI_Model
             $this->db->where('b.goods_id', $goods_id);
             $this->db->join('goods_shop_cat1 b','a.id=b.reid','left');
             $this->db->order_by('a.sortnum asc,a.id asc');
+            $this->db->group_by('a.id');
             $query = $this->db->get();
             $list = $query->result_array();//echo $this->db->last_query();
         }else{
@@ -151,11 +152,13 @@ class Shop_category_model extends CI_Model
             $this->db->select('a.id,a.name');
             $this->db->where('a.reid', $reid);
             $this->db->where('b.goods_id', $goods_id);
+            $this->db->join('goods_shop_cat2 b','a.id=b.reid','left');
             $this->db->order_by('a.sortnum asc,a.id asc');
-            $query = $this->db->get('goods_shop_cat2');
+            $this->db->group_by('a.id');
+            $query = $this->db->get();
             $list = $query->result_array();//echo $this->db->last_query();
         }else{
-            $this->db->select('id,name,desc,price,flag');
+            $this->db->select('id,name,flag');
             $this->db->where('reid', $reid);
             $this->db->where('goods_id', $goods_id);
             $this->db->order_by('sortnum asc,id asc');
