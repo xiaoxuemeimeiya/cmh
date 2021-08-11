@@ -165,12 +165,13 @@ class Goods_model extends CI_Model
             'edittime'     => time(),
             'start_time'   => strtotime($data_post['start_time']),
             'end_time'     => strtotime($data_post['end_time']),
-            'type'         => $data_post['type'] ? $data_post['type'] : 1,
+            //'type'         => $data_post['type'] ? $data_post['type'] :'',
             'num'          => $data_post['num'] ? $data_post['num'] : '',
             'active'       => $data_post['active'] ? $data_post['active'] : '',
             'service'      => $data_post['service'] ? $data_post['service'] : '',
             'cat_type'     => $cat_type,
         );
+         $data_post['type'] ? $update_data['type'] == $data_post['type'] :'';
        
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
         $data_post['need_know'] = remove_xss($this->input->post('need_know'));//单独过滤详情xss
@@ -332,19 +333,43 @@ class Goods_model extends CI_Model
             if($cat_type == 2 && $data_post['type'] == 2 && $data_post['date']){
                 //限时套餐
                 $date_list = $data_post['date'];
-                $insert = [];
-                foreach($date_list as $k=>$v){
-                    $insert[$k]['goods_id'] = $goods_id;
-                    $insert[$k]['date'] = $v;
-                    $insert[$k]['year'] = date('Y');
-                    $insert[$k]['month'] = $data_post['month'];
-                    $insert[$k]['limit'] = $data_post['limit'][$v];
-                    $insert[$k]['addtime'] = time();
+                if($data_post['id']){
+                    foreach($date_list as $k=>$v) {
+                        $where['year'] = date("Y", time());
+                        $where['goods_id'] = $data_post['id'];
+                        $where['month'] = $data_post['month'];
+                        $where['date'] = $v;
+                        $info = $this->loop_model->get_where('goods_date', $where);
+                        if (!$info) {
+                            $add['year'] = date("Y", time());
+                            $add['goods_id'] = $data_post['id'];
+                            $add['month'] = $data_post['month'];
+                            $add['date'] = $v;
+                            $add['limit'] = $data_post['limit'][$v];
+                            $add['addtime'] = time();
+                            $info = $this->loop_model->insert('goods_date', $add);
+                        } else {
+                            $add['limit'] = $data_post['limit'][$v];
+                            $info = $this->loop_model->update_where('goods_date', $add, $where);
+                        }
+                    }
+                }else{
+                    $insert = [];
+                    foreach($date_list as $k=>$v){
+                        $insert[$k]['goods_id'] = $goods_id;
+                        $insert[$k]['date'] = $v;
+                        $insert[$k]['year'] = date('Y');
+                        $insert[$k]['month'] = $data_post['month'];
+                        $insert[$k]['limit'] = $data_post['limit'][$v];
+                        $insert[$k]['addtime'] = time();
+                    }
+                    if($insert){
+                        $this->loop_model->insert('goods_date', $insert,true);
+                    }
                 }
-                if($insert){
-                    $this->loop_model->insert('goods_date', $insert,true);
-                }
+
             }
+            exit;
             return 'y';
         } else {
             return '信息保存失败';

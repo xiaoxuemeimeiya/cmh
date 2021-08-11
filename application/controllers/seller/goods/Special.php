@@ -134,44 +134,6 @@ class Special extends CI_Controller
         $shop_cat_list = $this->shop_category_model->get_all($this->shop_id);
         assign('shop_cat_list', $shop_cat_list);
         assign('today_month', date("n",time()));
-/*
-        if(!empty($id) && $item['type'] == 2){
-            $date = [];
-            for($i=1;$i<=12 ;$i++){
-                //月初，月末
-                $start_time = strtotime(date("Y")."-".$i."-01");
-                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
-                $j = 1;
-                for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
-                    //判断是否选中
-                    $where['where']['year'] = date("Y",time());
-                    $where['where']['goods_id'] = $id;
-                    $where['where']['month'] = $i;
-                    $list = $this->loop_model->get_list('goods_date',$where,'','','date asc');
-                    $date[$i] = $list;
-                }
-            }
-            assign('date',$date);
-            var_dump($date);
-        }else{
-            $date = [];
-            for($i=1;$i<=12 ;$i++){
-                //月初，月末
-                $start_time = strtotime(date("Y")."-".$i."-01");
-                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
-                $j = 0;
-                for($start_time ;$start_time <$end_time;$start_time = $start_time+24*3600 ){
-                    //判断是否选中
-                    $date[$i][floor($j/3)][$j%3]['month'] = $i;
-                    $date[$i][floor($j/3)][$j%3]['date'] = $j+1;
-                    $date[$i][floor($j/3)][$j%3]['limit'] = 0;
-                    $j++;
-                }
-            }
-            //var_dump($date);
-            assign('date',$date);
-        }
-        */
 
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/goods/special/add.html');

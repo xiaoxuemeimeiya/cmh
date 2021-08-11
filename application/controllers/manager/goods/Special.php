@@ -51,7 +51,7 @@ class Special extends CI_Controller
         if (!empty($type)) {
             $where_data['where_in']['type'] = $type;
         }else{
-            $where_data['where_in']['type'] = [2,3];
+            $where_data['where_in']['type'] = [1,2,3];
         }
 
         //品牌
@@ -139,59 +139,8 @@ class Special extends CI_Controller
         assign('shop_list', $shop_list);
 
         $this->load->helpers('upload_helper');//加载上传文件插件
+        assign('today_month', date("n",time()));
 
-        //获取时间表
-        //$year_start=strtotime(date("Y")."-01-01");
-        //$year_end=strtotime(date("Y")."-12-31");
-        if(!empty($id) && $item['type'] == 2){
-            $date = [];
-            for($i=1;$i<=12 ;$i++){
-                //月初，月末
-                $start_time = strtotime(date("Y")."-".$i."-01");
-                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
-                $j = 1;
-                for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
-                    //判断是否选中
-                    if($id){
-                        //查看是否有选时间
-                        $where['year'] = date("Y",time());
-                        $where['goods_id'] = $id;
-                        $where['month'] = $i;
-                        $where['date'] = $j;
-                        $isset_date = $this->loop_model->get_where('goods_date',$where);
-                        if($isset_date){
-                            $date[$i][$j-1]['date'] = $j;
-                            $date[$i][$j-1]['status'] = 1;
-                        }else{
-                            $date[$i][$j-1]['date'] = $j;
-                            $date[$i][$j-1]['status'] = 0;
-                        }
-                    }else{
-                        $date[$i][$j-1]['date'] = $j;
-                        $date[$i][$j-1]['status'] = 0;
-                    }
-                    
-                    $j++;
-                }
-            }
-            assign('date',$date);
-        }else{
-            $date = [];
-            for($i=1;$i<=12 ;$i++){
-                //月初，月末
-                $start_time = strtotime(date("Y")."-".$i."-01");
-                $end_time =  strtotime(date("Y")."-".$i."-01 +1 month -1 day");
-                $j = 1;
-                for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
-                    //判断是否选中
-                    $date[$i][$j-1]['date'] = $j;
-                    $date[$i][$j-1]['status'] = 0;
-                    $j++;
-                }
-            }
-            assign('date',$date);
-        }
-        
         display('/goods/special/add.html');
     }
 
@@ -210,6 +159,181 @@ class Special extends CI_Controller
         }
 
     }
+
+
+    /**
+     * 月份数据
+     */
+    public function date(){
+        //获取月份
+        $month = $this->input->post('month', true);
+        $id = $this->input->post('id', true);
+        //查看看是否有数据
+        $date = $this->input->post('date', true);
+        if($date) {
+            foreach ($date as $v) {
+                $array_date = explode('-', $v);
+                $where['year'] = date("Y", time());
+                $where['goods_id'] = $id;
+                $where['month'] = $month;
+                $where['date'] = $array_date[0];
+                $info = $this->loop_model->get_where('goods_date', $where);
+                if (!$info) {
+                    $add['year'] = date("Y", time());
+                    $add['goods_id'] = $id;
+                    $add['month'] = $month;
+                    $add['date'] = $array_date[0];
+                    $add['limit'] = $array_date[1];
+                    $add['addtime'] = time();
+                    $info = $this->loop_model->insert('goods_date', $add);
+                } else {
+                    $add['limit'] = $array_date[1];
+                    $info = $this->loop_model->update_where('goods_date', $add, $where);
+                }
+            }
+        }
+        //根据月份获取数据
+        $start_time = strtotime(date("Y")."-".$month."-01");
+        $end_time =  strtotime(date("Y")."-".$month."-01 +1 month -1 day");
+        $j = 0;
+        $date = [];
+        if($id){
+            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                //判断是否选中
+                $where['year'] = date("Y",time());
+                $where['goods_id'] = $id;
+                $where['month'] = $month;
+                $where['date'] = $j+1;
+                $limit = $this->loop_model->get_where('goods_date',$where);
+                $date[floor($j/3)][$j%3]['month'] = $month;
+                $date[floor($j/3)][$j%3]['date'] = $j+1;
+                $date[floor($j/3)][$j%3]['limit'] = $limit ? $limit['limit'] : 0;
+                $j++;
+            }
+        }else{
+            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                //判断是否选中
+                $where['year'] = date("Y",time());
+                $where['goods_id'] = $id;
+                $where['month'] = $month;
+                $where['date'] = $j;
+                $date[floor($j/3)][$j%3]['month'] = $month;
+                $date[floor($j/3)][$j%3]['date'] = $j+1;
+                $date[floor($j/3)][$j%3]['limit'] = 0;
+                $j++;
+            }
+        }
+        $str = '<input type="hidden" name="month1" value="'.$month.'"/>';
+        foreach($date as $v){
+            $str .='<tr>';
+            foreach($v as $v1){
+                if(count($v) == 1){
+                    //foreach($v1 as $v2){
+                    $str .= '<td>'.$v1["date"].'号</td>';
+                    if(strtotime(date("Y",time()).'-'.$month.'-'.$v1["date"])>time()){
+                        $str .= '<input class="date" type="hidden" name="date[]" value="' . $v1["date"] . '"/>';
+                        $str .= '<td><input class="limit'.$v1["date"].'" type="text" name="limit['.$v1["date"].']" value="'.$v1["limit"].'"/></td>';
+                    }else{
+                        $str .='<td>'.$v1["limit"].'</td>';
+                    }
+                    $str .='<td></td><td></td><td></td><td></td>';
+                    //}
+                }elseif(count($v) == 2){
+                    //foreach($v1 as $v2){
+                    $str .= '<td>'.$v1["date"].'号</td>';
+                    if(strtotime(date("Y",time()).'-'.$month.'-'.$v1["date"])>time()){
+                        $str .= '<input class="date" type="hidden" name="date[]" value="' . $v1["date"] . '"/>';
+                        $str .= '<td><input class="limit'.$v1["date"].'" type="text" name="limit['.$v1["date"].']" value="'.$v1["limit"].'"/></td>';
+                    }else{
+                        $str .='<td>'.$v1["limit"].'</td>';
+                    }
+                    $str .='<td></td><td></td>';
+                    //}
+                }else{
+                    //foreach($v1 as $v2){
+                    $str .= '<td>'.$v1["date"].'号</td>';
+                    if(strtotime(date("Y",time()).'-'.$month.'-'.$v1["date"])>time()){
+                        $str .= '<input class="date" type="hidden" name="date[]" value="' . $v1["date"] . '"/>';
+                        $str .= '<td><input class="limit'.$v1["date"].'" type="text" name="limit['.$v1["date"].']" value="'.$v1["limit"].'"/></td>';
+                    }else{
+                        $str .='<td>'.$v1["limit"].'</td>';
+                    }
+                    //}
+                }
+
+            }
+            $str .='</tr>';
+        }//exit;
+        //assign('date',$date);
+        error_json($str,'y');
+    }
+
+    /**
+     * 月份数据
+     */
+    public function date_save(){
+        //获取月份
+        $month = $this->input->post('month', true);
+        $id = $this->input->post('goods_id', true);
+        //查看看是否有数据
+        $date = $this->input->post('date', true);
+        foreach($date as $v){
+            var_dump($v);exit;
+            $where['year'] = date("Y",time());
+            $where['goods_id'] = $id;
+            $where['month'] = $month;
+            $where['date'] = $j;
+            $info = $this->loop_model->get_where('goods_date',$where)->find();
+        }
+
+        //根据月份获取数据
+        $start_time = strtotime(date("Y")."-".$month."-01");
+        $end_time =  strtotime(date("Y")."-".$month."-01 +1 month -1 day");
+        $j = 0;
+        $date = [];
+        if($id){
+            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                //判断是否选中
+                $where['year'] = date("Y",time());
+                $where['goods_id'] = $id;
+                $where['month'] = $month;
+                $where['date'] = $j;
+                $limit = $this->loop_model->get_where('goods_date',$where)->find();
+                $date[floor($j/3)][$j%3]['month'] = $month;
+                $date[floor($j/3)][$j%3]['date'] = $j+1;
+                $date[floor($j/3)][$j%3]['limit'] = $limit ? $limit['limit'] : 0;
+                $j++;
+            }
+        }else{
+            for($start_time ;$start_time <=$end_time;$start_time = $start_time+24*3600 ){
+                //判断是否选中
+                $where['year'] = date("Y",time());
+                $where['goods_id'] = $id;
+                $where['month'] = $month;
+                $where['date'] = $j;
+                $date[floor($j/3)][$j%3]['month'] = $month;
+                $date[floor($j/3)][$j%3]['date'] = $j+1;
+                $date[floor($j/3)][$j%3]['limit'] = 0;
+                $j++;
+            }
+        }
+        $str = '<input type="hidden" name="month1" value="'.$month.'"/>';
+        foreach($date as $v){
+            $str .='<tr>';
+            foreach($v as $v1){
+                //foreach($v1 as $v2){
+
+                $str .= '<td>'.$v1["date"].'号</td>';
+                $str .= '<input class="date" type="hidden" name="date[]" value="'.$v1["date"].'"/>';
+                $str .= '<td><input class="limit'.$v1["date"].'" type="text" name="limit['.$v1["date"].']" value="'.$v1["limit"].'"/></td>';
+                //}
+            }
+            $str .='</tr>';
+        }//exit;
+        //assign('date',$date);
+        error_json($str,'y');
+    }
+
 
     /**
      * 删除数据到回收站

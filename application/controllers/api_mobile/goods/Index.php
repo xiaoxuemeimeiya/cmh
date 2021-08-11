@@ -186,16 +186,20 @@ class Index extends MY_Controller
                 $where['date'] = date('d',time()+($i-1)*24*3600);
                 $isset_date = $this->loop_model->get_where('goods_date',$where); 
                 if($isset_date){
-                    //有
-                    //$count =
-                    if($isset_date['limit']){
+                    if($isset_date['limit'] && $isset_date['limit']-$isset_date['use']>0){
                         $item['date'][$i]['limit'] = $isset_date['limit'];
-                        $item['date'][$i]['re_limit'] = $isset_date['re_limit'];
-                        $item['date'][$i]['status'] = 1;//不可抢
+                        $item['date'][$i]['re_limit'] = $isset_date['limit']-$isset_date['use'];
+                        $item['date'][$i]['status'] = 1;//可抢
+                    }else{
+                        $item['date'][$i]['limit'] = $isset_date['limit'];
+                        $item['date'][$i]['re_limit'] = $isset_date['limit']-$isset_date['use'];
+                        $item['date'][$i]['status'] = 3;//已抢光
                     }
-                    $item['date'][$i]['status'] = 2;//不可抢
+
                 }else{
                     //没有，不可抢
+                    $item['date'][$i]['limit'] = 0;
+                    $item['date'][$i]['re_limit'] = 0;
                     $item['date'][$i]['status'] = 2;//不可抢
                     //查看是否还有数量
                 }

@@ -14,7 +14,7 @@
 	<style>
 		.per-date{display:inline-block;width:50px;height:30px;line-height:30px;border:1px solid #D9D9D9;text-align:center;margin-bottom:10px;cursor:pointer; }
 		.per-date.active{color:#fff;background: #0f9ae0;cursor:pointer;}
-		.display-n{display:none;}
+		.display-n{display:none !important;}
 	</style>
 </head>
 <body>
@@ -49,15 +49,17 @@
 		<div class="row cl">
 			<label class="form-label col-2"><span class="c-red">*</span>套餐栏目：</label>
 			<{if $item}>
-			<div class="formControls col-2"> 
-				<span class="select-box cat-name">
+			<div class="formControls col-2">
 				<input type="hidden" name="type" value="<{$item.type}>">
+				<span class="select-box cat-name">
+
 				</span>
 			</div>
 			<{else}>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="type" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
 					<option value="">请选择套餐分类</option>
+					<option value="1">普通</option>
 					<option value="2">限量</option>
 					<option value="3">月卡</option>
 				</select>
@@ -227,7 +229,7 @@
 				</span>
 			</div>
 		</div>
-		<div class="row cl">
+		<div class="row cl cat-1">
 			<label class="form-label col-2"></label>
 			<div class="formControls col-10">
 				<table style="width: auto;" class="table table-border table-bordered table-bg table-hover table-sort" id="spec_list_th">
@@ -235,16 +237,23 @@
 					<tr class="text-c">
 						<th width="100">日期</th>
 						<th width="70">每日限制张数</th>
+						<th width="100">日期</th>
+						<th width="70">每日限制张数</th>
+						<th width="100">日期</th>
+						<th width="70">每日限制张数</th>
 					</tr>
 					</thead>
-					<tbody id="spec_list">
-
-					</tbody>
+					<tbody id="limit_list" class="list_date"></tbody>
 				</table>
+				<{if $item}>
+				<div class="row cl limit-submit">
+					<div class="col-10 col-offset-2">
+						<button id="add_date" class="btn btn-primary radius" type="button"><i class="Hui-iconfont">&#xe632;</i> 保存</button>
+					</div>
+				</div>
+				<{/if}>
 			</div>
-			
 		</div>
-
 		<div class="row cl">
 			<label class="form-label col-2"></label>
 			<input type="hidden" name="image" value="">
@@ -265,16 +274,14 @@
 		<div class="row cl">
 			<label class="form-label col-2">详细：</label>
 			<div class="formControls col-10">
-				<script type="text/javascript" src="/public/kindeditor/kindeditor.js"></script>
-				<{load_editer('desc', $item.desc)}>
+				<a style="color:#fff;" href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('详情','<{site_url("/manager/goods/category/list1/<{$item.id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加详情</a>
 			</div>
 		</div>
 
 		<div class="row cl">
 			<label class="form-label col-2">须知：</label>
 			<div class="formControls col-10">
-				<script type="text/javascript" src="/public/kindeditor/kindeditor.js"></script>
-				<{load_editer('need_know', $item.need_know)}>
+				<a style="color:#fff;"  href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('须知','<{site_url("/manager/goods/category/list2/<{$item.id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加须知</a>
 			</div>
 		</div>
 		<div class="row cl">
@@ -283,10 +290,7 @@
 				<button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
 			</div>
 		</div>
-		<input type="hidden" name="model_id" value="0"/>
-		<div class="display-n date-list-input">
-			<!--<input class="date" type="hidden" name="date" value=""/>-->     ,                                                                                                       
-		</div>
+		<input type="hidden" name="last_month" value="1"/>
 	</form>
 </div>
 </div>
@@ -321,10 +325,121 @@
 		});
 	});
 
+
+	$("#add_date").click(function(){
+		//获取月份和日期
+		var va = $('[name=month1]').val();
+		var date1 = [];
+
+		$(".date").each(function(index){
+			var val =$(this).val()
+			date1.push(val+'-'+$('.limit'+val).val())
+			//data.limit[index] =  $(this).val()
+		})
+		var data = {id:'<{$item.id}>',month:va,date:date1};
+		$.ajax({
+			type:"POST",
+			url: '<{site_url("/seller/goods/special/date/")}>',
+			data: data,
+			dataType:"json",
+			beforeSend: function () {
+				loadIndex = layer.load();
+			},
+			complete: function () {
+				layer.close(loadIndex);
+			},
+			success: function(data){
+				if (data.status == 'y') {
+					$("#limit_list").html(data.info);
+					layer.msg('保存成功!');
+				}else{
+					layer.msg(data.info);
+				}
+			}
+		});
+	})
+
 	function date_select_month(va){
-	    console.log(va)
-		$('.list_date').addClass('display-n');
-	 	$('.list_date'+va).removeClass('display-n');
+		//判断是否保存该月份的修改
+		var limit_list = $("#limit_list").html();
+		var today_month = '<{$today_month}>';
+		console.log(today_month)
+
+		if(va >= today_month){
+			console.log(today_month)
+			$(".limit-submit").removeClass('display-n')
+		}else{
+			$(".limit-submit").addClass('display-n')
+		}
+		//month
+		var month = $('[name=last_month]').val();
+		$('[name=last_month]').val(va)
+		console.log(month)
+		console.log(today_month<va)
+		if(limit_list.length > 0 && month >= today_month) {
+			if ('<{$item.id}>') {
+				var title = '离开不会保存，确认要离开吗？';
+			} else {
+				var title = '切换不会保存，确认要离开？';
+			}
+			layer.confirm(title, function (index) {
+				$.ajax({
+					type: "POST",
+					url: '<{site_url("/seller/goods/special/date/")}>',
+					data: {id: '<{$item.id}>', month: va},
+					dataType: "json",
+					beforeSend: function () {
+						loadIndex = layer.load();
+					},
+					complete: function () {
+						layer.close(loadIndex);
+					},
+					success: function (data) {
+						if (data.status == 'y') {
+							/*
+                            if ('<{$item.id}>') {
+                            } else {
+                                layer.close(index);
+                            }
+                            */
+							$("#limit_list").html(data.info);
+							layer.close(index);
+						} else {
+							layer.msg(data.info);
+						}
+					}
+				});
+			});
+		}else{
+			$.ajax({
+				type: "POST",
+				url: '<{site_url("/seller/goods/special/date/")}>',
+				data: {id: '<{$item.id}>', month: va},
+				dataType: "json",
+				beforeSend: function () {
+					loadIndex = layer.load();
+				},
+				complete: function () {
+					layer.close(loadIndex);
+				},
+				success: function (data) {
+					if (data.status == 'y') {
+						/*
+                        if ('<{$item.id}>') {
+                            $("#limit_list").html(data.info);
+                        } else {
+                            //var index = parent.layer.getFrameIndex(window.name);
+                            layer.close(index);
+                        }
+                        */
+						$("#limit_list").html(data.info);
+						layer.close(loadIndex);
+					} else {
+						layer.msg(data.info);
+					}
+				}
+			});
+		}//$('.list_date').addClass('display-n');
 	}
 
 	function elemite_date(thi,v){
@@ -394,8 +509,11 @@
 		if(type == 2){
 			$('.cat-1').show();
 			$('.cat-2').hide();
-		}else{
+		}else if(type == 3){
 			$('.cat-2').show();
+			$('.cat-1').hide();
+		}else{
+			$('.cat-2').hide();
 			$('.cat-1').hide();
 		}
 		var cat_id = 2;//套餐
@@ -580,10 +698,14 @@
 			$('.cat-2').show();
 			$('.cat-1').hide();
 			$('.cat-name').html('月卡');
-		<{else}>
+		<{else if $item.type ==2 }>
 			$('.cat-1').show();
 			$('.cat-2').hide();
 			$('.cat-name').html('限时');
+		<{else}>
+			$('.cat-1').hide();
+			$('.cat-2').hide();
+			$('.cat-name').html('普通');
 		<{/if}>
 
 		//商品图片回填
