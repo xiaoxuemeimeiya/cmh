@@ -445,6 +445,10 @@ class Goods_model extends CI_Model
         //*******************************************************
         
         $page_count  = ceil($goods_count / $limit);
+        foreach ($goods_data as $v => $k) {
+            $goods_data[$v]['market_price'] = format_price($k['market_price']);
+            $goods_data[$v]['sell_price'] = format_price($k['sell_price']);
+        }
 
         $reslut_array = array('goods_list' => $goods_data, 'page_count' => $page_count);
     
@@ -472,10 +476,12 @@ class Goods_model extends CI_Model
             $is_new        = (int)$where_data['is_new'];//最新
             $is_flag       = (int)$where_data['is_flag'];//推荐
 
+            /*
             if (!is_array($cat_id)) {
                 $this->load->model('goods/category_model');
                 $cat_id = $this->category_model->get_reid_down($cat_id);
             }
+            */
             //*******************************************************
             //查询对应的商品start**************************************
             //*******************************************************
@@ -510,7 +516,14 @@ class Goods_model extends CI_Model
             //*******************************************************
             //$reslut_array = $goods_data;
             $shop_data[$k]['discount'] = $goods_data ? $goods_data[0]['discount'] : 10 ;
+
+            foreach ($goods_data as $v => $k1) {
+                $goods_data[$v]['market_price'] = format_price($k1['market_price']);
+                $goods_data[$v]['sell_price'] = format_price($k1['sell_price']);
+            }
+
             $shop_data[$k]['good_list'] = $goods_data;
+
             
         }
         
@@ -602,6 +615,11 @@ class Goods_model extends CI_Model
             $this->db->where('g.status', 0);
             $goods_count = $this->db->count_all_results();
             $page_count  = ceil($goods_count / $limit);
+
+            foreach ($goods_data as $v => $k) {
+                $goods_data[$v]['market_price'] = format_price($k['market_price']);
+                $goods_data[$v]['sell_price'] = format_price($k['sell_price']);
+            }
 
             $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
         }

@@ -59,10 +59,13 @@ class Setting extends CI_Controller
                 'area'         => $data_post['area'],
                 'address'      => $data_post['address'],
                 'desc'         => $data_post['desc'],
+                'per_price'    => $data_post['per_price'],
+                'open'         => $data_post['open'],
                 'banner_url'   => json_encode($banner_url),
+                'business_license' => $data_post['business_license']
             );
 
-            if (!empty($data_post['business_license']) && $member_shop_data['status'] == 2) $update_data['business_license'] = $data_post['business_license'];
+            //if (!empty($data_post['business_license']) && $member_shop_data['status'] == 2) $update_data['business_license'] = $data_post['business_license'];
 
             $res = $this->loop_model->update_where('member_shop', $update_data, array('m_id' => $this->shop_id));
             if (!empty($res)) {

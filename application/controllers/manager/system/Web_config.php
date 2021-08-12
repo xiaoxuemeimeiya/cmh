@@ -30,8 +30,6 @@ class Web_config extends CI_Controller
      */
     public function save()
     {
-        error_json('y');
-        
         $file_path = APPPATH . "/config/web_config.php";
         if (!is_writeable($file_path)) {
             error_json('文件写入权限不足');

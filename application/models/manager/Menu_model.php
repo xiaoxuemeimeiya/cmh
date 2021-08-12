@@ -85,6 +85,9 @@ class Menu_model extends CI_Model
                 ),
             ),
             'system' => array(
+                '<i class="Hui-iconfont">&#xe61d;</i> 店铺设置' => array(
+                    '店铺设置' => '/manager/system/setting/index',
+                ),
                 '<i class="Hui-iconfont">&#xe61d;</i> 网站管理' => array(
                     '站点设置' => '/manager/system/web_config/index',
                 ),

@@ -28,11 +28,12 @@ class Index extends MY_Controller
                 $search_where['is_hot'] = $this->input->get_post('is_hot', true);
                 //查询数据
                 $res_data = $this->goods_model->search_index($search_where,2);
-            }
-            //最新
-            if(!empty($this->input->get_post('is_new', true))){
+            }else if(!empty($this->input->get_post('is_new', true))){
+                //最新
                 $search_where['is_new'] = $this->input->get_post('is_new', true);
                 //查询数据
+                $res_data = $this->goods_model->search_index($search_where,2);
+            }else{
                 $res_data = $this->goods_model->search_index($search_where,2);
             }
         }

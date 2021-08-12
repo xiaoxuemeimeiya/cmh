@@ -12,9 +12,12 @@
 	<link href="/public/H-ui/hui-iconfont/iconfont.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<nav class="breadcrumb">
+	<i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 商品管理 <span class="c-gray en">&gt;</span> 分类列表 <a class="btn btn-success radius r mr-20" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
 <div class="pd-20" style="padding-top: 0px;">
 	<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l">
-		<a href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('添加顶详情','<{site_url("/manager/goods/category/add1?goods_id=<{$goods_id}>")}>')"><i class="Hui-iconfont">&#xe600;</i> 添加顶详情</a>
+		<a href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('添加顶详情','<{site_url("/manager/goods/category/add1")}>')"><i class="Hui-iconfont">&#xe600;</i> 添加顶详情</a>
 	</span></div>
 	<div class="mt-20">
 		<table class="table table-border table-bordered table-bg table-hover table-sort">
@@ -42,8 +45,8 @@
 					<td><{$key.price}></td>
 					<td><{$key.sortnum}></td>
 					<td class="f-14 td-manage">
-						<a style="text-decoration:none" class="ml-5" onClick="open_iframe('添加<{$key.name}>类','<{site_url("/manager/goods/category/add1/<{$key.id}>?goods_id=<{$goods_id}>")}>')" href="javascript:;" title="添加<{$key.name}>类"><i class="Hui-iconfont">&#xe600;</i></a>
-						<a style="text-decoration:none" class="ml-5" onClick="open_iframe('编辑','<{site_url("/manager/goods/category/edit1/<{$key.id}>?goods_id=<{$goods_id}>")}>')" href="javascript:;" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<a style="text-decoration:none" class="ml-5" onClick="open_iframe('添加<{$key.name}>类','<{site_url("/manager/goods/category/add1/<{$key.id}>")}>')" href="javascript:;" title="添加<{$key.name}>类"><i class="Hui-iconfont">&#xe600;</i></a>
+						<a style="text-decoration:none" class="ml-5" onClick="open_iframe('编辑','<{site_url("/manager/goods/category/edit1/<{$key.id}>")}>')" href="javascript:;" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
 						<a style="text-decoration:none" class="ml-5" onClick="data_del(this,'<{site_url('/manager/goods/category/delete1/')}>','<{$key.id}>')" href="javascript:;" title="删除"><i class="Hui-iconfont">&#xe6e2;</i></a>
 					</td>
 				</tr>

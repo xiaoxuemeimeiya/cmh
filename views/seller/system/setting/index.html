@@ -35,6 +35,15 @@
                         <input type="file" name="logo_pic" id="logo_pic" onchange="upload_file(this);" style="width: 150px;">
                     </div>
                 </div>
+
+                <div class="row cl">
+                    <label class="form-label col-2"><span class="c-red">*</span>店铺封面：</label>
+                    <div class="formControls col-3">
+                        <a href="<{$item.cove_img}>" target="_blank"><img src="<{$item.cove_img}>" width="50" <{if $item.cove_img==''}>style="display: none;"<{/if}>></a>
+                        <input type="hidden" value="" name="cove_img" datatype="*" nullmsg="请上传店铺封面！">
+                        <input type="file" name="cove_img_pic" id="cove_img_pic" onchange="upload_file(this);" style="width: 150px;">
+                    </div>
+                </div>
                 <div class="row cl">
                     <label class="form-label col-2"><span class="c-red">*</span>电话：</label>
                     <div class="formControls col-3">
@@ -48,6 +57,18 @@
                     </div>
                 </div>
                 <div class="row cl">
+                    <label class="form-label col-2"><span class="c-red">*</span>营业时间：</label>
+                    <div class="formControls col-3">
+                        <input type="text" class="input-text" value="" name="open" datatype="*" nullmsg="请输入营业时间！">
+                    </div>
+                </div>
+                <div class="row cl">
+                    <label class="form-label col-2"><span class="c-red">*</span>人均价格：</label>
+                    <div class="formControls col-3">
+                        <input type="text" class="input-text" value="" name="per_price" datatype="*" nullmsg="请输入人均价格！">
+                    </div>
+                </div>
+                <div class="row cl">
                     <label class="form-label col-2">第三方客服链接：</label>
                     <div class="formControls col-3">
                         <input type="text" class="input-text" value="" name="customer_url" datatype="empty|url" nullmsg="第三方客服链接！">
@@ -57,10 +78,8 @@
                     <label class="form-label col-2"><span class="c-red">*</span>营业执照：</label>
                     <div class="formControls col-3">
                         <a href="<{$item.business_license}>" target="_blank"><img src="<{$item.business_license}>" width="50" <{if $item.business_license==''}>style="display: none;"<{/if}>></a>
-                        <{if $item.status==2}>
                         <input type="hidden" value="" name="business_license" datatype="*" nullmsg="请上传营业执照">
                         <input type="file" name="business_license_pic" id="business_license_pic" onchange="upload_file(this);" style="width: 150px;">
-                        <{/if}>
                     </div>
                 </div>
                 <div class="row cl">

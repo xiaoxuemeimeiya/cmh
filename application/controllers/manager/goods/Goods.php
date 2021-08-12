@@ -63,7 +63,7 @@ class Goods extends CI_Controller
         $search_where = array(
             'status'           => $status,
             'shop_id'          => $shop_id,
-            'cat_type'         => $cat_type,
+            'cat_type'         => 3,
             'brand_id'         => $brand_id,
             'name'             => $name,
             'flag_type'        => $flag_type,
