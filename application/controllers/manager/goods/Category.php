@@ -364,7 +364,7 @@ class Category extends CI_Controller
         $this->load->model('goods/shop_category_model');
         $top_list = $this->shop_category_model->get_all_cat1($shop_id,0,'');//列表
         assign('top_list', $top_list);
-        
+
         assign('goods_id', $id);
         assign('shop_id', $shop_id);
         $this->load->helpers('upload_helper');//加载上传文件插件
