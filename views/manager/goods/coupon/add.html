@@ -42,21 +42,31 @@
 		</div>
 		<div class="row cl">
 			<label class="form-label col-2"><span class="c-red">*</span>分类栏目：</label>
+			<{if $item}>
+			<div class="formControls col-2">
+				<input type="hidden" name="cat_id" value="1">
+				<span class="select-box cat-name">优惠券</span>
+			</div>
+			<{else}>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="cat_id" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
 					<option value="">请选择分类</option>
+					<option value="1">优惠券</option>
 					<!--分类模板-->
+					<!--
 					<{function name=type level=0}>
 					<{foreach $data as $key}>
 						<option value="<{$key.id}>"><{section name=loop loop=$level}>├<{/section}><{$key.name}></option>
 					<{call name=type data=$key.down level=$level+1}>
 					<{/foreach}>
 					<{/function}>
+					-->
 					<!--调用模板函数-->
 					<{call name=type data=$cat_list}>
 				</select>
 				</span>
 			</div>
+			<{/if}>
 			<label class="form-label col-1"><span class="c-red">*</span>商户：</label>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="shop_id" class="select">
@@ -225,6 +235,7 @@
 				{{/each}}
 			</script>
 		</div>
+		<{if $item}>
 		<div class="row cl">
 			<label class="form-label col-2">详细：</label>
 			<div class="formControls col-10">
@@ -238,6 +249,7 @@
 				<a style="color:#fff;"  href="javascript:;" class="btn btn-primary radius" onclick="open_iframe('须知','<{site_url("/manager/goods/category/goods_list2/<{$item.id}>?shop_id=<{$item.shop_id}>")}>','100%')"><i class="Hui-iconfont">&#xe600;</i> 添加须知</a>
 			</div>
 		</div>
+		<{/if}>
 		<div class="row cl">
 			<div class="col-10 col-offset-2">
 				<button onClick="$('#add').submit();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 保存并提交审核</button>

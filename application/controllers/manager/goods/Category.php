@@ -416,15 +416,15 @@ class Category extends CI_Controller
     /**
      * 删除数据
      */
-    public function goods_delete1()
+    public function goods_delete1($shop_id)
     {
         $id = (int)$this->input->post('id', true);
         if (empty($id)) error_json('id不能为空');
-        $re_item = $this->loop_model->get_where('goods_shop_cat1', array('reid' => $id, 'shop_id' => $this->shop_id));
+        $re_item = $this->loop_model->get_where('goods_shop_cat1', array('reid' => $id, 'shop_id' => $shop_id));
         if (!empty($re_item)) {
             error_json('下级栏目不为空不能删除');
         } else {
-            $res = $this->loop_model->delete_where('goods_shop_cat1', array('id' => $id, 'shop_id' => $this->shop_id));
+            $res = $this->loop_model->delete_where('goods_shop_cat1', array('id' => $id, 'shop_id' => $shop_id));
             if (!empty($res)) {
                 admin_log_insert('删除分类' . $id);
                 error_json('y');
@@ -439,14 +439,16 @@ class Category extends CI_Controller
     /**
      * 列表
      */
-    public function good_list2($goods_id)
+    public function goods_list2($goods_id)
     {
         //查到数据
-        $this->load->model('goods/category_model');
-        $list = $this->category_model->get_all_cat2($goods_id);//列表
+        $shop_id = $this->input->get_post('shop_id');
+        $this->load->model('goods/shop_category_model');
+        $list = $this->shop_category_model->get_all_cat2($shop_id,1,$goods_id);//列表
         assign('list', $list);//print_r($list);
         assign('goods_id', $goods_id);
-        display('/goods/category/list2.html');
+        assign('shop_id', $shop_id);
+        display('/goods/category/good_list2.html');
     }
 
     /**
@@ -455,11 +457,17 @@ class Category extends CI_Controller
     public function goods_add2($reid = 0)
     {
         $goods_id = $this->input->get_post('goods_id');
+        $shop_id = $this->input->get_post('shop_id');
         $reid = (int)$reid;
         assign('reid', $reid);
         assign('goods_id', $goods_id);
+        assign('shop_id', $shop_id);
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat2($shop_id,0,'');//列表
+        assign('top_list', $top_list);
         $this->load->helpers('upload_helper');//加载上传文件插件
-        display('/goods/category/add2.html');
+        display('/goods/category/good_add2.html');
+
     }
 
     /**
@@ -467,14 +475,21 @@ class Category extends CI_Controller
      */
     public function goods_edit2($id)
     {
+        $shop_id = $this->input->get_post('shop_id');
         $id = (int)$id;
         if (!empty($id)) {
-            $item = $this->loop_model->get_id('goods_cat2', $id);
+            $item = $this->loop_model->get_where('goods_shop_cat2', array('id' => $id, 'shop_id' => $shop_id));
             assign('item', $item);
         }
 
+        $this->load->model('goods/shop_category_model');
+        $top_list = $this->shop_category_model->get_all_cat2($shop_id,0,'');//列表
+        assign('top_list', $top_list);
+
+        assign('shop_id', $shop_id);
+        assign('goods_id', $id);
         $this->load->helpers('upload_helper');//加载上传文件插件
-        display('/goods/category/add2.html');
+        display('/goods/category/good_add2.html');
     }
 
     /**
@@ -498,11 +513,12 @@ class Category extends CI_Controller
             }
             if (!empty($data_post['id'])) {
                 //修改数据
-                $res = $this->loop_model->update_id('goods_cat2', $update_data, $data_post['id']);
+                $res = $this->loop_model->update_where('goods_shop_cat2', $update_data, array('id' => $data_post['id'], 'shop_id' => $data_post['shop_id']));
                 admin_log_insert('修改分类' . $data_post['id']);
             } else {
                 //增加数据
-                $res = $this->loop_model->insert('goods_cat2', $update_data);
+                $update_data['shop_id'] = $data_post['shop_id'];;
+                $res                    = $this->loop_model->insert('goods_shop_cat2', $update_data);
                 admin_log_insert('增加分类' . $res);
             }
             if (!empty($res)) {
@@ -519,15 +535,15 @@ class Category extends CI_Controller
     /**
      * 删除数据
      */
-    public function goods_delete2()
+    public function goods_delete2($shop_id)
     {
         $id = (int)$this->input->post('id', true);
         if (empty($id)) error_json('id不能为空');
-        $re_item = $this->loop_model->get_where('goods_cat2', array('reid' => $id));
+        $re_item = $this->loop_model->get_where('goods_shop_cat2', array('reid' => $id, 'shop_id' => $shop_id));
         if (!empty($re_item)) {
             error_json('下级栏目不为空不能删除');
         } else {
-            $res = $this->loop_model->delete_id('goods_cat2', $id);
+            $res = $this->loop_model->delete_where('goods_shop_cat2', array('id' => $id, 'shop_id' => $shop_id));
             if (!empty($res)) {
                 admin_log_insert('删除分类' . $id);
                 error_json('y');
