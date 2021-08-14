@@ -19,6 +19,7 @@ class MY_Controller extends CI_Controller {
         'api_mobile/order/invite/order_detail',
 
         'api_mobile/order/order/comment',
+        'api_mobile/order/order/comment_list',
     ];
 	
 	public function __construct()

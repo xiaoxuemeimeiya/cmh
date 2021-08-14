@@ -371,4 +371,32 @@ class Order extends MY_Controller
             }
         }
     }
+    //商家评论列表
+    public function comment_list(){
+        $shop_id = (int)$this->input->get_post('shop_id',true);
+        $pagesize = 10;//分页大小
+        $page     = (int)$this->input->get_post('page');
+        $page <= 1 ? $page = 1 : $page = $page;//当前页数
+        $where_data['select'] = 'o.id,o.order_id,o.level,o.service_level,o.environment_level,o.social_level,o.desc,k.nickname,k.headimgurl';
+        $where_data['join']   = array(
+            //array('goods_commet_image as m', 'o.order_id=m.order_id'),
+            array('member_oauth as k', 'o.m_id=k.id','left'),
+        );
+        $where_data['where']['o.shop_id'] = $shop_id;
+        $list = $this->loop_model->get_list('goods_comment as o', $where_data, $pagesize, $pagesize * ($page - 1), 'o.id desc');//列表
+        //获取图片
+        if($list){
+            foreach($list as $k=>$v){
+                $where_data1['where']['order_id'] =$v['order_id'];
+                $img_list = $this->loop_model->get_list('goods_comment_image', $where_data1, '', '', 'id desc');
+                $list[$k]['img_list'] = $img_list;
+            }
+        }
+        $this->ResArr['code'] = 200;
+        $this->ResArr['data'] = [
+            'list'=>$list,
+            'page_count'=> ceil($all_rows / $pagesize)
+        ];;
+        echo json_encode($this->ResArr);exit;
+    }
 }
