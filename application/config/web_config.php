@@ -7,6 +7,7 @@ $config['website_keywords'] = '商城系统';
 $config['website_desc'] = '商城系统';
 $config['website_icp'] = '';
 $config['goods_list_pagesize'] = '10';
+$config['shop_list_pagesize'] = '10';
 $config['goods_list_orderby'] = 'up_time';
 $config['goods_list_orderby_type'] = 'desc';
 $config['cache_type'] = 'file';
