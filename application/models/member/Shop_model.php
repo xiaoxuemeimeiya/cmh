@@ -256,7 +256,6 @@ class Shop_model extends CI_Model
 
                 $query      = $this->db->get();
                 $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
-
                 $goods_count = $this->db->count_all_results();
                 $page_count  = ceil($goods_count / $limit);
                 $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
