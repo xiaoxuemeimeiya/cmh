@@ -164,6 +164,9 @@ class Shop_model extends CI_Model
         if($search_where['shop_name']){
             $this->db->like('shop_name', $search_where['shop_name']);
         }
+        if($search_where['status']){
+            $this->db->where('status', $search_where['status']);
+        }
 
         //分页
         $page = (int)$search_where['page'];//是否有传入参数
