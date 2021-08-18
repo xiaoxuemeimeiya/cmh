@@ -246,6 +246,7 @@ class Shop_model extends CI_Model
                 $this->db->where('shop_id',$shop_id);
                 //$this->db->where('cat_id',$type);
                 $this->db->where('cat_type',$type);
+                $this->db->where('status',0);//正常商品
 
                 //分页
                 $page = (int)$page;//是否有传入参数
@@ -284,6 +285,7 @@ class Shop_model extends CI_Model
                 $this->db->select($select);
                 $this->db->where('shop_id',$shop_id);
                 $this->db->where('cat_type',$type);
+                $this->db->where('status',0);//正常商品
                 $query      = $this->db->get();
                 $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
         }
