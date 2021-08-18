@@ -139,7 +139,7 @@ class Shop_model extends CI_Model
 
     function search($search_where,$distance){
         $this->db->from('member_shop as g');
-        $select = 'm_id,shop_name,logo,cove_img,tel,email,business_license,prov,desc,goods_comment,level,banner_url,address';
+        $select = 'g.m_id,g.shop_name,g.logo,g.cove_img,g.tel,g.email,g.business_license,g.prov,g.desc,g.goods_comment,g.level,g.banner_url,g.address';
         //$this->db->select('m_id,shop_name,logo,tel,email,business_license,prov,ga.area_name as city,gae.area_name as area,address,desc,goods_comment,level,banner_url');
 
         if($search_where['city']){
@@ -159,14 +159,16 @@ class Shop_model extends CI_Model
             $this->db->where('gae.area_name',$search_where['area']);
 
         }
+        if($search_where['shop_name']){
+            $this->db->like('g.shop_name', $search_where['shop_name']);
+        }
+        if(isset($search_where['status'])){
+            $this->db->where('g.status', $search_where['status']);
+        }
+
         $this->db->select($select);
 
-        if($search_where['shop_name']){
-            $this->db->like('shop_name', $search_where['shop_name']);
-        }
-        if($search_where['status']){
-            $this->db->where('status', $search_where['status']);
-        }
+
 
         //分页
         $page = (int)$search_where['page'];//是否有传入参数
@@ -177,7 +179,7 @@ class Shop_model extends CI_Model
 
         //根据位置帅选
         $query      = $this->db->get();
-        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
+        $goods_data = $query->result_array();echo $this->db->last_query()."<br>";
         //根据位置排序
         return $goods_data;
         //$this->db->order_by('sortnum', 'asc');
