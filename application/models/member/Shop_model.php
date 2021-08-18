@@ -264,6 +264,10 @@ class Shop_model extends CI_Model
                 $goods_list = $query->result_array();//echo $this->db->last_query()."<br>";
                 $goods_count = $this->db->count_all_results();
                 $page_count  = ceil($goods_count / $limit);
+                foreach ($goods_list as $v => $k) {
+                    $goods_list[$v]['market_price'] = format_price($k['market_price']);
+                    $goods_list[$v]['sell_price'] = format_price($k['sell_price']);
+                }
                 $reslut_array = array('goods_list' => $goods_list, 'page_count' => $page_count);
         }
 
