@@ -179,7 +179,7 @@ class Shop_model extends CI_Model
 
         //根据位置帅选
         $query      = $this->db->get();
-        $goods_data = $query->result_array();echo $this->db->last_query()."<br>";
+        $goods_data = $query->result_array();//echo $this->db->last_query()."<br>";
         //根据位置排序
         return $goods_data;
         //$this->db->order_by('sortnum', 'asc');
