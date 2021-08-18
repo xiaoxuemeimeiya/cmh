@@ -32,6 +32,7 @@ class Shop extends CI_Controller
         if (!empty($area)) {
             $search_where['area'] = $area;
         }
+        $search_where['status'] = 0;
         $search_where['page'] = $page;
         //查询数据
         $res_data = $this->shop_model->search($search_where,'');
