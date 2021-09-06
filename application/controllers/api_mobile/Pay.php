@@ -58,7 +58,7 @@ class Pay extends CI_Controller
         $input->SetTime_expire(date("YmdHis", time() + 600));
         $input->SetSubMch_id('1608890757');
         $input->SetReceipt("Y");
-        $input->SetProfit_sharing("Y");
+        $input->SetProfit_sharing("Y");//是否分账
         $input->SetGoods_tag($pay_data["order_body"]);
         //$input->SetNotify_url("https://".$_SERVER["SERVER_NAME"]."/miniapp/notify");
         $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
@@ -225,7 +225,6 @@ class Pay extends CI_Controller
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::subunifiedOrder($config, $input);
-        var_dump($order);
 
         if($order["return_code"]=="SUCCESS"){
             //lyLog(var_export($order,true) , "oncourse" , true);
@@ -259,7 +258,6 @@ class Pay extends CI_Controller
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::reunifiedOrder($config, $input);
-        var_dump($order);
 
         if($order["return_code"]=="SUCCESS"){
             //lyLog(var_export($order,true) , "oncourse" , true);
@@ -295,7 +293,6 @@ class Pay extends CI_Controller
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::finishunifiedOrder($config, $input);
-        var_dump($order);
 
         if($order["return_code"]=="SUCCESS"){
             //lyLog(var_export($order,true) , "oncourse" , true);

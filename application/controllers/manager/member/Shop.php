@@ -99,7 +99,7 @@ class Shop extends CI_Controller
     }
 
     /**
-     * 添加收账方
+     * 修改收账方
      */
     public function add_mch_edit($m_id){
         $m_id = (int)$m_id;

@@ -34,7 +34,9 @@ class Shop_model extends CI_Model
             'area'             => $data_post['area'],
             'address'          => $data_post['address'],
             'desc'             => $data_post['desc'],
+            'mch_id'           => $data_post['mch_id'],
         );
+        $update_data['status'] = 2;
 
         if (empty($update_data['shop_name'])) return '店铺名称不能为空';
         if (empty($update_data['logo'])) return '店铺LOGO不能为空';
