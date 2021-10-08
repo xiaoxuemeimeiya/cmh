@@ -26,7 +26,7 @@ class Info extends MY_Controller
             $this->ResArr["code"] = 200;
             $this->ResArr["card"] = 0;
         }
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
    /**
@@ -41,13 +41,13 @@ class Info extends MY_Controller
         if(!$mobile || !$name || !$position){
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $this->load->helpers('form_validation_helper');
         if(!is_mobile($mobile)){
             $this->ResArr["code"] = 6;
             $this->ResArr["msg"] = '手机号码格式错误请不要加0或86';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //判断该手机是否申请过
         $checkinWhere["mobile"] = $mobile;
@@ -55,7 +55,7 @@ class Info extends MY_Controller
         if($count){
             $this->ResArr["code"] = 10;
             $this->ResArr["msg"] = '改手机号已领取过';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //cache('save', 'sms_code' . $mobile, array('code' => 464835, 'time' => time()), 600);//写入缓存,测试用
                     
@@ -65,11 +65,11 @@ class Info extends MY_Controller
         if (time() - $server_code['time'] > 300) {
             $this->ResArr["code"] = 8;
             $this->ResArr["msg"] = '验证码已经过期';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         } elseif ($server_code['code'] != $code) {
             $this->ResArr["code"] = 9;
             $this->ResArr["msg"] = '验证码错误';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         */
         $addData['m_id'] = $getData['m_id'];
@@ -80,11 +80,11 @@ class Info extends MY_Controller
         if($res > 0){
             $this->ResArr['code'] = 200;
             $this->ResArr['msg'] = '获取成功';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }else{
             $this->ResArr['code'] = 1001;
             $this->ResArr['msg'] = '获取失败';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         } 
     }
 

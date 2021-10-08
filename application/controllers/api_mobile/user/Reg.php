@@ -27,7 +27,7 @@ class Reg extends CI_Controller
             $this->ResArr['msg'] = $exception->getMessage();
             $this->ResArr['code'] = $exception->getCode();
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
 
     }
 
@@ -38,7 +38,7 @@ class Reg extends CI_Controller
         if(empty($code)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //获取appid,appsecrect
         $smallapp_appid  = config_item('miniApp_appid');//appid
@@ -50,7 +50,7 @@ class Reg extends CI_Controller
             if(isset($info["errcode"])){
                 $this->ResArr['code'] = $info["errcode"];
                 $this->ResArr['msg'] = $info["errmsg"];
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
             $info["userin"] = false;
             //会话密钥
@@ -93,7 +93,7 @@ class Reg extends CI_Controller
                     cache('save', 'user_token_' . $user_data['id'], $token, time() + 30 * 24 * 3600);//保存token
                     $this->ResArr['code'] = 200;
                     $this->ResArr['data'] = $tokenData;
-                    echo json_encode($this->ResArr);exit;
+                    echo ch_json_encode($this->ResArr);exit;
                 } else {
                     //用户不存在
                     $addDAta["is_true"] = 0;
@@ -115,19 +115,19 @@ class Reg extends CI_Controller
                     cache('save', 'user_token_' . $user_data['id'], $token, time() + 30 * 24 * 3600);//保存token
                     $this->ResArr['code'] = 200;
                     $this->ResArr['data'] = $tokenData;
-                    echo json_encode($this->ResArr);exit;
+                    echo ch_json_encode($this->ResArr);exit;
                 }
             }else{
                 //拒绝会话密钥
                 $this->ResArr['code'] = 4;
                 $this->ResArr['msg'] = '用户拒绝授权';
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
 
         }else{
             $this->ResArr['code'] = 1002;
             $this->ResArr['msg'] = '配置异常';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
     }
 
@@ -140,7 +140,7 @@ class Reg extends CI_Controller
         if(sizeof($getData)=="0"){
             $this->ResArr["code"] = "3";
             $this->ResArr["msg"] = "参数不能为空！";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
 
         require(APPPATH . 'third_party/wx/wxBizDataCrypt.php');
@@ -155,7 +155,7 @@ class Reg extends CI_Controller
             if(!isset($data["openId"])||strlen($data["openId"])=="0"){
                 $this->ResArr["code"] = "40002";
                 $this->ResArr["msg"] = "error,checkout sid!".$data["openId"];
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
             $sex  = ($data["gender"]==1)?"1":"0";
             $addData['appid']               = $smallapp_appid;
@@ -245,17 +245,17 @@ class Reg extends CI_Controller
                 $this->ResArr['code'] = 200;
 				$this->ResArr['data'] = $tokenData;
                 $this->ResArr['msg'] = '数据更新成功';
-                echo json_encode($this->ResArr);
+                echo ch_json_encode($this->ResArr);
             }else{
                 $this->ResArr['code'] = 1001;
                 $this->ResArr['msg'] = '数据更新失败';
-                echo json_encode($this->ResArr);
+                echo ch_json_encode($this->ResArr);
             }
 
         } else {
             $this->ResArr["code"] = $errCode;
             $this->ResArr["msg"] = '获取用户信息失败';
-            echo json_encode($this->ResArr);
+            echo ch_json_encode($this->ResArr);
         }
 
     }
@@ -269,7 +269,7 @@ class Reg extends CI_Controller
         if(sizeof($getData)=="0"){
             $this->ResArr["code"] = "3";
             $this->ResArr["msg"] = "参数不能为空！";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
 
         require(APPPATH . 'third_party/wx/wxBizDataCrypt.php');
@@ -302,17 +302,17 @@ class Reg extends CI_Controller
                 $this->ResArr['code'] = 200;
                 $this->ResArr['data'] = $addData['phone'];
                 $this->ResArr['msg'] = '数据更新成功';
-                echo json_encode($this->ResArr);
+                echo ch_json_encode($this->ResArr);
             }else{
                 $this->ResArr['code'] = 1001;
                 $this->ResArr['msg'] = '数据更新失败';
-                echo json_encode($this->ResArr);
+                echo ch_json_encode($this->ResArr);
             }
 
         } else {
             $this->ResArr["code"] = $errCode;
             $this->ResArr["msg"] = '获取信息失败';
-            echo json_encode($this->ResArr);
+            echo ch_json_encode($this->ResArr);
         }
 
     }
@@ -369,7 +369,7 @@ class Reg extends CI_Controller
         if (!$mobile) {
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         /*
         $origin = $_SERVER['HTTP_ORIGIN'] ;
@@ -379,7 +379,7 @@ class Reg extends CI_Controller
         if(!in_array($origin,$arr)){
             $this->ResArr["code"] = 4;
             $this->ResArr["msg"] = '请不要恶意刷验证码';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
 
         }
         */
@@ -402,16 +402,16 @@ class Reg extends CI_Controller
             if ($res->Code == 'OK') {
                 $this->ResArr["code"] = 200;
                 $this->ResArr["msg"] = "发送成功";
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             } else {
                 $this->ResArr["code"] = 7;
                 $this->ResArr["msg"] = $res->Message;
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
         } else {
             $this->ResArr["code"] = 6;
             $this->ResArr["msg"] = '手机号码格式错误请不要加0或86';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
     }
 

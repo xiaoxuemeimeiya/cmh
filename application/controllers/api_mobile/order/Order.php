@@ -109,7 +109,7 @@ class Order extends MY_Controller
            'list'=>$order_list,
            'page_count'=> ceil($all_rows / $pagesize)
        ];;
-       echo json_encode($this->ResArr);exit;
+       echo ch_json_encode($this->ResArr);exit;
    }
 
     /**
@@ -121,13 +121,13 @@ class Order extends MY_Controller
         if (empty($post_data['id'])){
             $this->ResArr['code'] = 15;
             $this->ResArr['msg'] = '订单id不能为空';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,status,sku_price_real,addtime,paytime');
         if (!$order_data){
             $this->ResArr['code'] = 16;
             $this->ResArr['msg'] = '该订单不存在';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname,headimgurl');
         $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'shop_id,name,image,start_time,end_time');
@@ -140,7 +140,7 @@ class Order extends MY_Controller
         $order_data['end_time'] = $good['end_time'];
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = $order_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -154,7 +154,7 @@ class Order extends MY_Controller
         if (empty($good_id)) {
             $this->ResArr["code"] = 14;
             $this->ResArr["msg"]= '缺失商品id';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $payment_id    = 3;//支付方式（微信支付）
         /*
@@ -165,14 +165,14 @@ class Order extends MY_Controller
         if(count($orderData) > 0){
             $this->ResArr["code"] = 11;
             $this->ResArr["msg"]= '该商品已购买';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         */
         $goodData = $this->loop_model->get_where('goods',array('id'=>$good_id,'status'=>0));
         if(!$goodData){
             $this->ResArr["code"] = 12;
             $this->ResArr["msg"]= '该商品已下架';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //组合订单数据
         $order_data = array(
@@ -210,7 +210,7 @@ class Order extends MY_Controller
                 if(!$res){
                     $this->ResArr["code"] = 13;
                     $this->ResArr["msg"]= '生成订单失败 ';
-                    echo json_encode($this->ResArr);exit;
+                    echo ch_json_encode($this->ResArr);exit;
                 }
                 //插入数据
                 $date_insert['order_id'] = $res;
@@ -225,14 +225,14 @@ class Order extends MY_Controller
                 //限量商品，请选择时间
                 $this->ResArr["code"] = 12;
                 $this->ResArr["msg"]= '请选择购买的使用时间';
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
         }else{
             $res = $this->order_model->add($order_data,'');
             if(!$res){
                 $this->ResArr["code"] = 13;
                 $this->ResArr["msg"]= '生成订单失败 ';
-                echo json_encode($this->ResArr);exit;
+                echo ch_json_encode($this->ResArr);exit;
             }
         }
 
@@ -289,13 +289,13 @@ class Order extends MY_Controller
             $this->ResArr["code"] = 200;
             $this->ResArr["pay"] = 1;
             $this->ResArr["msg"]= '支付成功';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         } else {
             $this->ResArr["code"] = 200;
             $this->ResArr["pay"] = 0;
             $this->ResArr["data"] = $order_no;
             $this->ResArr["msg"]= '生成订单请去支付';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
     }
 
@@ -407,6 +407,6 @@ class Order extends MY_Controller
             'list'=>$list,
             'page_count'=> ceil($all_rows / $pagesize)
         ];;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encodech_json_encode($this->ResArr);exit;
     }
 }

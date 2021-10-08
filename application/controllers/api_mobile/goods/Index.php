@@ -39,7 +39,7 @@ class Index extends MY_Controller
         }
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $res_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
 
     }
     /*
@@ -50,7 +50,7 @@ class Index extends MY_Controller
         $list = $this->goods_model->search($search_where, '');
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $list;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
     */
 
@@ -65,7 +65,7 @@ class Index extends MY_Controller
         $list = $this->loop_model->get_list('adv', $where);
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $list;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -79,7 +79,7 @@ class Index extends MY_Controller
         if (empty($cat_id)) {
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失cat_id";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //搜索条件
         $search_where = array(
@@ -103,7 +103,7 @@ class Index extends MY_Controller
 
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $res_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -119,7 +119,7 @@ class Index extends MY_Controller
         if (empty($shop_id)) {
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失$shop_id";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $search_where['shop_id'] = $shop_id;
         //热门
@@ -137,7 +137,7 @@ class Index extends MY_Controller
      
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $res_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
     /**
      * 商品详情
@@ -148,14 +148,14 @@ class Index extends MY_Controller
         if(!$id){
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $this->load->model('goods/goods_model');
         $item = $this->goods_model->get_id($id);
         if(!$item){
             $this->ResArr["code"] =17;
             $this->ResArr["msg"] = "商品不存在或者已下架";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //查看用户是否购买过此商品(商品可多次购买)
         /*
@@ -226,7 +226,7 @@ class Index extends MY_Controller
         $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
 

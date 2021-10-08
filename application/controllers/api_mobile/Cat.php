@@ -26,7 +26,7 @@ class Cat extends CI_Controller
         $list_data            = $this->loop_model->get_list('goods_category', $where_data, '', '', 'sortnum asc,id asc');
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $list_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
 
     }
 

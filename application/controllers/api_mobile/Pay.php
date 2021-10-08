@@ -21,7 +21,7 @@ class Pay extends CI_Controller
         if (empty($order_no)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_price  = 0;
         $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 1));
@@ -31,7 +31,7 @@ class Pay extends CI_Controller
         } else {
             $this->ResArr['code'] = 101;
             $this->ResArr['msg'] = '订单信息错误,或者订单已支付';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $payment_id      = 3;//微信支付
         $pay_data = array(
@@ -77,7 +77,7 @@ class Pay extends CI_Controller
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = "pay data error!";
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
     }
 
     /**
@@ -163,7 +163,7 @@ class Pay extends CI_Controller
         if (empty($order_no)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         //获取特约商户的信息
 
@@ -194,7 +194,7 @@ class Pay extends CI_Controller
             $this->ResArr['msg'] = $order["err_code"];
             $this->ResArr['data'] = $order["err_code_des"];
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
     }
     /**分账**/
     public function sub_pay(){
@@ -202,7 +202,7 @@ class Pay extends CI_Controller
         if (empty($order_no)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
 
@@ -234,7 +234,7 @@ class Pay extends CI_Controller
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = "pay data error!";
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
     }
 
     /**查询订单待分账金额*/
@@ -243,7 +243,7 @@ class Pay extends CI_Controller
         if (empty($order_no)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
 
@@ -267,7 +267,7 @@ class Pay extends CI_Controller
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = "pay data error!";
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
     }
 
     /**完结分账*/
@@ -276,7 +276,7 @@ class Pay extends CI_Controller
         if (empty($order_no)) {
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = '参数缺失';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
         $this->load->library('minipay/WxPayApi');
@@ -302,7 +302,7 @@ class Pay extends CI_Controller
             $this->ResArr['code'] = 3;
             $this->ResArr['msg'] = "pay data error!";
         }
-        echo json_encode($this->ResArr);
+        echo ch_json_encode($this->ResArr);
     }
     public function notify_cash (){
         $postStr = file_get_contents("php://input");

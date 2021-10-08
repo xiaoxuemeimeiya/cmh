@@ -40,7 +40,7 @@ class Invite extends MY_Controller
             'list'=>$card,
             'page_count'=> ceil($all_rows / $pagesize)
         ];
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -93,7 +93,7 @@ class Invite extends MY_Controller
            'list'=>$order_list,
            'page_count'=> ceil($all_rows / $pagesize)
        ];
-       echo json_encode($this->ResArr);exit;
+       echo ch_json_encode($this->ResArr);exit;
    }
 
     /**
@@ -105,13 +105,13 @@ class Invite extends MY_Controller
         if (empty($post_data['id'])){
             $this->ResArr['code'] = 200;
             $this->ResArr['msg'] = '订单id不能为空';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,payment_status,status,convert(order_price/10000,decimal(10,2)) as order_price,convert(sku_price_real/10000,decimal(10,2)) as sku_price_real,,addtime,paytime');
         if (!$order_data){
             $this->ResArr['code'] = 200;
             $this->ResArr['msg'] = '该订单不存在';
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $user = $this->loop_model->get_where('user',array('id'=>$order_data['m_id']),'nickname');
         $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'name');
@@ -119,7 +119,7 @@ class Invite extends MY_Controller
         $order_data['name'] = $good['name'];
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = $order_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -176,7 +176,7 @@ class Invite extends MY_Controller
             'list'=>$order_list,
             'page_count'=> ceil($all_rows / $pagesize)
         ];
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -220,7 +220,7 @@ class Invite extends MY_Controller
             'list'=>$order_list,
             'page_count'=> ceil($all_rows / $pagesize)
         ];
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
 
     }
 

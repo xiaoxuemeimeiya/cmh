@@ -36,7 +36,7 @@ class Upload extends CI_Controller
                 $this->ResArr['msg'] = $res['error'];
             }
             //echo json_encode($res);
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
     }
 }

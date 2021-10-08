@@ -39,7 +39,7 @@ class Shop extends CI_Controller
 
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]['goods'] = $res_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     //店铺详情
@@ -48,13 +48,13 @@ class Shop extends CI_Controller
         if(!$shop_id){
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         $this->load->model('member/shop_model');
         $res_data = $this->shop_model->shop_detail($shop_id);
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $res_data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     /**
@@ -67,7 +67,7 @@ class Shop extends CI_Controller
         if(!$shop_id){
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         switch($type){
             case 2:
@@ -84,7 +84,7 @@ class Shop extends CI_Controller
         }
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
     //店铺优惠券/套餐
@@ -96,7 +96,7 @@ class Shop extends CI_Controller
         if(!$shop_id){
             $this->ResArr["code"] = 3;
             $this->ResArr["msg"] = "参数缺失";
-            echo json_encode($this->ResArr);exit;
+            echo ch_json_encode($this->ResArr);exit;
         }
         switch($type){
             case 2:
@@ -146,7 +146,7 @@ class Shop extends CI_Controller
         }
         $this->ResArr["code"] = 200;
         $this->ResArr["data"] = $data;
-        echo json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
     }
 
 
