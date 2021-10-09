@@ -218,12 +218,12 @@ class Index extends MY_Controller
                 }
                 $item['date'][] = $date_item;
             }
+            $this->load->model('goods/shop_category_model');
+            $detail = $this->shop_category_model->get_all_name_cat1($item['id'],0);
+            $item['desc'] = $detail;
+            $need_know = $this->shop_category_model->get_all_name_cat2($item['id'],0);
+            $item['need_know'] = $need_know;
         }
-        $this->load->model('goods/shop_category_model');
-        $detail = $this->shop_category_model->get_all_name_cat1($item['id'],0);
-        $item['desc'] = $detail;
-        $need_know = $this->shop_category_model->get_all_name_cat2($item['id'],0);
-        $item['need_know'] = $need_know;
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
         echo ch_json_encode($this->ResArr);exit;
