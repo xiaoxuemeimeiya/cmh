@@ -369,7 +369,6 @@ class Goods_model extends CI_Model
                 }
 
             }
-            exit;
             return 'y';
         } else {
             return '信息保存失败';
