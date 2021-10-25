@@ -26,16 +26,17 @@
 			<label class="form-label col-2"><span class="c-red">*</span>分类栏目：</label>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="cat_id" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
+					<option value="3">商品服务</option>
+					<!--
 					<option value="">请选择分类</option>
-					<!--分类模板-->
 					<{function name=type level=0}>
 					<{foreach $data as $key}>
 						<option value="<{$key.id}>"><{section name=loop loop=$level}>├<{/section}><{$key.name}></option>
 					<{call name=type data=$key.down level=$level+1}>
 					<{/foreach}>
 					<{/function}>
-					<!--调用模板函数-->
 					<{call name=type data=$cat_list}>
+					分类模板-->
 				</select>
 				</span>
 			</div>

@@ -42,15 +42,8 @@
 		</div>
 		<div class="row cl">
 			<label class="form-label col-2"><span class="c-red">*</span>分类栏目：</label>
-			<{if $item}>
-			<div class="formControls col-2">
-				<input type="hidden" name="cat_id" value="1">
-				<span class="select-box cat-name">优惠券</span>
-			</div>
-			<{else}>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="cat_id" class="select" datatype="*" nullmsg="请选择分类" onchange="cat_id_select(this.value)">
-					<option value="">请选择分类</option>
 					<option value="1">优惠券</option>
 					<!--分类模板-->
 					<!--
@@ -61,12 +54,9 @@
 					<{/foreach}>
 					<{/function}>
 					-->
-					<!--调用模板函数-->
-					<{call name=type data=$cat_list}>
 				</select>
 				</span>
 			</div>
-			<{/if}>
 			<label class="form-label col-1"><span class="c-red">*</span>商户：</label>
 			<div class="formControls col-2"> <span class="select-box">
 				<select name="shop_id" class="select">
