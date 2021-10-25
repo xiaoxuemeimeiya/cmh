@@ -139,7 +139,7 @@ class Goods extends CI_Controller
         if (is_post()) {
             $data_post = $this->input->post(NULL, true);
             $this->load->model('goods/goods_model');
-            $res = $this->goods_model->update($data_post, 0,'');
+            $res = $this->goods_model->update($data_post, 0,3);
             error_json($res);
         } else {
             error_json('提交方式错误');
