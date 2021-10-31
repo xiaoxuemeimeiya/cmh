@@ -561,7 +561,7 @@ class Goods_model extends CI_Model
             //*******************************************************
             $this->db->from('goods as g');
             //$this->db->select('g.id,name,cat_id,brand_id,shop_id,image');
-            $this->db->select('g.id,g.name,sub_name,image,f.shop_name');
+            $this->db->select('g.id,g.name,sub_name,image,f.shop_name,g.sell_price,g.market_price');
 
             //搜索条件
             if (!empty($cat_id)) $this->db->where_in('g.cat_id', $cat_id);
