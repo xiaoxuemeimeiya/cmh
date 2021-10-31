@@ -57,6 +57,10 @@
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/seller/goods/goods/update_status/')}>?status=4')" class="btn btn-danger radius">审核拒绝</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/seller/goods/goods/update_flag/')}>?type=is_shop_flag&value=1')" class="btn btn-primary radius">推荐</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/seller/goods/goods/update_flag/')}>?type=is_shop_flag&value=0')" class="btn btn-danger radius">取消推荐</a>
+		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/goods/goods/update_flag/')}>?type=is_hot&value=1')" class="btn btn-primary radius">火热爆款</a>
+		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/goods/goods/update_flag/')}>?type=is_hot&value=0')" class="btn btn-danger radius">取消火热爆款</a>
+		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/goods/goods/update_flag/')}>?type=is_new&value=1')" class="btn btn-primary radius">新品</a>
+		<a href="javascript:;" onclick="data_del(this,'<{site_url('/manager/goods/goods/update_flag/')}>?type=is_new&value=0')" class="btn btn-danger radius">取消新品</a>
 		<a href="javascript:;" onclick="data_del(this,'<{site_url('/seller/goods/goods/delete_recycle/')}>')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe60b;</i> 批量删除</a>
 		<a href="<{site_url('/seller/goods/goods/')}>?status=1" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe6e2;</i> 回收站</a>
 		<{/if}>
@@ -85,6 +89,8 @@
 				<td class="text-l">
 					<a target="_blank" href="<{site_url("/web/goods/product/<{$key.id}>")}>"><img width="30" height="30" class="album-img" src="<{$key.image}>"></a><{$key.name}>
 					<{if $key.is_shop_flag}><span class="label label-success radius">推荐</span><{/if}>
+					<{if $key.is_hot}><span class="label label-success radius">火热爆款</span><{/if}>
+					<{if $key.is_new}><span class="label label-success radius">新品</span><{/if}>
 				</td>
 				<td class="text-l"><{$key.cat_name}></td>
 				<td class="text-l"><{$key.store_nums}></td>

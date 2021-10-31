@@ -55,6 +55,7 @@ class Setting extends CI_Controller
                 'tel'          => $data_post['tel'],
                 'email'        => $data_post['email'],
                 'customer_url' => $data_post['customer_url'],
+                'cove_img'     => $data_post['cove_img'],
                 'prov'         => $data_post['prov'],
                 'city'         => $data_post['city'],
                 'area'         => $data_post['area'],
