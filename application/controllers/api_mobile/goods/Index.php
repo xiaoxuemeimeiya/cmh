@@ -235,5 +235,33 @@ class Index extends MY_Controller
         echo ch_json_encode($this->ResArr);exit;
     }
 
+     /**
+     * 商品详情
+     */
+    public function fdetail()
+    {
+        $id = $this->input->get_post('id', true);
+        if(!$id){
+            $this->ResArr["code"] = 3;
+            $this->ResArr["msg"] = "参数缺失";
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        $this->load->model('goods/goods_model');
+        $item = $this->goods_model->get_id($id);
+        if(!$item){
+            $this->ResArr["code"] =17;
+            $this->ResArr["msg"] = "商品不存在或者已下架";
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        //获取该详情的店铺
+        $detail = DB::table('my_member_shop')->field('shop_name,logo')->where('id',$id)->find();
+        $item['shop_name'] = $detail['name'];
+        $item['logo'] = $detail['logo'];
+        $this->ResArr["code"] = 200;
+        $this->ResArr["data"]= $item;
+        echo ch_json_encode($this->ResArr);exit;
+    }
+
+
 
 }

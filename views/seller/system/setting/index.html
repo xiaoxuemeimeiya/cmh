@@ -132,7 +132,7 @@
                 </table>
                 <!--属性模板-->
                 <script type='text/html' id='banner_list_Template'>
-                    {{each banner_url}}
+                    {{each banner_url as $k => $value}}
                     <tr class="text-c">
                         <td>
                             <input type="text" class="input-text" value="{{$value.name}}" name="banner_name[]">
@@ -218,6 +218,7 @@
         {
             data = {"banner_url":[{"name":"","link":"","url":""}]};
         }
+        var len = $('#banner_list').children().length;
         var html = template('banner_list_Template', data);
         $('#banner_list').append(html);
     }
