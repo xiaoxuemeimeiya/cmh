@@ -219,7 +219,8 @@
             data = {"banner_url":[{"name":"","link":"","url":""}]};
         }
         var html = template('banner_list_Template', data);
-        $('#banner_list').append(html);
+        //$('#banner_list').append(html);
+        $('#banner_list').prepend(html);
     }
 
     //向上移动

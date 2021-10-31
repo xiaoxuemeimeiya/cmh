@@ -216,11 +216,12 @@
         var data = arguments[0] ? arguments[0] :'';
         if(data=='')
         {
-            data = {"banner_url":[{"name":"","link":"","url":""}]};
+            data = {"banner_url":[{"name":"","link":"","url":""}]}; 
         }
         
         var html = template('banner_list_Template', data);
-        $('#banner_list').append(html);
+        //$('#banner_list').append(html);
+        $('#banner_list').prepend(html);
     }
 
     //向上移动
