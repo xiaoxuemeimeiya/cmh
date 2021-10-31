@@ -467,6 +467,7 @@ class Goods_model extends CI_Model
     {
         $this->db->from('member_shop');
         $this->db->select('m_id,shop_name,logo');
+        $this->db->where('status',0);
         $this->db->limit(6);
         $query      = $this->db->get();
         $shop_data = $query->result_array();
