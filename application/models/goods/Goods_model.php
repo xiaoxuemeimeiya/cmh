@@ -232,6 +232,11 @@ class Goods_model extends CI_Model
 
         //保存或者修改商品信息
         $this->load->model('loop_model');
+
+        if (!empty($data_post['image_list'])) {
+            $update_data['image'] = $data_post['image_list'][0];
+        }
+
         if (!empty($data_post['id'])) {
             //修改数据
             $where['id'] = (int)$data_post['id'];
