@@ -171,8 +171,7 @@ class Goods_model extends CI_Model
             'service'      => $data_post['service'] ? $data_post['service'] : '',
             'cat_type'     => $cat_type,
         );
-         $data_post['type'] ? $update_data['type'] == $data_post['type'] :'';
-       
+        $data_post['type'] ? $update_data['type'] = $data_post['type'] :'';
         $data_post['desc'] = remove_xss($this->input->post('desc'));//单独过滤详情xss
         $data_post['need_know'] = remove_xss($this->input->post('need_know'));//单独过滤详情xss
 
@@ -340,11 +339,11 @@ class Goods_model extends CI_Model
                 $date_list = $data_post['date'];
                 if($data_post['id']){
                     foreach($date_list as $k=>$v) {
-                        $where['year'] = date("Y", time());
-                        $where['goods_id'] = $data_post['id'];
-                        $where['month'] = $data_post['month'];
-                        $where['date'] = $v;
-                        $info = $this->loop_model->get_where('goods_date', $where);
+                        $where1['year'] = date("Y", time());
+                        $where1['goods_id'] = $data_post['id'];
+                        $where1['month'] = $data_post['month'];
+                        $where1['date'] = $v;
+                        $info = $this->loop_model->get_where('goods_date', $where1);
                         if (!$info) {
                             $add['year'] = date("Y", time());
                             $add['goods_id'] = $data_post['id'];
@@ -355,7 +354,7 @@ class Goods_model extends CI_Model
                             $info = $this->loop_model->insert('goods_date', $add);
                         } else {
                             $add['limit'] = $data_post['limit'][$v];
-                            $info = $this->loop_model->update_where('goods_date', $add, $where);
+                            $info = $this->loop_model->update_where('goods_date', $add, $where1);
                         }
                     }
                 }else{
