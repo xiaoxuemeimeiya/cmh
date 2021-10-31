@@ -223,6 +223,12 @@ class Index extends MY_Controller
             $item['desc'] = $detail;
             $need_know = $this->shop_category_model->get_all_name_cat2($item['id'],0);
             $item['need_know'] = $need_know;
+        }elseif($item['cat_type'] == 1 || $item['cat_type'] == 2){
+            $this->load->model('goods/shop_category_model');
+            $detail = $this->shop_category_model->get_all_name_cat1($item['id'],0);
+            $item['desc'] = $detail;
+            $need_know = $this->shop_category_model->get_all_name_cat2($item['id'],0);
+            $item['need_know'] = $need_know;
         }
         $this->ResArr["code"] = 200;
         $this->ResArr["data"]= $item;
