@@ -254,7 +254,7 @@ class Index extends MY_Controller
             echo ch_json_encode($this->ResArr);exit;
         }
         //获取该详情的店铺
-        $detail = $this->loop_model->get_id('member_shop', array('m_id' => $id),'shop_name,logo');
+        $detail = $this->loop_model->get_where('member_shop', array('m_id' => $id),'shop_name,logo');
         $item['shop_name'] = $detail['name'];
         $item['logo'] = $detail['logo'];
         $this->ResArr["code"] = 200;
