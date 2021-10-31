@@ -321,6 +321,10 @@
 			}
 		});
 
+
+        $('.cat-2').hide();
+        $('.cat-1').hide();
+
 	});
 
 	$("#add_date").click(function(){
@@ -505,10 +509,13 @@
         if(type == 2){
             $('.cat-1').show();
             $('.cat-2').hide();
-        }else{
+        }else if(type == 3){
             $('.cat-2').show();
             $('.cat-1').hide();
-        }
+        }else{
+			$('.cat-2').hide();
+            $('.cat-1').hide();
+		}
         var cat_id = 2;//套餐
 		//品牌
 		$.ajax({
