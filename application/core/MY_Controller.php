@@ -12,6 +12,7 @@ class MY_Controller extends CI_Controller {
         'api_mobile/goods/index/index',//首页列表
         'api_mobile/goods/index/goods_list',
         'api_mobile/goods/index/detail',
+        'api_mobile/goods/index/fdetail',
         'api_mobile/pay/do_pay',//支付
         'api_mobile/pay/callback/2/mobile',
         'api_mobile/user/info/validation_code',
