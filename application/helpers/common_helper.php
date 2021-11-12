@@ -77,6 +77,7 @@ if (!function_exists('curl_get')) {
 if (!function_exists('curl_post')) {
     function curl_post($url, $data)
     {
+        error_reporting(1);
         $ch = curl_init(); //初始化curl
         curl_setopt($ch, CURLOPT_URL, $url);//设置链接
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//设置是否返回信息
@@ -84,10 +85,14 @@ if (!function_exists('curl_post')) {
             'Content-Type:text/json;charset=utf-8',
             'Content-Length:' . strlen($data)
         ));//设置HTTP头*/
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_POST, 1);//设置为POST方式
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);//POST数据
         $res = curl_exec($ch);//接收返回信息
+        var_dump($res);
         curl_close($ch); //关闭curl链接
+
         return $res;
     }
 }

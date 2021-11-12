@@ -45,6 +45,38 @@ class Shop_model extends CI_Model
         if (!empty($data_post['m_id'])) {
             //查询是否会员是否注册
             $member_data = $this->loop_model->get_id('member', $data_post['m_id']);
+            //查看access_token是否过期
+            //查看是否有生成二维码
+            if(!file_exists("uploads/ercode/qr_".$data_post['m_id'].".png")){
+                if(cache('get', 'access_token')){
+                    $access_token = cache('get', 'access_token');
+                }else{
+                    $smallapp_appid  = config_item('miniApp_appid');//appid
+                    $smallapp_secret = config_item('miniApp_secret');//secret
+                    $gettokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$smallapp_appid."&secret=".$smallapp_secret;
+                    $result = curl_get($gettokenUrl);
+                    $info = json_decode($result,true);
+                    if(isset($info["errcode"])){
+                        $this->ResArr['code'] = $info["errcode"];
+                        $this->ResArr['msg'] = $info["errmsg"];
+                        echo ch_json_encode($this->ResArr);exit;
+                    }else{
+                        cache('save', 'access_token', $info['access_token'], time() + 7000);//保存token
+                        $access_token = $info['access_token'];
+                    }
+                }
+                error_reporting(1);
+                $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
+                $param['scene'] = 'shop_id='.$data_post['m_id'];
+                $param['width'] = 280;
+                $param['is_hyaline'] = false;
+                $param['page'] = "pages/main/store/store";
+                $param = json_encode($param);var_dump($param);
+                $res = curl_post($url,$param);
+                file_put_contents("uploads/ercode/qr_".$data_post['m_id'].".png", $res);
+                $update_data['ercode'] = "uploads/ercode/qr_".$data_post['m_id'].".png";
+            }
+
             if (!empty($member_data)) {
                 $member_shop_data = $this->loop_model->get_where('member_shop', array('m_id' => $data_post['m_id']));
                 if (!empty($member_shop_data)) {
@@ -53,6 +85,9 @@ class Shop_model extends CI_Model
                     $res                    = $this->loop_model->update_where('member_shop', $update_data, array('m_id' => $data_post['m_id']));
                 } else {
                     //增加
+                    //生成小程序二维码
+
+                    $ercode = '';
                     $update_data['addtime'] = time();
                     $update_data['endtime'] = time();
                     $update_data['m_id']    = $data_post['m_id'];
