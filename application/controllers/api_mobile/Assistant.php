@@ -116,7 +116,7 @@ class Assistant extends ST_Controller
      */
     public function login_out(){
         $m_id = $this->input->post('m_id');
-        cache('delete', 'assistant_token_' . $m_id, '');//保存token
+        cache('del', 'assistant_token_' . $m_id, '');//保存token
         $this->ResArr['code'] = 200;
         $this->ResArr['msg'] = '退出登录成功';
         echo ch_json_encode($this->ResArr);exit;
