@@ -62,6 +62,11 @@ class Menu_model extends CI_Model
                     '修改密码' => '/seller/system/admin/update_password',
                     '角色管理' => '/seller/system/role/index',
                 ),
+                '<i class="Hui-iconfont">&#xe605;</i> 店员' => array(
+                    '店员' => '/seller/system/assistant/index',
+                    /*'修改密码' => '/seller/system/assistant/update_password',
+                    '角色管理' => '/seller/system/assistant/index',*/
+                ),
             ),
         );
         return $menu_array[$type];
