@@ -182,13 +182,16 @@ class Order extends MY_Controller
             'payment_id'          => $payment_id,
             'good_id'             => $good_id,
             'status'              => 1,
-            'sku_price'           => price_format($goodData['market_price']),
-            'sku_price_real'      => price_format($goodData['sell_price']),
+            //'sku_price'           => price_format($goodData['market_price']),
+            //'sku_price_real'      => price_format($goodData['sell_price']),
+            'sku_price'           => $goodData['market_price'],
+            'sku_price_real'      => $goodData['sell_price'],
             'addtime'             => time(),
             'shop_id'             => $goodData['shop_id']
         );
         //订单总价
-        $order_data['order_price'] =price_format($goodData['sell_price']);
+        //$order_data['order_price'] =price_format($goodData['sell_price']);
+        $order_data['order_price'] =$goodData['sell_price'];
         if ($order_data['order_price'] <= 0) $order_data['order_price'] = 0;//订单少于0元的时候直接等于0元
 
         //查看该用户是否绑定其他用户
