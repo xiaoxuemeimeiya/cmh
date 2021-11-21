@@ -215,6 +215,8 @@ class Order extends MY_Controller
                 $array_day = explode('日',explode('月',$date)[1])[0];
                 $array_year = date("Y",time());
                 $order_data['date'] = mktime(0,0,0,$array_month,$array_day,$array_year);
+                $order_data['starttime'] = $order_data['date'];
+                $order_data['endtime'] = $order_data['date'] + 24*60*60 - 1;
                 $res = $this->order_model->add($order_data,'');
                 if(!$res){
                     $this->ResArr["code"] = 13;
@@ -237,6 +239,13 @@ class Order extends MY_Controller
                 echo ch_json_encode($this->ResArr);exit;
             }
         }else{
+            if($goodData['cat_type'] == 2 && $goodData['type'] == 3){
+                //月卡
+            }else{
+                //其他卡
+                $order_data['starttime'] = $goodData['start_time'];
+                $order_data['endtime'] = $goodData['end_time'];
+            }
             $res = $this->order_model->add($order_data,'');
             if(!$res){
                 $this->ResArr["code"] = 13;
