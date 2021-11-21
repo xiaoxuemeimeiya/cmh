@@ -76,18 +76,22 @@ class Notify extends CI_Controller
                     $this->loop_model->get_where('goods_date',$where_date)->setInc('use');
 
                 }
-                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
-                    //
-                    $where_date1['id']           = $checkRes['id'];
-                    $where_date1['status']             = 2;
-                    $where_up1['starttime'] = time();
-                    $where_up1['endtime'] = $where_up1['starttime']+30*24*3600;
-                    $res = $this->loop_model->update_where('order',$where_up1,$where_date1);
-
-                }
+                
 
             }
         }
+        lyLog(var_export($checkRes,true) , "paynotify11" , true);
+        if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
+            //
+            $where_date1['id']           = $checkRes['id'];
+            $where_date1['status']             = 2;
+            $where_up1['starttime'] = time();
+            $where_up1['endtime'] = $where_up1['starttime']+30*24*3600;
+            $res = $this->loop_model->update_where('order',$where_up1,$where_date1);
+
+        }
+        
+        lyLog(var_export($checkRes,true) , "paynotify11" , true);
     }
 
     public function set_phone($num,$message){
