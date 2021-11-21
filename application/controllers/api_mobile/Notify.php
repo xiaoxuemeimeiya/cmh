@@ -57,7 +57,8 @@ class Notify extends CI_Controller
                     $this->db->trans_commit();
                 }
                 lyLog(var_export($checkRes,true) , "paynotify11" , true);
-                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 2){
+                $goods = $this->loop_model->get_where('goods',['id'=>$checkRes['good_id']]);
+                if($goods['cat_type'] == 2 && $goods['type'] == 2){
                     //获取日期
                     $where_date['order_id']           = $checkRes['id'];
                     $date = $this->loop_model->get_where('order_limit_date',$where_date);
@@ -70,7 +71,7 @@ class Notify extends CI_Controller
 
                 }
 
-                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
+                if($goods['cat_type'] == 2 && $goods['type'] == 3){
                     //
                     $where_date1['id']           = $checkRes['id'];
                     $where_date1['status']             = 2;
