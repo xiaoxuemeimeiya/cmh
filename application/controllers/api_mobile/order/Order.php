@@ -123,22 +123,53 @@ class Order extends MY_Controller
             $this->ResArr['msg'] = '订单id不能为空';
             echo ch_json_encode($this->ResArr);exit;
         }
-        $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,status,sku_price_real,addtime,paytime');
+        $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id,m_id,good_id,order_no,status,order_price,addtime,paytime,starttime,endtime,ercode,code');
         if (!$order_data){
             $this->ResArr['code'] = 16;
             $this->ResArr['msg'] = '该订单不存在';
             echo ch_json_encode($this->ResArr);exit;
         }
         $user = $this->loop_model->get_where('member_oauth',array('id'=>$order_data['m_id']),'nickname,headimgurl');
-        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'shop_id,name,image,start_time,end_time');
+        $good = $this->loop_model->get_where('goods',array('id'=>$order_data['good_id']),'shop_id,name,image,cat_type,type,num');
         $shop = $this->loop_model->get_where('member_shop',array('m_id'=>$good['shop_id']),'shop_name');
         $order_data['nickname'] = $user['nickname'];
-        $order_data['sku_price_real'] = format_price($order_data['sell_price']);
+        $order_data['order_price'] = format_price($order_data['order_price']);
         $order_data['headimgurl'] = $user['headimgurl'];
         $order_data['name'] = $good['name'];
         $order_data['shop_name'] = $shop['shop_name'];
-        $order_data['start_time'] = $good['start_time'];
-        $order_data['end_time'] = $good['end_time'];
+        $order_data['starttime'] = $order_data['starttime'];
+        $order_data['endtime'] = $order_data['endtime'];
+        if($good['cat_type'] == 1){
+            $order_data['card_type'] = '优惠券';
+            $order_data['total'] = 1;
+            $order_data['per_price'] = $order_data['order_price'];
+            if($order_data['status'] == 4 || $order_data['status'] == 5){
+                $order_data['res'] = 0;
+            }else{
+                $order_data['res'] = 1;
+            }
+        }elseif($good['cat_type'] == 2){
+            if($good['type'] == 3){
+                //月卡
+                $order_data['card_type'] = '月卡券';
+                $order_data['total'] = $order_data['num'];
+                $order_data['res'] = $order_data['num'];
+                $order_data['per_price'] = $order_data['order_price']/$order_data['num'];
+            }else{
+                $order_data['card_type'] = '套餐券';
+                $order_data['total'] = 1;
+                $order_data['per_price'] = $order_data['order_price'];
+                if($order_data['status'] == 4 || $order_data['status'] == 5){
+                    $order_data['res'] = 0;
+                }else{
+                    $order_data['res'] = 1;
+                } 
+            }
+            
+        }else{
+            $order_data['card_type'] = '商品服务';
+        }
+        
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = $order_data;
         echo ch_json_encode($this->ResArr);exit;
