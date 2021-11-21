@@ -76,6 +76,15 @@ class Notify extends CI_Controller
                     $this->loop_model->get_where('goods_date',$where_date)->setInc('use');
 
                 }
+                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
+                    //
+                    $where_date['order_id']           = $checkRes['id'];
+                    $where_up['starttime'] = $updateData['paytime'];
+                    $where_up['endtime'] = $where_up['starttime']+30*24*3600;
+                    $res = $this->loop_model->update_where('order',$where_up,$where_date);
+
+                }
+
             }
         }
     }

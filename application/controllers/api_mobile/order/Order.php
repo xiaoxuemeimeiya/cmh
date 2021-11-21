@@ -140,7 +140,7 @@ class Order extends MY_Controller
         $order_data['starttime'] = $order_data['starttime'];
         $order_data['endtime'] = $order_data['endtime'];
         if($good['cat_type'] == 1){
-            $order_data['card_type'] = '优惠券';
+            $order_data['card_type'] = 1;
             $order_data['type'] = 1;
             $order_data['total'] = 1;
             $order_data['per_price'] = $order_data['order_price'];
@@ -156,7 +156,7 @@ class Order extends MY_Controller
                 $order_data['type'] = 2;
                 $order_data['total'] = $order_data['num'];
                 $order_data['res'] = $order_data['num'];
-                $order_data['per_price'] = $order_data['order_price']/$order_data['num'];
+                $order_data['per_price'] = $order_data['order_price']/$good['num'];
             }else{
                 if($good['type'] == 2){
                     $order_data['type'] = 3;
