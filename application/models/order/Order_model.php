@@ -46,25 +46,28 @@ class Order_model extends CI_Model
             $this->db->insert('order', $order_data);
             $res = $this->db->insert_id();
 
-            foreach ($sku_list as $key) {
-                $insert_data = array();
-                $insert_data = array(
-                    'order_id'            => $res,
-                    'goods_id'            => $key['goods_id'],
-                    'goods_name'          => $key['name'],
-                    'sku_id'              => $key['id'],
-                    'sku_no'              => $key['sku_no'],
-                    'sku_image'           => $key['image'],
-                    'sku_num'             => $key['num'],
-                    'sku_market_price'    => price_format($key['market_price']),
-                    'sku_sell_price_real' => price_format($key['sell_price']),
-                    'sku_weight'          => $key['weight'],
-                    'sku_value'           => ch_json_encode($key['value']),
-                    'shop_id'             => $key['shop_id'],
-                );
-                $this->db->insert('order_sku', $insert_data);
-                self::update_store_nums($key['id'], $key['num'], 'reduce');//更新商品库存
+            if($sku_list){
+                foreach ($sku_list as $key) {
+                    $insert_data = array();
+                    $insert_data = array(
+                        'order_id'            => $res,
+                        'goods_id'            => $key['goods_id'],
+                        'goods_name'          => $key['name'],
+                        'sku_id'              => $key['id'],
+                        'sku_no'              => $key['sku_no'],
+                        'sku_image'           => $key['image'],
+                        'sku_num'             => $key['num'],
+                        'sku_market_price'    => price_format($key['market_price']),
+                        'sku_sell_price_real' => price_format($key['sell_price']),
+                        'sku_weight'          => $key['weight'],
+                        'sku_value'           => ch_json_encode($key['value']),
+                        'shop_id'             => $key['shop_id'],
+                    );
+                    $this->db->insert('order_sku', $insert_data);
+                    self::update_store_nums($key['id'], $key['num'], 'reduce');//更新商品库存
+                }
             }
+            
             $this->db->trans_complete();
         }
 /*

@@ -210,6 +210,11 @@ class Order extends MY_Controller
         if($goodData['cat_type'] == 2 && $goodData['type'] == 2){
             //判断是否传日期
             if(!empty($this->input->get_post('date'))){
+                $date = $this->input->get_post('date');
+                $array_month = explode('月',$date)[0];
+                $array_day = explode('日',explode('月',$date)[1])[0];
+                $array_year = date("Y",time());
+                $order_data['date'] = mktime(0,0,0,$array_month,$array_day,$array_year);
                 $res = $this->order_model->add($order_data,'');
                 if(!$res){
                     $this->ResArr["code"] = 13;

@@ -110,6 +110,68 @@ class Assistant extends ST_Controller
         $list['consume_money']= $make_out[0]['total_amount'] ;
         error_json($list);
     }
+
+    
+    /**
+     * 我的订单列表
+     * type(null-全部订单，1-待付款，2-已支付，3-待收货，4-已完成，5-已退款，6-已取消，10-退款/售后）
+     * status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
+     * */
+   public function order_list()
+   {
+       //自动执行start********************************************
+       $m_id     = (int)$this->input->get_post('m_id');
+       //根据店员获取店铺
+       $shop_data = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,shop_id');
+       $where_data['where']['o.shop_id'] = $shop_data['shop_id'];
+       $this->load->model('order/order_model');
+       $this->order_model->auto_cancel();//自动取消超时的订单
+       $this->order_model->auto_confirm();//自动确认超时的订单
+       //自动执行end**********************************************
+
+       $pagesize = 10;//分页大小
+       $page     = (int)$this->input->get_post('page');
+       $page <= 1 ? $page = 1 : $page = $page;//当前页数
+       //搜索条件start
+       
+       //状态
+        $where_data['sql'] = '((o.status=2) or (o.status=3) or (o.status=4) or (o.status=5))';
+        
+       //支付状态
+       $where_data['where']['payment_status'] = 1;
+
+       //关键字
+       /*
+       $keyword_where = $this->input->get_post('keyword_where');
+       $keyword       = $this->input->get_post('keyword');
+       if (!empty($keyword_where) && !empty($keyword)) $where_data['where'][$keyword_where] = $keyword;
+       $search_where = array(
+           'keyword_where'  => $keyword_where,
+           'keyword'        => $keyword,
+       );
+       */
+
+       //搜索条件end
+       $where_data['select'] = "o.id,o.order_no,FROM_UNIXTIME(o.offtime,'%Y-%m-%d %H:%i:%s') offtime,o.status,round(o.sku_price_real / 100, 2) as sku_price_real,FROM_UNIXTIME(o.paytime,'%Y-%m-%d %H:%i:%s') paytime,m.nickname,m.headimgurl,k.name,k.image,s.m_id as shop_id,s.shop_name,FROM_UNIXTIME(k.start_time,'%Y-%m-%d %H:%i:%s') start_time,FROM_UNIXTIME(k.end_time,'%Y-%m-%d %H:%i:%s') end_time";
+       $where_data['join']   = array(
+           array('member_oauth as m', 'o.m_id=m.id'),
+           array('goods as k', 'o.good_id=k.id'),
+           array('member_shop as s', 's.m_id=o.shop_id'),
+       );
+       //查到数据
+       $order_list = $this->loop_model->get_list('order as o', $where_data, $pagesize, $pagesize * ($page - 1), 'o.id desc');//列表
+       //assign('list', $order_list);
+       //开始分页start
+       $all_rows = $this->loop_model->get_list_num('order as o', $where_data);//所有数量
+       //assign('page_count', ceil($all_rows / $pagesize));
+       //开始分页end
+       $this->ResArr['code'] = 200;
+       $this->ResArr['data'] = [
+           'list'=>$order_list,
+           'page_count'=> ceil($all_rows / $pagesize)
+       ];;
+       echo ch_json_encode($this->ResArr);exit;
+   }
     
     /**
      * 推出登录
