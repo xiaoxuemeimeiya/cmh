@@ -56,15 +56,7 @@ class Notify extends CI_Controller
                 if($res1 > 0){
                     $this->db->trans_commit();
                 }
-                $temp["pay_money"] = $data["total_fee"]/100;
-                $temp["openid"] = $data["openid"];
-                $temp["prepay_id"] = $checkRes["prepay_id"];
-                $temp["order_id"] = $data["transaction_id"];
-                $temp["order_type"] = $checkRes['order_type'];
-                $ee = self::sendmsg($temp); lyLog(var_export($ee,true) , "343paynotify" , true);
-                $re = $this->echoCallBack(true);
-
-                //
+                lyLog(var_export($checkRes,true) , "paynotify11" , true);
                 if($checkRes['cat_type'] == 2 && $checkRes['type'] == 2){
                     //获取日期
                     $where_date['order_id']           = $checkRes['id'];
@@ -73,25 +65,35 @@ class Notify extends CI_Controller
                     $where_up['year'] = $date['year'];
                     $where_up['month'] = $date['month'];
                     $where_up['date'] = $date['day'];
-                    $this->loop_model->get_where('goods_date',$where_date)->setInc('use');
+                    $res1 = $this->loop_model->get_where('goods_date',$where_date)->setInc('use');
+                    lyLog(var_export($res1,true) , "paynotify111" , true);
 
                 }
+
+                if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
+                    //
+                    $where_date1['id']           = $checkRes['id'];
+                    $where_date1['status']             = 2;
+                    $where_up1['starttime'] = time();
+                    $where_up1['endtime'] = $where_up1['starttime']+30*24*3600;
+                    $res = $this->loop_model->update_where('order',$where_up1,$where_date1);
+                    lyLog(var_export($res,true) , "paynotify1111" , true);
+                }
                 
+                
+
+                $temp["pay_money"] = $data["total_fee"]/100;
+                $temp["openid"] = $data["openid"];
+                $temp["prepay_id"] = $checkRes["prepay_id"];
+                $temp["order_id"] = $data["transaction_id"];
+                $temp["order_type"] = $checkRes['order_type'];
+                $ee = self::sendmsg($temp); lyLog(var_export($ee,true) , "343paynotify" , true);
+                $re = $this->echoCallBack(true); 
 
             }
         }
-        lyLog(var_export($checkRes,true) , "paynotify11" , true);
-        if($checkRes['cat_type'] == 2 && $checkRes['type'] == 3){
-            //
-            $where_date1['id']           = $checkRes['id'];
-            $where_date1['status']             = 2;
-            $where_up1['starttime'] = time();
-            $where_up1['endtime'] = $where_up1['starttime']+30*24*3600;
-            $res = $this->loop_model->update_where('order',$where_up1,$where_date1);
-
-        }
         
-        lyLog(var_export($checkRes,true) , "paynotify11" , true);
+        
     }
 
     public function set_phone($num,$message){
