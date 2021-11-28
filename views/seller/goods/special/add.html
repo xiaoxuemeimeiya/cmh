@@ -201,7 +201,15 @@
 			</div>
 		</div>
 
-		<div class="row cl cat-2">
+		<div class="row cl">
+			<label class="form-label col-2"><span class="c-red">*</span>有效时间：</label>
+			<div class="formControls col-10">
+				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly datatype="*" nullmsg="请选择开始日期！" style="width: 150px">-
+				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly datatype="*" nullmsg="请选择结束日期！" style="width: 150px">
+			</div>
+		</div>
+
+		<div class="row cl cat-0">
 			<label class="form-label col-2">可用次数：</label>
 			<div class="formControls col-10">
 				<input style="width:200px;" type="text" class="input-text" value="" name="num" >
@@ -301,6 +309,7 @@
 <script type="text/javascript" src="/public/js/artTemplate.js"></script>
 <script type="text/javascript" src="/public/H-ui/js/H-ui.js"></script>
 <script type="text/javascript" src="/public/H-ui/js/H-ui.admin.js"></script>
+<script type="text/javascript" src="/public/js/laydate/laydate.js"></script>
 <{ajax_upload()}>
 <{plupload('select_goods_pic',['num'=>5])}>
 <script language="JavaScript">
@@ -324,6 +333,7 @@
 
         $('.cat-2').hide();
         $('.cat-1').hide();
+		$('.cat-o').show();
 
 	});
 
@@ -509,12 +519,15 @@
         if(type == 2){
             $('.cat-1').show();
             $('.cat-2').hide();
+			$('.cat-0').hide();
         }else if(type == 3){
             $('.cat-2').show();
             $('.cat-1').hide();
+			$('.cat-0').hide();
         }else{
 			$('.cat-2').hide();
             $('.cat-1').hide();
+			$('.cat-0').show();
 		}
         var cat_id = 2;//套餐
 		//品牌
