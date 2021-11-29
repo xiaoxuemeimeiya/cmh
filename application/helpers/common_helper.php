@@ -113,7 +113,7 @@ if (!function_exists('code')) {
     {
         $CI = &get_instance();
         $CI->load->model('loop_model');
-        $code = date('dHis') . get_rand_num('int', 6);
+        $code = date('dHis') . get_rand_num('int', 4);
         $admin_data = $CI->loop_model->get_where('order',  array('code'=>$code));
         if($admin_data){
             code();
