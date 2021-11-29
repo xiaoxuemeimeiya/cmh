@@ -227,7 +227,7 @@ class Order extends MY_Controller
             'addtime'             => time(),
             'shop_id'             => $goodData['shop_id']
         );
-        $order_data['code'] = $order_data['order_no'].get_rand_num('int', 2);
+        $order_data['code'] = code();
         //订单总价
         //$order_data['order_price'] =price_format($goodData['sell_price']);
         $order_data['order_price'] =$goodData['sell_price'];

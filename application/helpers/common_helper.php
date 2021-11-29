@@ -105,6 +105,23 @@ if (!function_exists('get_copyright')) {
         return 'Copyright © 2018';
     }
 }
+/**
+ * 获取唯一 code
+ */
+if (!function_exists('code')) {
+    function code()
+    {
+        $CI = &get_instance();
+        $CI->load->model('loop_model');
+        $code = date('dHis') . get_rand_num('int', 6);
+        $admin_data = $CI->loop_model->get_where('order',  array('code'=>$code));
+        if($admin_data){
+            code();
+        }else{
+            return $code;
+        }
+    }
+}
 
 /**
  ***************************************************************
