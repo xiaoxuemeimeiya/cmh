@@ -47,7 +47,7 @@ class Shop_model extends CI_Model
             $member_data = $this->loop_model->get_id('member', $data_post['m_id']);
             //查看access_token是否过期
             //查看是否有生成二维码
-            if(!file_exists("uploads/ercode/qr_".$data_post['m_id'].".png")){
+            if(!file_exists("/uploads/ercode/qr_".$data_post['m_id'].".png")){
                 if(cache('get', 'access_token')){
                     $access_token = cache('get', 'access_token');
                 }else{
@@ -65,16 +65,15 @@ class Shop_model extends CI_Model
                         $access_token = $info['access_token'];
                     }
                 }
-                error_reporting(1);
                 $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
                 $param['scene'] = 'shop_id='.$data_post['m_id'];
                 $param['width'] = 280;
                 $param['is_hyaline'] = false;
                 $param['page'] = "pages/main/store/store";
-                $param = json_encode($param);var_dump($param);
+                $param = json_encode($param);
                 $res = curl_post($url,$param);
                 file_put_contents("uploads/ercode/qr_".$data_post['m_id'].".png", $res);
-                $update_data['ercode'] = "uploads/ercode/qr_".$data_post['m_id'].".png";
+                $update_data['ercode'] = "/uploads/ercode/qr_".$data_post['m_id'].".png";
             }
 
             if (!empty($member_data)) {

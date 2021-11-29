@@ -90,7 +90,6 @@ if (!function_exists('curl_post')) {
         curl_setopt($ch, CURLOPT_POST, 1);//设置为POST方式
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);//POST数据
         $res = curl_exec($ch);//接收返回信息
-        var_dump($res);
         curl_close($ch); //关闭curl链接
 
         return $res;

@@ -37,6 +37,12 @@
             </div>
         </div>
         <div class="row cl">
+            <label class="form-label col-2">店铺二维码：</label>
+            <div class="formControls col-3">
+                <a href="<{$item.ercode}>" target="_blank"><img src="<{$item.ercode}>" width="50" <{if $item.ercode==''}>style="display: none;"<{/if}>></a>
+            </div>
+        </div>
+        <div class="row cl">
             <label class="form-label col-2"><span class="c-red">*</span>电话：</label>
             <div class="formControls col-3">
                 <input type="text" class="input-text" value="" name="tel" datatype="*" nullmsg="请输入电话！">
