@@ -75,45 +75,76 @@ class Assistant extends ST_Controller
     }
 
     /***
-     * 我的核销
+     * 核销
      */
-    public function fill_list()
+    public function verify()
     {
-        $pagesize = 20;//分页大小
-        $page     = (int)$this->input->get('per_page');
-        $page <= 1 ? $page = 1 : $page = $page;//当前页数
-        $date = $this->input->get('date');
-        $m_id = $this->input->get('m_id');
-        if(!$date){
-            $date = strtotime(date('Y-m',time()));
+        //获取内容
+        $code = $this->input->post('code');
+        if(!$code){
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '核销码不存在';
+            echo ch_json_encode($this->ResArr);exit;
         }
-        $start_time = strtotime($date);
-        $end_time =  $end_time = strtotime('+1 month',strtotime($date));
-        $where['where']['addtime >='] = $start_time;
-        $where['where']['addtime <'] = $end_time;
-        $where['where']['m_id']= $m_id;
-        $where['select']= array('id,m_id,amount,note,add_money,consume,FROM_UNIXTIME(addtime,"%m月%d %H:%i") as addtime');
-        $recharge_list = $this->loop_model->get_list('order_collection_doc',$where, $pagesize, $pagesize * ($page - 1),'');
-        $all_rows = $this->loop_model->get_list_num('order_collection_doc',$where,'','','');
-        $pages = ceil($all_rows / $pagesize);
-        //获取本月的总赚费用，以及获取本月的总花费用
-        $where['select'] = array('sum(amount) as total_amount');
-        $where1 = $where;
-        $where1['where']['amount >'] = 0;
-        $make_in = $this->loop_model->get_list('order_collection_doc',$where1,'','','');
-        $where2 = $where;
-        $where2['where']['amount <'] = 0;
-        $make_out = $this->loop_model->get_list('order_collection_doc',$where2,'','','');
-        $list['recharge_list'] = $recharge_list;
-        $list['pages'] = $pages;
-        $list['make_money']= $make_in[0]['total_amount'];
-        $list['consume_money']= $make_out[0]['total_amount'] ;
-        error_json($list);
+        $info = $this->loop_model->get_where('order',array('code'=>$code,'status'=>2),'id,good_id,starttime,endtime,');//获取已经支付的对应订单
+        if(!$info){
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '核销码错误';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        //查看核销码是否过期
+        if(time()>$info['starttime'] && time()< $info['endtime']){
+            //查看核销码是否是月卡，不是月卡的话修改状态，是月卡的话判断是否次数已经用完
+            $goods = $this->loop_model('goods',array('id'=>$info['good_id']),'cat_type,cat_id,type,num');
+            if($goods['cat_type'] == 2 && $goods['type'] == 3){
+                //是月卡，查看次数是否足够
+                $count = $this->loop_model->get_where('verify',array('order_id'=>$info['id'],'goods_id'=>$info['good_id']));
+                if($count >= $goods['num']){
+                    $this->ResArr['code'] = 4;
+                    $this->ResArr['msg'] = '核销码错误';
+                    echo ch_json_encode($this->ResArr);exit;
+                }else{
+                    $insert['order_id'] = $info['id'];
+                    $insert['type'] = 2;
+                    $insert['addtime'] = time();
+                    $insert['goods_id'] = $info['good_id'];
+                    $res = $this->loop_model->insert('verify',$insert);
+                    if($res){
+                        $this->ResArr['code'] = 200;
+                        $this->ResArr['msg'] = '核销成功';
+                        echo ch_json_encode($this->ResArr);exit;
+                    }else{
+                        $this->ResArr['code'] = 4;
+                        $this->ResArr['msg'] = '核销失败，请联系客服';
+                        echo ch_json_encode($this->ResArr);exit;
+                    }
+                }
+            }else{
+                //一次性的优惠券或者套餐券
+                $update['status'] = 4;
+                $res = $this->loop_model->update_where('order',$update,array('id'=>$info['id']));
+                if($res){
+                    $this->ResArr['code'] = 200;
+                    $this->ResArr['msg'] = '核销成功';
+                    echo ch_json_encode($this->ResArr);exit;
+                }else{
+                    $this->ResArr['code'] = 4;
+                    $this->ResArr['msg'] = '核销失败，请联系客服';
+                    echo ch_json_encode($this->ResArr);exit;
+                }
+            }
+        }else{
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '核销码已过期';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+
+
     }
 
     
     /**
-     * 我的订单列表
+     * 核销列表
      * type(null-全部订单，1-待付款，2-已支付，3-待收货，4-已完成，5-已退款，6-已取消，10-退款/售后）
      * status(null-全部订单，1-待付款，2-待发货，3-待收货，4-待评价，10-退款/售后）
      * */
