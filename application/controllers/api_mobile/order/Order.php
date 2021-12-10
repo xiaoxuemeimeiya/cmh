@@ -157,8 +157,8 @@ class Order extends MY_Controller
                 $count = $this->loop_model->get_list_num('order_use',$where_data);
                 $order_data['card_type'] = '月卡券';
                 $order_data['type'] = 2;
-                $order_data['total'] = $goods['num'];
-                $order_data['res'] = $goods['num'] - $count;
+                $order_data['total'] = $good['num'];
+                $order_data['res'] = $good['num'] - $count;
                 $order_data['per_price'] = $order_data['order_price']/$good['num'];
             }else{
                 if($good['type'] == 2){
