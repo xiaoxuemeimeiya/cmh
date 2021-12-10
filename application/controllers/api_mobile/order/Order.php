@@ -140,7 +140,7 @@ class Order extends MY_Controller
         $order_data['starttime'] = $order_data['starttime'];
         $order_data['endtime'] = $order_data['endtime'];
         if($good['cat_type'] == 1){
-            $order_data['card_type'] = 1;
+            $order_data['card_type'] = '优惠券';
             $order_data['type'] = 1;
             $order_data['total'] = 1;
             $order_data['per_price'] = $order_data['order_price'];
@@ -152,18 +152,23 @@ class Order extends MY_Controller
         }elseif($good['cat_type'] == 2){
             if($good['type'] == 3){
                 //月卡
+                //查看消费了几次
+                $where_data['where']['order_id'] = $order_data['id'];
+                $count = $this->loop_model->get_list_num('order_use',$where_data);
                 $order_data['card_type'] = '月卡券';
                 $order_data['type'] = 2;
-                $order_data['total'] = $order_data['num'];
-                $order_data['res'] = $order_data['num'];
+                $order_data['total'] = $goods['num'];
+                $order_data['res'] = $goods['num'] - $count;
                 $order_data['per_price'] = $order_data['order_price']/$good['num'];
             }else{
                 if($good['type'] == 2){
                     $order_data['type'] = 3;
+                    $order_data['card_type'] = '限购券';
                 }else{
                     $order_data['type'] = 4;
+                    $order_data['card_type'] = '套餐券';
                 }
-                $order_data['card_type'] = '套餐券';
+                
                 $order_data['total'] = 1;
                 $order_data['per_price'] = $order_data['order_price'];
                 if($order_data['status'] == 4 || $order_data['status'] == 5){
@@ -264,11 +269,15 @@ class Order extends MY_Controller
                 }
                 //插入数据
                 $date_insert['order_id'] = $res;
-                $date_insert['date'] = $this->input->get_post('date');
-                $date = $date_insert['date'];
-                $date_insert['year'] = date("Y",strtotime($date));
-                $date_insert['month'] = date("n",strtotime($date));
-                $date_insert['day'] = date("d",strtotime($date));
+                //$date_insert['date'] = $this->input->get_post('date');
+                //$date = $date_insert['date'];
+                //$date_insert['year'] = date("Y",strtotime($date));
+                //$date_insert['month'] = date("n",strtotime($date));
+                //$date_insert['day'] = date("d",strtotime($date));
+                $date_insert['date'] = $date;
+                $date_insert['year'] = date("Y",$order_data['date']);
+                $date_insert['month'] = date("n",$order_data['date']);
+                $date_insert['day'] = date("d",$order_data['date']);
                 $date_insert['addtime'] = time();
                 $res1 = $this->loop_model->insert('order_limit_date',$date_insert);
             }else{
