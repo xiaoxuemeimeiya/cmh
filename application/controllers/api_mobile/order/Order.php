@@ -186,6 +186,34 @@ class Order extends MY_Controller
         $this->ResArr['data'] = $order_data;
         echo ch_json_encode($this->ResArr);exit;
     }
+    /**
+     * 取消订单
+     */
+    public function order_cancel()
+    {
+        $post_data = $this->input->get_post(NULL);
+        if (empty($post_data['id'])){
+            $this->ResArr['code'] = 15;
+            $this->ResArr['msg'] = '订单id不能为空';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        $order_data = $this->loop_model->get_where('order',array('id'=>$post_data['id']),'id');
+        if (!$order_data){
+            $this->ResArr['code'] = 16;
+            $this->ResArr['msg'] = '该订单不存在';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        $res = $this->loop_model->update_where('order', array('status' => 8), array('id' => $post_data['id']));
+        if ($res > 0) {
+            $this->ResArr['code'] = 200;
+            $this->ResArr['msg'] = '取消成功';
+            echo ch_json_encode($this->ResArr);exit;
+        } else {
+            $this->ResArr['code'] = 16;
+            $this->ResArr['msg'] = '取消失败';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+    }
 
     /**
      * 订单提交
@@ -232,7 +260,7 @@ class Order extends MY_Controller
             'addtime'             => time(),
             'shop_id'             => $goodData['shop_id']
         );
-        $order_data['code'] = $order_data['order_no'].get_rand_num('int', 2);
+        $order_data['code'] = code();
         //订单总价
         //$order_data['order_price'] =price_format($goodData['sell_price']);
         $order_data['order_price'] =$goodData['sell_price'];

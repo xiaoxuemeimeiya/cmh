@@ -90,7 +90,6 @@ if (!function_exists('curl_post')) {
         curl_setopt($ch, CURLOPT_POST, 1);//设置为POST方式
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);//POST数据
         $res = curl_exec($ch);//接收返回信息
-        var_dump($res);
         curl_close($ch); //关闭curl链接
 
         return $res;
@@ -104,6 +103,23 @@ if (!function_exists('get_copyright')) {
     function get_copyright()
     {
         return 'Copyright © 2018';
+    }
+}
+/**
+ * 获取唯一 code
+ */
+if (!function_exists('code')) {
+    function code()
+    {
+        $CI = &get_instance();
+        $CI->load->model('loop_model');
+        $code = date('dHis') . get_rand_num('int', 4);
+        $admin_data = $CI->loop_model->get_where('order',  array('code'=>$code));
+        if($admin_data){
+            code();
+        }else{
+            return $code;
+        }
     }
 }
 

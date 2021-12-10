@@ -24,6 +24,37 @@ class Setting extends CI_Controller
     {
         $member_shop               = $this->loop_model->get_where('member_shop', array('m_id' => $this->shop_id));
         $member_shop['banner_url'] = json_decode($member_shop['banner_url'], true);
+        if(!file_exists("/uploads/ercode/qr_".$member_shop['m_id'].".png")){
+            if(cache('get', 'access_token')){
+                $access_token = cache('get', 'access_token');
+            }else{
+                $smallapp_appid  = config_item('miniApp_appid');//appid
+                $smallapp_secret = config_item('miniApp_secret');//secret
+                $gettokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$smallapp_appid."&secret=".$smallapp_secret;
+                $result = curl_get($gettokenUrl);
+                $info = json_decode($result,true);
+                if(isset($info["errcode"])){
+                    $this->ResArr['code'] = $info["errcode"];
+                    $this->ResArr['msg'] = $info["errmsg"];
+                    echo ch_json_encode($this->ResArr);exit;
+                }else{
+                    cache('save', 'access_token', $info['access_token'], time() + 7000);//保存token
+                    $access_token = $info['access_token'];
+                }
+            }
+            $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
+            $param['scene'] = 'shop_id='.$member_shop['m_id'];
+            $param['width'] = 280;
+            $param['is_hyaline'] = false;
+            $param['page'] = "pages/main/store/store";
+            $param = json_encode($param);
+            $res = curl_post($url,$param);
+            file_put_contents("uploads/ercode/qr_".$member_shop['m_id'].".png", $res);
+            $update_data['ercode'] = "/uploads/ercode/qr_".$member_shop['m_id'].".png";
+
+            $this->loop_model->update_where('member_shop', $update_data, array('m_id' => $member_shop['m_id']));
+            $member_shop['ercode'] = $update_data['ercode'];
+        }
         assign('item', $member_shop);
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/system/setting/index.html');

@@ -119,8 +119,8 @@ class Coupon extends CI_Controller
         if (!empty($id)) {
             $this->load->model('goods/goods_model');
             $item = $this->goods_model->admin_edit($id);
-            $item['start_time'] = date('Y-m-d H:i:s', $item['start_time']);
-            $item['end_time']   = date('Y-m-d H:i:s', $item['end_time']);
+            $item['start_time'] = date('Y-m-d', $item['start_time']);
+            $item['end_time']   = date('Y-m-d', $item['end_time']);
             assign('item', $item);
         }
         //商品分类
