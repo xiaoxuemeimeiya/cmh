@@ -401,7 +401,11 @@ class Order extends MY_Controller
         if (is_post()) {
             $id = (int)$this->input->get_post('order_id', true);
             $m_id = (int)$this->input->get_post('m_id', true);
-            if (empty($id)) error_json('订单ID错误');
+            if (empty($id)){
+                $this->ResArr["code"] = 6;
+                $this->ResArr["msg"]= '订单ID错误';
+                echo ch_json_encode($this->ResArr);exit;
+            }
             $order_data = $this->loop_model->get_where('order', array('id' => $id));
             if (is_comment($order_data)) {
                 //$order_sku     = $this->loop_model->get_list('order_sku', array('where' => array('order_id' => $order_data['id'])));//商品列表
@@ -455,13 +459,19 @@ class Order extends MY_Controller
                         $shop_level = $this->shop_model->shop_level($goods_comment);//店铺等级
                         $this->loop_model->update_where('member_shop', array('goods_comment' => $goods_comment, 'level' => $shop_level), array('m_id' => $order_data['shop_id']));
                     }
-                    error_json('y');
+                    $this->ResArr["code"] = 200;
+                    $this->ResArr["msg"]= '评价成功';
+                    echo ch_json_encode($this->ResArr);exit;
                 }
 
             } elseif ($order_data['status'] == 5) {
-                error_json('订单已经评价');
+                $this->ResArr["code"] = 7;
+                $this->ResArr["msg"]= '订单已经评价';
+                echo ch_json_encode($this->ResArr);exit;
             } else {
-                error_json('订单还不能评价');
+                $this->ResArr["code"] = 6;
+                $this->ResArr["msg"]= '订单还不能评价';
+                echo ch_json_encode($this->ResArr);exit;
             }
         }
     }
