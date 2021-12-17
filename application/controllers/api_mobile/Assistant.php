@@ -95,7 +95,7 @@ class Assistant extends ST_Controller
         $m_id     = (int)$this->input->get_post('m_id');
        //根据店员获取店铺
        $shop_data = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,shop_id');
-       if($info['shop_id'] != $shop_data['shop_id']]){
+       if($info['shop_id'] != $shop_data['shop_id']){
             $this->ResArr['code'] = 4;
             $this->ResArr['msg'] = '核销码不能在该店使用';
             echo ch_json_encode($this->ResArr);exit;
