@@ -86,12 +86,20 @@ class Assistant extends ST_Controller
             $this->ResArr['msg'] = '核销码不存在';
             echo ch_json_encode($this->ResArr);exit;
         }
-        $info = $this->loop_model->get_where('order',array('code'=>$code,'status'=>2),'id,good_id,starttime,endtime,');//获取已经支付的对应订单
+        $info = $this->loop_model->get_where('order',array('code'=>$code,'status'=>2),'id,shop_id,good_id,starttime,endtime,');//获取已经支付的对应订单
         if(!$info){
             $this->ResArr['code'] = 4;
             $this->ResArr['msg'] = '核销码错误';
             echo ch_json_encode($this->ResArr);exit;
         }
+        $m_id     = (int)$this->input->get_post('m_id');
+       //根据店员获取店铺
+       $shop_data = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,shop_id');
+       if($info['shop_id'] != $shop_data['shop_id']]){
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '核销码不能在该店使用';
+            echo ch_json_encode($this->ResArr);exit;
+       }
         
         //查看核销码是否过期
         if(time()>$info['starttime'] && time()< $info['endtime']){
