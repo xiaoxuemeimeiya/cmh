@@ -101,7 +101,7 @@ class Assistant extends ST_Controller
                 $count = $this->loop_model->get_where('verify',array('order_id'=>$info['id'],'goods_id'=>$info['good_id']));
                 if($count >= $goods['num']){
                     $this->ResArr['code'] = 4;
-                    $this->ResArr['msg'] = '核销码错误';
+                    $this->ResArr['msg'] = '核销码已使用完';
                     echo ch_json_encode($this->ResArr);exit;
                 }else{
                     $insert['order_id'] = $info['id'];
@@ -124,6 +124,11 @@ class Assistant extends ST_Controller
                 $update['status'] = 4;
                 $res = $this->loop_model->update_where('order',$update,array('id'=>$info['id']));
                 if($res){
+                    $insert['order_id'] = $info['id'];
+                    $insert['type'] = 1;
+                    $insert['addtime'] = time();
+                    $insert['goods_id'] = $info['good_id'];
+                    $res = $this->loop_model->insert('verify',$insert);
                     $this->ResArr['code'] = 200;
                     $this->ResArr['msg'] = '核销成功';
                     echo ch_json_encode($this->ResArr);exit;
