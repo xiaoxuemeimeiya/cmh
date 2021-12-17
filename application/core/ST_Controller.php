@@ -6,6 +6,7 @@ class ST_Controller extends CI_Controller {
 
     private $whiteList = [
         'api_mobile/assistant/login',
+        'api_mobile/assistant/verify',
     ];
 	
 	public function __construct()

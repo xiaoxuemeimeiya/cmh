@@ -92,10 +92,11 @@ class Assistant extends ST_Controller
             $this->ResArr['msg'] = '核销码错误';
             echo ch_json_encode($this->ResArr);exit;
         }
+        
         //查看核销码是否过期
         if(time()>$info['starttime'] && time()< $info['endtime']){
             //查看核销码是否是月卡，不是月卡的话修改状态，是月卡的话判断是否次数已经用完
-            $goods = $this->loop_model('goods',array('id'=>$info['good_id']),'cat_type,cat_id,type,num');
+            $goods = $this->loop_model->get_where('goods',array('id'=>$info['good_id']),'cat_type,cat_id,type,num');
             if($goods['cat_type'] == 2 && $goods['type'] == 3){
                 //是月卡，查看次数是否足够
                 $count = $this->loop_model->get_where('verify',array('order_id'=>$info['id'],'goods_id'=>$info['good_id']));
@@ -159,6 +160,10 @@ class Assistant extends ST_Controller
        $m_id     = (int)$this->input->get_post('m_id');
        //根据店员获取店铺
        $shop_data = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,shop_id');
+       $pagesize = 10;//分页大小
+       $page     = (int)$this->input->get_post('page');
+       $page <= 1 ? $page = 1 : $page = $page;//当前页数
+       /*
        $where_data['where']['o.shop_id'] = $shop_data['shop_id'];
        $this->load->model('order/order_model');
        $this->order_model->auto_cancel();//自动取消超时的订单
@@ -171,21 +176,10 @@ class Assistant extends ST_Controller
        //搜索条件start
        
        //状态
-        $where_data['sql'] = '((o.status=2) or (o.status=3) or (o.status=4) or (o.status=5))';
+       $where_data['sql'] = '((o.status=2) or (o.status=3) or (o.status=4) or (o.status=5))';
         
        //支付状态
        $where_data['where']['payment_status'] = 1;
-
-       //关键字
-       /*
-       $keyword_where = $this->input->get_post('keyword_where');
-       $keyword       = $this->input->get_post('keyword');
-       if (!empty($keyword_where) && !empty($keyword)) $where_data['where'][$keyword_where] = $keyword;
-       $search_where = array(
-           'keyword_where'  => $keyword_where,
-           'keyword'        => $keyword,
-       );
-       */
 
        //搜索条件end
        $where_data['select'] = "o.id,o.order_no,FROM_UNIXTIME(o.offtime,'%Y-%m-%d %H:%i:%s') offtime,o.status,round(o.sku_price_real / 100, 2) as sku_price_real,FROM_UNIXTIME(o.paytime,'%Y-%m-%d %H:%i:%s') paytime,m.nickname,m.headimgurl,k.name,k.image,s.m_id as shop_id,s.shop_name,FROM_UNIXTIME(k.start_time,'%Y-%m-%d %H:%i:%s') start_time,FROM_UNIXTIME(k.end_time,'%Y-%m-%d %H:%i:%s') end_time";
@@ -201,12 +195,23 @@ class Assistant extends ST_Controller
        $all_rows = $this->loop_model->get_list_num('order as o', $where_data);//所有数量
        //assign('page_count', ceil($all_rows / $pagesize));
        //开始分页end
-       $this->ResArr['code'] = 200;
-       $this->ResArr['data'] = [
-           'list'=>$order_list,
-           'page_count'=> ceil($all_rows / $pagesize)
-       ];;
-       echo ch_json_encode($this->ResArr);exit;
+       */
+        $where_data['select'] = "o.id,o.order_no,FROM_UNIXTIME(a.addtime,'%Y-%m-%d %H:%i:%s') offtime,o.status,round(o.sku_price_real / 100, 2) as sku_price_real,FROM_UNIXTIME(o.paytime,'%Y-%m-%d %H:%i:%s') paytime,m.nickname,m.headimgurl,k.name,k.image,s.m_id as shop_id,s.shop_name,FROM_UNIXTIME(k.start_time,'%Y-%m-%d %H:%i:%s') start_time,FROM_UNIXTIME(k.end_time,'%Y-%m-%d %H:%i:%s') end_time";
+        $where_data['join']   = array(
+            array('order as o', 'a.order_id=o.id'),
+            array('member_oauth as m', 'o.m_id=m.id'),
+           array('goods as k', 'o.good_id=k.id'),
+           array('member_shop as s', 's.m_id=o.shop_id'),
+        );
+        $where_data['where']['o.shop_id'] = $shop_data['shop_id'];
+        $list = $this->loop_model->get_list('verify as a',$where_data,$pagesize, $pagesize * ($page - 1), 'o.id desc');
+        $all_rows = $this->loop_model->get_list_num('verify as a', $where_data);//所有数量
+        $this->ResArr['code'] = 200;
+        $this->ResArr['data'] = [
+            'list'=>$list,
+            'page_count'=> ceil($all_rows / $pagesize)
+        ];
+        echo ch_json_encode($this->ResArr);exit;
    }
     
     /**

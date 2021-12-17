@@ -278,7 +278,7 @@ class Loop_model extends CI_Model
                 $this->db->order_by($orderby);
             }
             $query = $this->db->get();
-            $result = $query->result_array();
+            $result = $query->result_array();//echo $this->db->last_query();exit;
             if($cache!='') {
                 cache('save', $cache_name, $result);
             }
