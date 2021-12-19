@@ -66,7 +66,8 @@ class Shop_model extends CI_Model
                     }
                 }
                 $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
-                $param['scene'] = 'shop_id='.$data_post['m_id'];
+                //$param['scene'] = 'shop_id='.$data_post['m_id'];
+                $param['scene'] = 'storeId='.$data_post['m_id'].'&storeName='.$data_post['shop_name']
                 $param['width'] = 280;
                 $param['is_hyaline'] = false;
                 $param['page'] = "pages/main/store/store";
