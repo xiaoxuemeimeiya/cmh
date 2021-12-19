@@ -67,8 +67,8 @@ class Assistant extends ST_Controller
     public function detail()
     {
 		$m_id = $this->input->post('m_id');
-		$info = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,username,full_name,tel,shop_id,mch_id');
-        $detail = $this->loop_model->get_where('member_shop',array('m_id'=>$info['shop_id']),'shop_name,logo,cove_img');
+		$info = $this->loop_model->get_where('member_shop_assistant',array('id'=>$m_id),'id,username,full_name,tel,shop_id');
+        $detail = $this->loop_model->get_where('member_shop',array('m_id'=>$info['shop_id']),'shop_name,logo,cove_img,mch_id');
         $this->ResArr['code'] = 200;
         $this->ResArr['data'] = array_merge($info,$detail);
         echo ch_json_encode($this->ResArr);exit;
