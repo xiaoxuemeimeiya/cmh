@@ -225,8 +225,11 @@ class Shop extends CI_Controller
                 }
             }
             $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
-            $param['scene'] = 'storeId='.$m_id;
+            //$param['scene'] = 'storeId='.$m_id;
+            $param['scene'] = $m_id;
             $param['width'] = 280;
+            //$param['check_path'] = false;
+            //$param['env_version'] = 'develop';
             $param['is_hyaline'] = false;
             $param['page'] = "pages/main/store/store";
             $param = json_encode($param);
