@@ -213,7 +213,8 @@ class Shop extends CI_Controller
                 $smallapp_appid  = config_item('miniApp_appid');//appid
                 $smallapp_secret = config_item('miniApp_secret');//secret
                 $gettokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$smallapp_appid."&secret=".$smallapp_secret;
-                $result = curl_get($gettokenUrl);
+                var_dump($gettokenUrl);
+                $result = curl_get($gettokenUrl);var_dump($result);
                 $info = json_decode($result,true);
                 if(isset($info["errcode"])){
                     $this->ResArr['code'] = $info["errcode"];
