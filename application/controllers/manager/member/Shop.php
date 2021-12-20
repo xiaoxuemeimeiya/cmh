@@ -209,13 +209,11 @@ class Shop extends CI_Controller
         if(!file_exists("/uploads/ercode/qr_".$m_id.".png")){
             if(cache('get', 'access_token')){
                 $access_token = cache('get', 'access_token');
-                var_dump(4444);
             }else{
                 $smallapp_appid  = config_item('miniApp_appid');//appid
                 $smallapp_secret = config_item('miniApp_secret');//secret
                 $gettokenUrl = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$smallapp_appid."&secret=".$smallapp_secret;
-                var_dump($gettokenUrl);
-                $result = curl_get($gettokenUrl);var_dump($result);
+                $result = curl_get($gettokenUrl);
                 $info = json_decode($result,true);
                 if(isset($info["errcode"])){
                     $this->ResArr['code'] = $info["errcode"];
@@ -232,14 +230,13 @@ class Shop extends CI_Controller
             $param['is_hyaline'] = false;
             $param['page'] = "pages/main/store/store";
             $param = json_encode($param);
-            $res = curl_post($url,$param);var_dump($res);
+            $res = curl_post($url,$param);
             file_put_contents("uploads/ercode/qr_".$m_id.".png", $res);
             $update_data['ercode'] = "/uploads/ercode/qr_".$m_id.".png";
 
             $this->loop_model->update_where('member_shop', $update_data, array('m_id' => $m_id));
             $member_shop['ercode'] = $update_data['ercode'];
         }
-
         assign('item', $member_shop);
         $this->load->helpers('upload_helper');//加载上传文件插件
         display('/member/shop/add.html');
