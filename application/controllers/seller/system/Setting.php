@@ -42,7 +42,6 @@ class Setting extends CI_Controller
                     $access_token = $info['access_token'];
                 }
             }
-            var_dump($access_token);
             $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
             $param['scene'] = $member_shop['m_id'];
             //$param['scene'] = 'storeId='.$member_shop['m_id'].'&storeName='.$member_shop['shop_name']
