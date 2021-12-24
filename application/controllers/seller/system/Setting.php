@@ -38,10 +38,11 @@ class Setting extends CI_Controller
                     $this->ResArr['msg'] = $info["errmsg"];
                     echo ch_json_encode($this->ResArr);exit;
                 }else{
-                    cache('save', 'access_token', $info['access_token'], time() + 7000);//保存token
+                    cache('save', 'access_token', $info['access_token'], 7000);//保存token
                     $access_token = $info['access_token'];
                 }
             }
+            var_dump($access_token);
             $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token='.$access_token;
             $param['scene'] = $member_shop['m_id'];
             //$param['scene'] = 'storeId='.$member_shop['m_id'].'&storeName='.$member_shop['shop_name']

@@ -61,7 +61,7 @@ class Shop_model extends CI_Model
                         $this->ResArr['msg'] = $info["errmsg"];
                         echo ch_json_encode($this->ResArr);exit;
                     }else{
-                        cache('save', 'access_token', $info['access_token'], time() + 7000);//保存token
+                        cache('save', 'access_token', $info['access_token'], 7000);//保存token
                         $access_token = $info['access_token'];
                     }
                 }
