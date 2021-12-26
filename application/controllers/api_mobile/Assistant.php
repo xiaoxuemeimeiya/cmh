@@ -107,8 +107,8 @@ class Assistant extends ST_Controller
             $goods = $this->loop_model->get_where('goods',array('id'=>$info['good_id']),'cat_type,cat_id,type,num');
             if($goods['cat_type'] == 2 && $goods['type'] == 3){
                 //是月卡，查看次数是否足够
-                $count = $this->loop_model->get_where('verify',array('order_id'=>$info['id'],'goods_id'=>$info['good_id']));
-                if($count >= $goods['num']){
+                $count = $this->loop_model->get_where('verify',array('order_id'=>$info['id'],'goods_id'=>$info['good_id']),'count(id) as count');
+                if($count['count'] >= $goods['num']){
                     $this->ResArr['code'] = 4;
                     $this->ResArr['msg'] = '核销码已使用完';
                     echo ch_json_encode($this->ResArr);exit;

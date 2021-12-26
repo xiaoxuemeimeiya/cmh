@@ -155,7 +155,7 @@ class Order extends MY_Controller
                 //月卡
                 //查看消费了几次
                 $where_data['where']['order_id'] = $order_data['id'];
-                $count = $this->loop_model->get_list_num('order_use',$where_data);
+                $count = $this->loop_model->get_list_num('verify',$where_data);
                 $order_data['card_type'] = '月卡券';
                 $order_data['type'] = 2;
                 $order_data['total'] = $good['num'];
