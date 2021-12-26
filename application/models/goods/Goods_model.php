@@ -506,8 +506,9 @@ class Goods_model extends CI_Model
             $this->db->join('member_shop f','g.shop_id=f.m_id','left');
             //开始排序
             //$this->db->order_by('sell_price/market_price', 'asc');
-            $this->db->order_by('discount', 'asc');
             $this->db->order_by('sortnum', 'asc');
+            $this->db->order_by('discount', 'asc');
+            
             
             $this->db->limit(3);
             $query      = $this->db->get();
