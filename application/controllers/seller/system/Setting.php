@@ -93,6 +93,7 @@ class Setting extends CI_Controller
                 'address'      => $data_post['address'],
                 'desc'         => $data_post['desc'],
                 'per_price'    => $data_post['per_price'],
+                'mch_id'       => $data_post['mch_id'],
                 'open'         => $data_post['open'],
                 'banner_url'   => json_encode($banner_url),
                 'business_license' => $data_post['business_license']
@@ -104,7 +105,11 @@ class Setting extends CI_Controller
             if (!empty($res)) {
                 error_json('y');
             } else {
-                error_json('保存失败');
+                if($res == 0){
+                    error_json('y');
+                }else{
+                    error_json('保存失败');
+                }
             }
         } else {
             error_json('提交方式错误');

@@ -204,8 +204,8 @@
 		<div class="row cl cat-0">
 			<label class="form-label col-2"><span class="c-red">*</span>有效时间：</label>
 			<div class="formControls col-10">
-				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly datatype="*" nullmsg="请选择开始日期！" style="width: 150px">-
-				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly datatype="*" nullmsg="请选择结束日期！" style="width: 150px">
+				<input type="text" class="input-text" value="" name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly nullmsg="请选择开始日期！" style="width: 150px">-
+				<input type="text" class="input-text" value="" name="end_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD'})" readonly nullmsg="请选择结束日期！" style="width: 150px">
 			</div>
 		</div>
 
@@ -217,7 +217,7 @@
 		</div>
 
 		<div class="row cl cat-1">
-			<label class="form-label col-2">排除时间</label>
+			<label class="form-label col-2">数量设置</label>
 			<div class="formControls col-2">
 				<span class="select-box">
 					<select id="month" name="month" class="select" nullmsg="请选择月份" onchange="date_select_month(this.value)">

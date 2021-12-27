@@ -223,6 +223,25 @@ class Goods extends CI_Controller
     }
 
     /**
+     * 修改数据状态
+     */
+    public function update_sortnum()
+    {
+        $id     = $this->input->post('id', true);
+        $sortnum = $this->input->get_post('sort', true);
+        if (empty($id) || $sortnum == '') error_json('id错误');
+        $update_data['sortnum'] = (int)$sortnum;
+
+        $res = $this->loop_model->update_id('goods', $update_data, $id);
+        if (!empty($res)) {
+            if (is_array($id)) $id = join(',', $id);
+            error_json('y');
+        } else {
+            error_json('修改失败');
+        }
+    }
+
+    /**
      * 修改数据推荐状态
      */
     public function update_flag()

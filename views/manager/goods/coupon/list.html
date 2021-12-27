@@ -120,7 +120,7 @@
 				<td class="text-l"><{$key.store_nums}></td>
 				<td class="text-l">￥<{$key.market_price}></td>
 				<td class="text-l">￥<{$key.sell_price}></td>
-				<td class="text-l"><{$key.sortnum}></td>
+				<td class="text-l"><input style="width:50px;border:1px solid #ddd;height:25px;" onchange="setPart(this,'<{$key.id}>')" type="text" name="sortnum" value="<{$key.sortnum}>"/></td>
 				<{if $search_where['status']==0}>
 				<td>
 					<span class="select-box">
@@ -183,6 +183,24 @@
 			success: function(data){
 				if(data.status!='y'){
 					layer.msg(data.info);
+				}
+			}
+		});
+	}
+
+	//排序
+	function setPart(_this,id) {
+		var sort = $(_this).val();
+		$.ajax({
+			type:"POST",
+			url: "<{site_url('/manager/goods/goods/update_sortnum')}>",
+			data:"id="+id+"&sort="+sort,
+			dataType:"json",
+			success: function(data){
+				if(data.status!='y'){
+					layer.msg(data.info);
+				}else{
+					layer.msg('更新成功');
 				}
 			}
 		});
