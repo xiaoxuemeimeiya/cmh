@@ -55,6 +55,7 @@
 				<th width="80">电话</th>
 				<th width="100">邮箱</th>
 				<th width="50">营业执照</th>
+				<th width="50">商户号</th>
 				<th width="70">注册时间</th>
 				<th width="80">最后登录时间</th>
 				<th width="90">状态</th>
@@ -75,6 +76,7 @@
 					<a href="<{$key.business_license}>" target="_blank"><img src="<{$key.business_license}>" width="30" href="30"></a>
 					<{/if}>
 				</td>
+				<td><{$key.mch_id}></td>
 				<td><{date('Y-m-d',$key.addtime)}></td>
 				<td><{date('Y-m-d',$key.endtime)}></td>
 				<td>
