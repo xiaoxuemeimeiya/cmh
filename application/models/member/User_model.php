@@ -44,6 +44,7 @@ class User_model extends CI_Model
         if (!empty($data_post['city'])) $update_data['city'] = $data_post['city'];
         if (!empty($data_post['area'])) $update_data['area'] = $data_post['area'];
         if (!empty($data_post['address'])) $update_data['address'] = $data_post['address'];
+        if (!empty($data_post['remark'])) $update_data['remark'] = $data_post['remark'];
         $update_data['endtime'] = time();
 
         $this->load->model('loop_model');
