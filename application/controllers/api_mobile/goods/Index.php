@@ -187,7 +187,7 @@ class Index extends MY_Controller
                 $where['year'] = date("Y",time());
                 $where['goods_id'] = $id;
                 $where['month'] = date('n',time()+($i-1)*24*3600);//m加0，n不加0
-                $where['date'] = date('d',time()+($i-1)*24*3600);
+                $where['date'] = date('j',time()+($i-1)*24*3600);//d加0，j不加0
                 $isset_date = $this->loop_model->get_where('goods_date',$where); 
                 if($isset_date){
                     if($isset_date['limit'] && $isset_date['limit']-$isset_date['use']>0){
