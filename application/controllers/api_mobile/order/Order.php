@@ -517,6 +517,46 @@ class Order extends MY_Controller
             'list'=>$list,
             'page_count'=> ceil($all_rows / $pagesize)
         ];;
-        echo ch_json_encodech_json_encode($this->ResArr);exit;
+        echo ch_json_encode($this->ResArr);exit;
+    }
+
+    //退款
+    public function refund_order(){
+        $id   = (int)$this->input->get_post('order_id', true);
+        $desc = $this->input->get_post('desc', true);
+        if (empty($id)) error_json('订单商品ID错误');
+        if (empty($desc)) error_json('退款理由不能为空');
+        $order_sku_data = $this->loop_model->get_where('order_sku', array('id' => $id));
+        //订单信息
+        $order_data = $this->loop_model->get_where('order', array('id' => $order_sku_data['order_id']));
+        if (is_refund($order_data)) {
+            if ($order_sku_data['is_refund'] == 1) {
+                error_json('已经提交了退款申请,请等待处理');
+            } elseif ($order_sku_data['is_refund'] == 2) {
+                error_json('退款申请已经处理完成');
+            } else {
+                //开始添加退款单
+                $refund_doc_data = array(
+                    'order_id' => $order_data['id'],
+                    'm_id'     => $this->member_data['id'],
+                    'amount'   => $order_sku_data['sku_sell_price_real'] * $order_sku_data['sku_num'],
+                    'goods_id' => $order_sku_data['goods_id'],
+                    'sku_id'   => $order_sku_data['id'],
+                    'addtime'  => time(),
+                    'note'     => $desc,
+                    'shop_id'  => $order_data['shop_id'],
+                );
+                $this->load->model('order/order_model');
+                $res = $this->order_model->refund_add($refund_doc_data);
+                if (!empty($res)) {
+                    error_json('y');
+                } else {
+                    error_json('申请失败');
+                }
+            }
+        } else {
+            error_json('已经确认和未支付的不能退款');
+        }
+
     }
 }
