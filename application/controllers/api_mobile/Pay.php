@@ -66,7 +66,10 @@ class Pay extends CI_Controller
         $input->SetTrade_type("JSAPI");
         $input->SetOpenid($openid);
         $config = new \WxPayConfig();
-        $order = \WxPayApi::unifiedOrder($config, $input);
+        $shop_data = $this->loop_model->get_where('member_shop', array('m_id' => $order_data['shop_id'], 'status' => 0));
+        $config->GetMerchantId($shop_data['mch_id']);
+        $config->GetKey($shop_data['key']);
+        $order = \WxPayApi::unifiedOrder($config, $input);var_dump($order);
         $tools = new \JsApiPay();
         $jsApiParameters = $tools->GetJsApiParameters($order);
         if($order["return_code"]=="SUCCESS"){
@@ -304,6 +307,88 @@ class Pay extends CI_Controller
         }
         echo ch_json_encode($this->ResArr);
     }
+
+    //退款
+    /*
+    public function refund(){
+        $order_no    = $this->input->get_post('order_no');//订单号,多个之间用,隔开
+        if (empty($order_no)) {
+            $this->ResArr['code'] = 3;
+            $this->ResArr['msg'] = '参数缺失';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        $order_data = $this->loop_model->get_where('order', array('order_no' => $order_no, 'status' => 2));
+        //未支付或者已付款之外的其他状态
+        if(!$order_data){
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '订单错误';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        //获取商家
+        $shop_data = $this->loop_model->get_where('member_shop', array('m_id' => $order_data['shop_id'], 'status' => 0));
+        if(!$shop_data){
+            $this->ResArr['code'] = 4;
+            $this->ResArr['msg'] = '正在处理中';
+            echo ch_json_encode($this->ResArr);exit;
+        }
+        $total_fee = $order_data['order_price'];
+        //require_once Env::get('ROOT_PATH') . 'extend/minipay/WxPay.Api.php';
+        //require_once Env::get('ROOT_PATH') . 'extend/minipay/WxPay.JsApiPay.php';
+        //require_once Env::get('ROOT_PATH') . 'extend/minipay/WxPay.Config.php';
+        $this->load->library('minipay/WxPayApi');
+        $this->load->library('minipay/WxPayJsApiPay');
+        $this->load->library('minipay/WxPayConfig');
+        $this->load->library('minipay/JsApiPay');
+        //$out_trade_no = time().getRandChar(18);
+        $out_refund_no = time() . getRandChar(18);
+        $input = new \WxPayRefund();
+        //$input->SetBody("退款申请");
+        //$input->SetAttach("在线提问");
+        $input->SetOut_trade_no($order_data['order_no']);
+        $input->SetOut_refund_no($out_refund_no);
+        $input->SetTotal_fee($total_fee);
+        $input->SetRefund_fee($total_fee);
+        $config = new \WxPayConfig();
+        $input->SetOp_user_id($config->GetMerchantId($order_data['MerchantId']));
+        $config->GetMerchantId($order_data['mch_id']);
+        $config->GetKey($order_data['key']);
+        if ($_SERVER["SERVER_NAME"] == "devuser.mylyh.com") {
+            $input->SetNotify_url("http://" . $_SERVER["SERVER_NAME"] . "/miniapp/renotify");
+        } else {
+            $input->SetNotify_url("https://" . $_SERVER["SERVER_NAME"] . "/miniapp/renotify");
+        }
+        $refundOrder = \WxPayApi::refund($config, $input);
+            if ($refundOrder["return_code"] == "SUCCESS" && $refundOrder['result_code'] == 'SUCCESS') {
+                lyLog(var_export($refundOrder, true), "refund", true);
+                $UpdataWhere['id'] = $order_data["id"];
+                $updateData['state'] = 5;//状态改为退款
+                $updateData['refund_time'] = time();
+                $updateData['refund_success_time'] = time();
+                $res = Db::table('order')->where($UpdataWhere)->update($updateData);
+
+                $add['openid'] = $order_data['openid'];
+                $add['order_id'] = $order_data['id'];
+                //$add['money'] = $order['total_fee'] / 100;
+                $add['money'] = $order_data['wx_account'] / 100;
+                $add['addtime'] = time();
+                $res1 = Db::table('refund')->insert($add);
+                $this->ResArr['code'] = "1";
+                $this->ResArr['msg'] = "退款成功";
+                return json($this->ResArr);
+                //给用户退款
+
+            } else if (($refundOrder['return_code'] == 'FAIL') || ($refundOrder['result_code'] == 'FAIL')) {
+                //退款失败
+                //原因
+                $reason = (empty($refundOrder['err_code_des']) ? $refundOrder['return_msg'] : $refundOrder['err_code_des']);
+                $this->ResArr['code'] = "2";
+                $this->ResArr['msg'] = $reason;
+            } else {
+                $this->ResArr['code'] = "2";
+                $this->ResArr['msg'] = "pay data error!";
+            }
+    }
+    */
     public function notify_cash (){
         $postStr = file_get_contents("php://input");
 
