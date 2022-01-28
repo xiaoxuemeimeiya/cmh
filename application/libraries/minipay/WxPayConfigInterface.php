@@ -16,9 +16,9 @@ abstract class WxPayConfigInterface
 	 * 
 	 */
 	public abstract function GetAppId();
-	public abstract function GetMerchantId($MerchantId);
+	//public abstract function GetMerchantId($MerchantId);
 	//public abstract function GetAppId();
-    //public abstract function GetSubMerchantId();
+    public abstract function GetSubMerchantId();
 	
 	
 	//=======【支付相关配置：支付成功回调地址/签名方式】===================================
@@ -59,8 +59,8 @@ abstract class WxPayConfigInterface
 	 * 获取地址：https://mp.weixin.qq.com/advanced/advanced?action=dev&t=advanced/dev&token=2005451881&lang=zh_CN
 	 * @var string
 	 */
-	//public abstract function GetKey();
-    public abstract function GetKey($key);
+	public abstract function GetKey();
+    //public abstract function GetKey($key);
 	public abstract function GetAppSecret();
 
 

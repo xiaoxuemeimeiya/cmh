@@ -18,6 +18,7 @@ require_once "WxPayConfigInterface.php";
 class WxPayConfig extends WxPayConfigInterface
 {
     protected $values = array();
+    /*
     public function SetMerchantId($MerchantId)
     {
         $this->values['MerchantId'] = $MerchantId;
@@ -28,6 +29,7 @@ class WxPayConfig extends WxPayConfigInterface
         $this->values['sign_type'] = $key;
         return $key;
     }
+    */
 	//=======【基本信息设置】=====================================
 	/**
 	 * TODO: 修改这里配置为您自己申请的商户信息
@@ -42,17 +44,13 @@ class WxPayConfig extends WxPayConfigInterface
     {
         return 'wxb2574206f6344b83';
     }
-	/*
+
 	public function GetMerchantId()
 	{
 		//return '1513878071';//普通
         return '1515139181';//商户号（开通了特约商户的商户号）
 	}
-	*/
-    public function GetMerchantId($MerchantId)
-    {
-        return $MerchantId;//商户号（开通了特约商户的商户号）
-    }
+
 /*
     public function GetSubMerchantId()
     {
@@ -111,19 +109,13 @@ class WxPayConfig extends WxPayConfigInterface
 	 * 获取地址：https://mp.weixin.qq.com/advanced/advanced?action=dev&t=advanced/dev&token=2005451881&lang=zh_CN
 	 * @var string
 	 */
-	/*
+
 	public function GetKey()
 	{
 		//return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应普通商户
         return 'AHIDHI29SDDS22DADA22DADA222D3564';//对应特殊商户
 	}
-	*/
-    public function GetKey($key)
-    {
-        //return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应普通商户
-        //return 'AHIDHI29SDDS22DADA22DADA222D3564';//对应特殊商户
-        return $key;
-    }
+
 	public function GetAppSecret()
 	{
 		return '50a2d26793bf233be6b17146e98f9aaf';
