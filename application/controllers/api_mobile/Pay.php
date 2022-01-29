@@ -359,14 +359,14 @@ class Pay extends CI_Controller
             $updateData['state'] = 6;//状态改为退款
             $updateData['refund_time'] = time();
             $updateData['refund_success_time'] = time();
-            $res = Db::table('order')->where($UpdataWhere)->update($updateData);
+            $res = $this->loop_model->update_where('order', $UpdataWhere, $updateData);
 
             $add['openid'] = $order_data['openid'];
             $add['order_id'] = $order_data['id'];
             //$add['money'] = $order['total_fee'] / 100;
             $add['money'] = $order_data['wx_account'] / 100;
             $add['addtime'] = time();
-            $res1 = Db::table('refund')->insert($add);
+            $res1 = $this->loop_model->insert('refund',$add);
             $this->ResArr['code'] = "1";
             $this->ResArr['msg'] = "退款成功";
             echo ch_json_encode($this->ResArr);exit;
