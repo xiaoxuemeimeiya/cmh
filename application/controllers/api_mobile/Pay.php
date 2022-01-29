@@ -293,7 +293,9 @@ class Pay extends CI_Controller
         $input->SetTransaction_id($order_data['payment_no']);
         $input->SetOut_order_no($order_data['order_no']);
         $input->SetDescription ('分账已完结');
-        $input->SetSubMch_id('1608890757');
+        $shop_data = $this->loop_model->get_where('member_shop', array('m_id' => $order_data['shop_id']));
+        $input->SetSubMch_id($shop_data['mch_id']);
+        //$input->SetSubMch_id('1608890757');
         //$input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
         $config = new \WxPayConfig();
         $order = \WxPayApi::finishunifiedOrder($config, $input);
@@ -369,7 +371,7 @@ class Pay extends CI_Controller
             $add['status'] = 2;
             $add['addtime'] = time();
             $res1 = $this->loop_model->insert('order_refund_doc',$add);
-            $this->ResArr['code'] = "1";
+            $this->ResArr['code'] = 200;
             $this->ResArr['msg'] = "退款成功";
             echo ch_json_encode($this->ResArr);exit;
         } else {
