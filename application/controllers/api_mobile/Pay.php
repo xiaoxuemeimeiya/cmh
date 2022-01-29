@@ -356,7 +356,7 @@ class Pay extends CI_Controller
         if ($refundOrder["return_code"] == "SUCCESS" && $refundOrder['result_code'] == 'SUCCESS') {
             lyLog(var_export($refundOrder, true), "refund", true);
             $UpdataWhere['id'] = $order_data["id"];
-            $updateData['state'] = 5;//状态改为退款
+            $updateData['state'] = 6;//状态改为退款
             $updateData['refund_time'] = time();
             $updateData['refund_success_time'] = time();
             $res = Db::table('order')->where($UpdataWhere)->update($updateData);
