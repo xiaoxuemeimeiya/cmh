@@ -352,7 +352,8 @@ class Pay extends CI_Controller
         $input->SetSubMch_id($shop_data['mch_id']);
         $config = new \WxPayConfig();
         $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
-        $refundOrder = \WxPayApi::subrefund($config, $input);
+        $refundOrder = \WxPayApi::subrefund($config, $input);var_dump($refundOrder);var_dump($refundOrder['return_code']);
+        var_dump(json_decode($refundOrder));
         if ($refundOrder["return_code"] == "SUCCESS" && $refundOrder['result_code'] == 'SUCCESS') {
             lyLog(var_export($refundOrder, true), "refund", true);
             $UpdataWhere['id'] = $order_data["id"];
