@@ -368,7 +368,7 @@ class Pay extends CI_Controller
             $add['note'] = '退款';
             $add['status'] = 2;
             $add['addtime'] = time();
-            $res1 = $this->loop_model->insert('refund',$add);
+            $res1 = $this->loop_model->insert('order_refund_doc',$add);
             $this->ResArr['code'] = "1";
             $this->ResArr['msg'] = "退款成功";
             echo ch_json_encode($this->ResArr);exit;
