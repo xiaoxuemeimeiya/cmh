@@ -352,7 +352,7 @@ class Pay extends CI_Controller
         $input->SetSubMch_id($shop_data['mch_id']);
         $config = new \WxPayConfig();
         $input->SetNotify_url("http://".$_SERVER["SERVER_NAME"]."/api_mobile/notify");
-        $refundOrder = \WxPayApi::subrefund($config, $input);var_dump($refundOrder);
+        $refundOrder = \WxPayApi::subrefund($config, $input);
         if ($refundOrder["return_code"] == "SUCCESS" && $refundOrder['result_code'] == 'SUCCESS') {
             lyLog(var_export($refundOrder, true), "refund", true);
             $UpdataWhere['id'] = $order_data["id"];
@@ -372,15 +372,12 @@ class Pay extends CI_Controller
             return json($this->ResArr);
             //给用户退款
 
-        } else if (($refundOrder['return_code'] == 'FAIL') || ($refundOrder['result_code'] == 'FAIL')) {
+        } else {
             //退款失败
             //原因
             $reason = (empty($refundOrder['err_code_des']) ? $refundOrder['return_msg'] : $refundOrder['err_code_des']);
             $this->ResArr['code'] = "2";
             $this->ResArr['msg'] = $reason;
-        } else {
-            $this->ResArr['code'] = "2";
-            $this->ResArr['msg'] = "pay data error!";
         }
     }
 
