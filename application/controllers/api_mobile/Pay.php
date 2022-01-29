@@ -356,15 +356,17 @@ class Pay extends CI_Controller
         if ($refundOrder["return_code"] == "SUCCESS" && $refundOrder['result_code'] == 'SUCCESS') {
             lyLog(var_export($refundOrder, true), "refund", true);
             $UpdataWhere['id'] = $order_data["id"];
-            $updateData['state'] = 6;//状态改为退款
+            $updateData['status'] = 6;//状态改为退款
             $updateData['refund_time'] = time();
-            $updateData['refund_success_time'] = time();
             $res = $this->loop_model->update_where('order',$updateData, $UpdataWhere);
 
-            $add['openid'] = $order_data['openid'];
+            $add['m_id'] = $order_data['m_id'];
             $add['order_id'] = $order_data['id'];
+            $add['goods_id'] = $order_data['good_id'];
+            $add['amount'] = $total_fee / 100;
             //$add['money'] = $order['total_fee'] / 100;
-            $add['money'] = $order_data['wx_account'] / 100;
+            $add['note'] = '退款';
+            $add['status'] = 2;
             $add['addtime'] = time();
             $res1 = $this->loop_model->insert('refund',$add);
             $this->ResArr['code'] = "1";
