@@ -289,6 +289,44 @@ class WxPayApi
 		
 		return $result;
 	}
+
+    /**
+     *
+     * 回退，WxPayRefund中out_trade_no、transaction_id至少填一个且
+     * out_refund_no、total_fee、refund_fee、op_user_id为必填参数
+     * appid、mchid、spbill_create_ip、nonce_str不需要填入
+     * @param WxPayConfigInterface $config  配置对象
+     * @param WxPayRefund $inputObj
+     * @param int $timeOut
+     * @throws WxPayException
+     * @return 成功时返回，其他抛异常
+     */
+    public static function subrefund($config, $inputObj, $timeOut = 6)
+    {
+        $url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+        //检测必填参数
+        if(!$inputObj->IsOut_trade_noSet() && !$inputObj->IsTransaction_idSet()) {
+            throw new WxPayException("退款申请接口中，out_trade_no、transaction_id至少填一个！");
+        }else if(!$inputObj->IsOut_refund_noSet()){
+            throw new WxPayException("退款申请接口中，缺少必填参数out_refund_no！");
+        }else if(!$inputObj->IsTotal_feeSet()){
+            throw new WxPayException("退款申请接口中，缺少必填参数total_fee！");
+        }else if(!$inputObj->IsRefund_feeSet()){
+            throw new WxPayException("退款申请接口中，缺少必填参数refund_fee！");
+        }
+        $inputObj->SetAppid($config->GetAppId());//公众账号ID
+        $inputObj->SetMch_id($config->GetMerchantId());//商户号
+        $inputObj->SetNonce_str(self::getNonceStr());//随机字符串
+
+        $inputObj->SetSign($config);//签名
+        $xml = $inputObj->ToXml();
+        $startTimeStamp = self::getMillisecond();//请求开始时间
+        $response = self::postXmlCurl($config, $xml, $url, true, $timeOut);var_dump($response);
+        $result = WxPayResults::Init($config, $response);
+        self::reportCostTime($config, $url, $startTimeStamp, $result);//上报请求花费时间
+
+        return $result;
+    }
 	
 	/**
 	 * 

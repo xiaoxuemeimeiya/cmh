@@ -1375,7 +1375,7 @@ class WxPayRefund extends WxPayDataBase
 
 	/**
 	* 设置微信支付分配的商户号
-	* @param string $value 
+	* @param string $value
 	**/
 	public function SetMch_id($value)
 	{
@@ -1398,8 +1398,34 @@ class WxPayRefund extends WxPayDataBase
 		return array_key_exists('mch_id', $this->values);
 	}
 
+    /**
+     * 设置微信分配的公众账号ID
+     * @param string $value
+     **/
+    public function SetSubMch_id($value)
+    {
+        $this->values['sub_mch_id'] = $value;
+    }
+    /**
+     * 获取微信分配的公众账号ID的值
+     * @return 值
+     **/
+    public function GetSubMch_id()
+    {
+        return $this->values['sub_mch_id'];
+    }
+    /**
+     * 判断微信分配的公众账号ID是否存在
+     * @return true 或 false
+     **/
+    public function IsSubMch_idSet()
+    {
+        return array_key_exists('sub_mch_id', $this->values);
+    }
 
-	/**
+
+
+    /**
 	* 设置微信支付分配的终端设备号，与下单一致
 	* @param string $value 
 	**/
@@ -1630,6 +1656,31 @@ class WxPayRefund extends WxPayDataBase
 	{
 		return array_key_exists('op_user_id', $this->values);
 	}
+
+    /**
+     * 设置接收微信支付异步通知回调地址
+     * @param string $value
+     **/
+    public function SetNotify_url($value)
+    {
+        $this->values['notify_url'] = $value;
+    }
+    /**
+     * 获取接收微信支付异步通知回调地址的值
+     * @return 值
+     **/
+    public function GetNotify_url()
+    {
+        return $this->values['notify_url'];
+    }
+    /**
+     * 判断接收微信支付异步通知回调地址是否存在
+     * @return true 或 false
+     **/
+    public function IsNotify_urlSet()
+    {
+        return array_key_exists('notify_url', $this->values);
+    }
 }
 
 /**

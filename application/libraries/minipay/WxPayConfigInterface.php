@@ -16,9 +16,9 @@ abstract class WxPayConfigInterface
 	 * 
 	 */
 	public abstract function GetAppId();
-	//public abstract function GetMerchantId($MerchantId);
+	public abstract function GetMerchantId();
 	//public abstract function GetAppId();
-    public abstract function GetSubMerchantId();
+    //public abstract function GetSubMerchantId();
 	
 	
 	//=======【支付相关配置：支付成功回调地址/签名方式】===================================

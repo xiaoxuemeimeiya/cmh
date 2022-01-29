@@ -17,7 +17,7 @@ require_once "WxPayConfigInterface.php";
 
 class WxPayConfig extends WxPayConfigInterface
 {
-    protected $values = array();
+    //protected $values = array();
     /*
     public function SetMerchantId($MerchantId)
     {
@@ -47,8 +47,8 @@ class WxPayConfig extends WxPayConfigInterface
 
 	public function GetMerchantId()
 	{
-		//return '1513878071';//普通
-        return '1515139181';//商户号（开通了特约商户的商户号）
+		//return '1513878071';//对应普通商户
+        return '1515139181';//商户号（服务商）
 	}
 
 /*
@@ -113,7 +113,7 @@ class WxPayConfig extends WxPayConfigInterface
 	public function GetKey()
 	{
 		//return 'AHIDHI29SDDS22DADA22DADA222D3ED5';//对应普通商户
-        return 'AHIDHI29SDDS22DADA22DADA222D3564';//对应特殊商户
+        return 'AHIDHI29SDDS22DADA22DADA222D3564';//商户号(服务商)
 	}
 
 	public function GetAppSecret()
