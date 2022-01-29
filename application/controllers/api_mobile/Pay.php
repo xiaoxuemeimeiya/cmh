@@ -359,7 +359,7 @@ class Pay extends CI_Controller
             $updateData['state'] = 6;//状态改为退款
             $updateData['refund_time'] = time();
             $updateData['refund_success_time'] = time();
-            $res = $this->loop_model->update_where('order', $UpdataWhere, $updateData);
+            $res = $this->loop_model->update_where('order',$updateData, $UpdataWhere);
 
             $add['openid'] = $order_data['openid'];
             $add['order_id'] = $order_data['id'];
