@@ -59,8 +59,8 @@ class Order extends MY_Controller
            //$where_data['sql'] = '((o.status=4) or (o.status=5))';
            $where_data['where']['o.status']      = 4;
        }elseif ($status == 5) {
-           //已退款
-           $where_data['sql'] = '((o.status=6) or (o.status=7))';
+           //已退款(也是已经完成)
+           //$where_data['sql'] = '((o.status=6) or (o.status=7))';
        }elseif ($status == 6) {
            //已取消
            $where_data['sql'] = '((o.status=8) or (o.status=9))';
@@ -69,7 +69,8 @@ class Order extends MY_Controller
            $where_data['where']['o.status']      = 10;
        }elseif ($status == 8) {
             //已评价，已完成
-            $where_data['where']['o.status']      = 5;
+            //$where_data['where']['o.status']      = 5;
+           $where_data['sql'] = '((o.status=5) or (o.status=6) or (o.status=7))';
        }elseif ($status != '' && $status >0) {
            $where_data['where']['o.status'] = $status;
        }
